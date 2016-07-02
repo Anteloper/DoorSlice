@@ -6,16 +6,10 @@
 //  Copyright © 2016 Oliver Hill. All rights reserved.
 //
 
-//
-//  NewAddressView.swift
-//  DoorSlice
-//
-//  Created by Oliver Hill on 5/31/16.
-//  Copyright © 2016 Oliver Hill. All rights reserved.
-//
 
 import UIKit
 
+//The address builder view
 class NewAddressView: UIView, UITextFieldDelegate {
     
     var delegate: Slideable!
@@ -63,14 +57,14 @@ class NewAddressView: UIView, UITextFieldDelegate {
             zipField.becomeFirstResponder()
         }
         else{
-            delegate.returnFromFullscreen()
+            delegate.returnFromFullscreen(withCard: nil)
         }
         return true
     }
     
     func makeTextFieldWithText(text: String, yPos: CGFloat)->UITextField{
         let textField = UITextField(frame: CGRect(x: 10, y: yPos, width: frame.width-20, height: 40))
-        textField.backgroundColor = Properties.tiltColor
+        textField.backgroundColor = Constants.tiltColor
         textField.textColor = UIColor.blackColor()
         textField.placeholder = text
         textField.font = UIFont(name: "GillSans-Light", size: 15)

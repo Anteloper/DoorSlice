@@ -6,23 +6,55 @@
 //  Copyright © 2016 Oliver Hill. All rights reserved.
 //
 import UIKit
+import Stripe
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
+
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(Constants.userKey)
+        Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
+    
+            guard let data = NSUserDefaults.standardUserDefaults().objectForKey(Constants.userKey) as? NSData else{
+            noUserFound()
+            return true
+        }
         
-        window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.rootViewController = ContainerController()
-        window!.makeKeyAndVisible()
-        
-        
+        let cc = ContainerController()
+        if let user = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? User{
+            cc.loggedInUser = user
+            window = UIWindow(frame: UIScreen.mainScreen().bounds)
+            window?.rootViewController = cc
+            window!.makeKeyAndVisible()
+        }
+        else{
+            noUserFound()
+        }
+   
         return true
-        
     }
     
+    func noUserFound(){
+        window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        window?.rootViewController = nil
+        //window?.rootViewController = UINavigationController(rootViewController: CreateAccountController())
+        window?.rootViewController = CreateAccountController()
+        window!.makeKeyAndVisible()
+    }
+    
+    
+    func application(application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
+        let windows = UIApplication.sharedApplication().windows
+        
+        for window in windows {
+            window.removeConstraints(window.constraints)
+        }
+    }
+    
+  
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.

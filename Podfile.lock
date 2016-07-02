@@ -1,0 +1,18 @@
+PODS:
+  - Alamofire (3.4.0)
+  - Stripe (7.0.2)
+  - SwiftyJSON (2.3.2)
+
+DEPENDENCIES:
+  - Alamofire (~> 3.4)
+  - Stripe
+  - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: c19a627cefd6a95f840401c49ab1f124e07f54ee
+  Stripe: d1eae5522cf993590f962ac1829a56c2096cf486
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+
+PODFILE CHECKSUM: 156c81311f4d4a52407aa09c4a3d53c8217a41bc
+
+COCOAPODS: 1.0.1

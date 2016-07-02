@@ -9,10 +9,13 @@
 import UIKit
 
 
+//View wrapper for a circle drawing animation
 class CircleView: UIView {
     
     var circleLayer: CAShapeLayer!
     var startTime: NSDate!
+    
+    
     var timeElapsed: NSTimeInterval?{
         didSet{
             if timeElapsed > 1.2{
@@ -48,7 +51,7 @@ class CircleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func animateCricle(duration: NSTimeInterval){
+    func animateCircle(duration: NSTimeInterval){
         
         startTime = NSDate()
         CATransaction.begin()

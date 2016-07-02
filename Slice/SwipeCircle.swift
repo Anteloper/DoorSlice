@@ -6,8 +6,10 @@
 //  Copyright © 2016 Oliver Hill. All rights reserved.
 //
 
+
 import UIKit
 
+//One of the navigation dots that appear below the slice button
 class SwipeCircle: UIView {
     
     
@@ -28,7 +30,7 @@ class SwipeCircle: UIView {
     }
     
     func fill(){
-        backgroundColor = Properties.tiltColor
+        backgroundColor = Constants.tiltColor
     }
     func unfill(){
         backgroundColor = UIColor.clearColor()

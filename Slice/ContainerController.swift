@@ -8,54 +8,80 @@
 
 
 import UIKit
+import Stripe
 
-class ContainerController: UIViewController, Slideable {
+protocol Payable {
+    func amountPaid(amount: Double)
+    func storeCardID(cardID: String, lastFour: String)
+    func cardStoreageFailed()
+    
+}
+
+
+//The overseeing ViewController for the entire project. Nothing in this controller is directly visible
+//Even the navigation bar belongs to the SliceController object it keeps track of. 
+//It is a delegate for the menuController, sliceController, and newCardController objects it contains
+class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthorizationViewControllerDelegate {
+    
     var sliceController: SliceController!
     var navController: UINavigationController!
     var menuController: MenuController?
+    var newCardController: NewCardController?
+    let paymentController = PaymentController()
     
-    var menuIsVisible = false{
-        didSet{
-            showShadow(menuIsVisible)
-        }
-    }
+    var loggedInUser: User!
     
+    var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
     let amountVisibleOfSliceController: CGFloat = 110
+    
+    var amount = 0//Should only be touched by the amountPaid function which is called by paymentController
+    
+    var applePayCancelled = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print(loggedInUser.cardIDs)
+        print(loggedInUser.userID)
         sliceController = SliceController()
         sliceController.delegate = self
+        paymentController.delegate = self
         
         navController = UINavigationController(rootViewController: sliceController)
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
-        
     }
     
     
+    //MARK: Slideable Functions
+    
     func toggleMenu() {
         
-        if !menuIsVisible{
-            if menuController == nil{
-                menuController = MenuController()
-                menuController?.delegate = self
-                view.insertSubview(menuController!.view, atIndex: 0)
-                addChildViewController(menuController!)
-                menuController!.didMoveToParentViewController(self)
-            }
+        if !menuIsVisible && menuController == nil{
+            menuController = MenuController()
+            menuController?.addresses = loggedInUser.addresses ?? [String]()
+            menuController?.cards = loggedInUser.cards
+            menuController?.preferredAddress = loggedInUser.preferredAddress
+            menuController?.preferredCard = loggedInUser.paymentMethod ?? .ApplePay
+            menuController?.delegate = self
+            view.insertSubview(menuController!.view, atIndex: 0)
+            addChildViewController(menuController!)
+            menuController!.didMoveToParentViewController(self)
         }
         
         if !menuIsVisible{
             menuIsVisible = true
-            animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController)
+            animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: false)
         }
             
             
         else{
-            animateCenterPanelXPosition(0) { finished in
+            
+            paymentController.chargeCard(loggedInUser.cardIDs[loggedInUser.cards![2]]!, userID: loggedInUser.userID)
+            loggedInUser.paymentMethod = menuController!.preferredCard
+            loggedInUser.preferredAddress = menuController?.preferredAddress
+            animateCenterPanelXPosition(0, fromFullScreen: false) { finished in
                 self.menuIsVisible = false
                 self.menuController?.view.removeFromSuperview()
                 self.menuController = nil
@@ -63,14 +89,15 @@ class ContainerController: UIViewController, Slideable {
         }
     }
     
-    func animateCenterPanelXPosition(targetPosition: CGFloat, completion: ((Bool) ->Void)! = nil){
+    func animateCenterPanelXPosition(targetPosition: CGFloat, fromFullScreen: Bool, completion: ((Bool) ->Void)! = nil){
         
         UIView.animateWithDuration(0.3,
-                                   delay: 0,
-                                   usingSpringWithDamping: 0.8,
-                                   initialSpringVelocity: 0,
-                                   options: .CurveEaseInOut,
+                                   delay: 0.0,
+                                   options: [.CurveEaseInOut],
                                    animations: {
+                                    if(fromFullScreen){
+                                       self.newCardController?.view.alpha = 0.0
+                                    }
                                     self.navController.view.frame.origin.x = targetPosition},
                                    completion:completion
         )
@@ -85,23 +112,6 @@ class ContainerController: UIViewController, Slideable {
         }
     }
     
-    
-    func userSwipe(recognizer: UIPanGestureRecognizer) {
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(sliceController.view)
-            //Horizontal Swipe
-            if(abs(point.x) >= abs(point.y)){
-                //Right Swipe, Menu not already showing
-                if point.x >= 0 && !menuIsVisible{
-                    toggleMenu()
-                }
-                    //Left Swipe, Menu already showing
-                else if point.x <= 0 && menuIsVisible{
-                    toggleMenu()
-                }
-            }
-        }
-    }
     func userTap(){
         if menuIsVisible{
             toggleMenu()
@@ -111,19 +121,124 @@ class ContainerController: UIViewController, Slideable {
         return menuIsVisible
     }
     
-    func bringMenuToFullscreen(completion: ((Bool) ->Void)) {
-        animateCenterPanelXPosition(view.frame.width, completion: completion)
+    func bringMenuToFullscreen() {
+        if(newCardController == nil){
+            newCardController = NewCardController()
+            newCardController!.delegate = self
+            view.insertSubview(newCardController!.view, atIndex: 1)
+            addChildViewController(newCardController!)
+            newCardController!.didMoveToParentViewController(self)
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
+                if($0){
+                    self.menuController?.removeFromParentViewController()
+                    self.newCardController?.paymentTextField.becomeFirstResponder()
+                }
+            }
+        }
     }
-    func returnFromFullscreen() {
-        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController)
+
+    
+    func returnFromFullscreen(withCard card: STPCardParams?) {
+        if card != nil{
+            let lastFour = card!.last4()!
+            if !loggedInUser.cards!.contains(lastFour){
+                loggedInUser.cards!.append(lastFour)
+                loggedInUser.paymentMethod = .CardIndex(loggedInUser.cards!.count-1)
+                menuController?.preferredCard = loggedInUser.paymentMethod!
+                menuController?.cards = loggedInUser.cards
+                
+                let url = loggedInUser.cardIDs.count == 0 ? Constants.firstCardURLString : Constants.newCardURLString
+                print(url)
+                paymentController.saveNewCard(card!, url: url+loggedInUser.userID, lastFour: lastFour)
+                
+            }
+            //TODO: Alert User Duplicates
+            else{
+                print("duplicate")
+            }
+           
+        }
+        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){ didComplete in
+            if didComplete{
+                self.newCardController?.view.removeFromSuperview()
+                self.newCardController = nil
+                self.menuController?.tableView.reloadData()
+            }
+        }
     }
+    
+    
+    
+    func payForOrder(cheese cheese: Double, pepperoni: Double) {
+        if loggedInUser.paymentMethod != nil{
+            if case .ApplePay = loggedInUser.paymentMethod!{
+                if PaymentController.canApplePay(){
+                    let paymentRequest = paymentController.createPaymentRequest(cheese: cheese, pepperoni: pepperoni)
+                    
+                    //Send it to an apple-made viewcontroller. This viewcontroller will take my PKPaymentRequest and
+                    //turn it into a PKPayment which is passed to the paymentAuthorizationViewController function
+                    let paymentAuthVC = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
+                    paymentAuthVC.delegate = self
+                    sliceController.presentViewController(paymentAuthVC, animated: true, completion: nil)
+                }
+            }
+            else{
+                
+            }
+        }
+            
+        else{
+            
+        }
+    }
+    
+    
+    //MARK: PKPaymentAuthorizationViewControllerDelegate Functions
+    func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
+        dismissViewControllerAnimated(true, completion: nil)
+        if(applePayCancelled){
+            sliceController.orderCancelled()
+        }
+    }
+    
+    func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
+        paymentController.applePayAuthorized(payment, userID:loggedInUser.userID, amount: amount, completion: completion)
+        applePayCancelled = false
+        sliceController.orderCompleted()
+    }
+    
+    func getPaymentAndAddress() -> (String, String){
+        var digits = "Pay"
+        if loggedInUser.paymentMethod != nil{
+            switch loggedInUser.paymentMethod!{
+            case .CardIndex(let index):
+                if(loggedInUser.cards != nil){
+                    digits = loggedInUser.cards![index]
+                }
+            default:break
+            }
+        }
+        
+        //TODO: Is there a situation where this or the force unwrap above could crash?
+        
+        return(digits, loggedInUser.addresses![loggedInUser.preferredAddress!])
+    }
+    
+    
+    func amountPaid(am: Double) {
+        amount = Int(am*100)
+    }
+
+    func storeCardID(cardID: String, lastFour: String){
+        loggedInUser.cardIDs[lastFour] = cardID
+    }
+    
+    
+    //TODO:
+    func cardStoreageFailed(){
+        
+    }
+   
+    
 }
 
-internal struct Properties{
-    
-    //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
-    static let sliceControllerShowing: CGFloat = 110
-    static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
-    static let eucalyptus = UIColor(red: 38/255.0, green: 166/255.0, blue: 91/255.0, alpha: 1.0)
-    
-}

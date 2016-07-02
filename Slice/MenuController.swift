@@ -8,17 +8,7 @@
 
 import UIKit
 
-enum CellType{
-    case HeaderCell
-    case PreferenceCell
-    case NewCell
-}
 
-enum CellCategory{
-    case Slice
-    case Address
-    case Card
-}
 
 class MenuController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
     
@@ -29,27 +19,26 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     let cellHeight: CGFloat = 80
     
     //User Info
-    var addresses: [String]?
-    var cards: [String]?
+    var addresses: [String]!
+    var cards: [String]! //The 0th element in cards will always be the string "Pay"
     
-    var prefersPlain = true { didSet{ updateTableView() } }
-    var preferredAddress = 1 { didSet{ updateTableView() } }
-    var preferredCard = 0 { didSet{ updateTableView() } }
-    
+    var preferredAddress: Int! { didSet{ tableView.reloadData() } }
+    var preferredCard: PaymentPreference = .ApplePay { didSet{ tableView.reloadData()} }
+
     
     //MARK: ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.blackColor()
-        garbage()
         tableViewSetup()
     }
     
     
+    //MARK: TableView Setup
     func tableViewSetup(){
         tableView.frame = CGRect(x: 0,
                                  y: 64,
-                                 width: menuWidth ?? view.frame.width-Properties.sliceControllerShowing,
+                                 width: menuWidth ?? view.frame.width-Constants.sliceControllerShowing,
                                  height: view.frame.size.height-64)
         tableView.backgroundView?.backgroundColor = UIColor.blackColor()
         tableView.backgroundColor = UIColor.blackColor()
@@ -62,108 +51,101 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     
     
-    
-    //MARK: TableView Delegate Methodss
+    //MARK: TableView Delegate Methods
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        switch cellTypeForPath(indexPath) {
-            
-        case .HeaderCell:
-            return cellHeight
-        case .PreferenceCell:
-            return cellHeight
-        default:
-            return cellHeight
-            
-        }
+        return cellHeight
     }
-    
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 7+addresses!.count + cards!.count
+        return section == 0 ? addresses.count+1 : cards.count + 1
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
     }
     
     
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return section == 0 ? "Deliver To" : "Pay With"
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 80
+    }
+    
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 80))
+        headerView.backgroundColor = Constants.tiltColor
+        headerView.alpha = 1.0
+        
+        let title = UILabel(frame: headerView.frame)
+        title.font = UIFont(name: "GillSans-Light", size: 20)
+        title.text = section == 0 ? "Deliver To" : "Pay With"
+        title.textColor = UIColor.whiteColor()
+        title.backgroundColor = UIColor.clearColor()
+        title.textAlignment = .Center
+        
+        headerView.addSubview(title)
+        return headerView
+        
+    }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cellNum = indexPath.row
-        
-        if cellNum == 0{
-            return headerCellWithTitle("Slice Preference")
-        }
-            
-        else if cellNum == 1{
-            return preferenceCellWithTitle("Cheese", isPreferred: prefersPlain)
-        }
-            
-        else if cellNum == 2{
-            return preferenceCellWithTitle("Pepperoni", isPreferred: !prefersPlain)
-        }
-            
-        else if cellNum == 3{
-            return headerCellWithTitle("Deliver To")
-        }
-            //TODO: DON'T FORCE UNWRAP
-        else if cellNum > 3 && cellNum < 4+addresses!.count{
-            return preferenceCellWithTitle(addresses![cellNum-4], isPreferred: (preferredAddress==cellNum-4))
-        }
-        else if cellNum == 4+addresses!.count{
-            return newCell()
-        }
-        else if cellNum == 5+addresses!.count{
-            return headerCellWithTitle("Card Preference")
-        }
-        else if cellNum > 5+addresses!.count && cellNum < 6 + addresses!.count + cards!.count{
-            return preferenceCellWithTitle("Ending in \(cards![cellNum-(6+addresses!.count)])", isPreferred: (preferredCard==cellNum-6+addresses!.count))
+        if indexPath.section == 0{
+            if indexPath.row < addresses.count{
+                return preferenceCellWithTitle(addresses[indexPath.row], isPreferred: indexPath.row == preferredAddress)
+            }
+            else{
+                return newCell()
+            }
         }
         else{
-            return newCell()
-        }
+            let str = indexPath.row == 0 ? "" : "Ending in "
         
+            if indexPath.row < cards.count{
+                return preferenceCellWithTitle(str + cards[indexPath.row], isPreferred: isPreferredCard(indexPath.row))
+            }
+            else{
+                return newCell()
+            }
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if(cellTypeForPath(indexPath) == .PreferenceCell){
-            switch cellCategoryForPath(indexPath){
-            case .Slice:
-                prefersPlain = (indexPath.row == 1)
-            case .Address:
-                preferredAddress = indexPath.row-4
-            case .Card:
-                preferredCard = indexPath.row-(6+addresses!.count)
+        
+        if indexPath.section == 0{
+            if indexPath.row <= addresses.count{
+                preferredAddress = indexPath.row
+            }
+            else{
+                /*//TODO: Nicer animation
+                for subview in view.subviews{
+                    subview.removeFromSuperview()
+                }
+                delegate!.bringMenuToFullscreen(){ finished in
+                    let newView = NewAddressView(frame: self.view.frame)
+                    newView.delegate = self.delegate!
+                    self.view = newView
+                }*/
             }
         }
-        else if(cellTypeForPath(indexPath) == .NewCell){
-            //TODO: Nicer animation
-            for subview in view.subviews{
-                subview.removeFromSuperview()
+        else{
+            if indexPath.row < (cards == nil ?  0 : cards.count){
+                preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
             }
-            delegate!.bringMenuToFullscreen(){ finished in
-                let newView = NewAddressView(frame: self.view.frame)
-                newView.delegate = self.delegate!
-                self.view = newView
+            else{
+                delegate!.bringMenuToFullscreen()
             }
         }
+        
+        
     }
     
     
-    
-    
-    //MARK: Cell-returning Functions
-    func headerCellWithTitle(title: String)->UITableViewCell{
-        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
-        cell.backgroundColor = UIColor.blackColor()
-        cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
-        cell.textLabel?.text = title
-        cell.textLabel?.textAlignment = .Center
-        cell.textLabel?.textColor = Properties.tiltColor
-        return cell
-    }
-    
+    //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{
         
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
-        
         for subview in cell.subviews{
             if subview is UIImageView{
                 subview.removeFromSuperview()
@@ -176,15 +158,14 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.textLabel?.textAlignment = .Left
         cell.textLabel?.textColor = UIColor.whiteColor()
         
-        let width = menuWidth ?? view.frame.width-Properties.sliceControllerShowing
+        let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
+     
         if isPreferred{
             let preferenceLight = UIImageView(frame: CGRect(x: width - 20, y: cellHeight/2 - 5, width: 10, height: 10))
             preferenceLight.image = UIImage(imageLiteral: "circle")
             cell.addSubview(preferenceLight)
         }
-        else{
-            
-        }
+
         return cell
     }
     
@@ -192,65 +173,22 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
         cell.backgroundColor = UIColor.blackColor()
         cell.textLabel?.textAlignment = .Center
-        cell.textLabel?.textColor = Properties.eucalyptus
+        cell.textLabel?.textColor = Constants.eucalyptus
         cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
         cell.textLabel?.text = "+"
         return cell
     }
     
     
-    
-    
-    func cellTypeForPath(path: NSIndexPath) ->CellType{
-        let cellNum = path.row
-        
-        if cellNum == 0 || cellNum == 3{
-            return .HeaderCell
-        }
-        else if cellNum == 1 || cellNum == 2 {
-            return .PreferenceCell
-        }
-            //TODO: DON'T FORCE UNWRAP
-        else if cellNum > 3 && cellNum < 4+addresses!.count{
-            return .PreferenceCell
-        }
-        else if cellNum == 4+addresses!.count{
-            return .NewCell
-        }
-        else if cellNum == 5+addresses!.count{
-            return .HeaderCell
-        }
-            
-        else if cellNum > 5+addresses!.count && cellNum < 6 + addresses!.count + cards!.count{
-            return .PreferenceCell
-        }
-        else{
-            return .NewCell
+    func isPreferredCard(row: Int)->Bool{
+        switch preferredCard{
+        case .ApplePay:
+            return row == 0
+        case .CardIndex(let pref):
+            return row == pref
         }
     }
+  
     
-    
-    func cellCategoryForPath(path: NSIndexPath) ->CellCategory{
-        let cellNum = path.row
-        if(cellNum <= 3){
-            return .Slice
-        }
-            //TODO: Don't force unwrap
-        else if(cellNum > 3 && cellNum <= 4+addresses!.count){
-            return .Address
-        }
-        
-        return .Card
-    }
-    
-    
-    func updateTableView(){
-        tableView.reloadData()
-    }
-    
-    func garbage(){
-        addresses = ["56 Montgomery Place", "333 E 53rd St", "40 Cedar St"]
-        cards = ["6947", "8452"]
-        
-    }
 }
+
