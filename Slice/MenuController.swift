@@ -20,11 +20,14 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     //User Info
     var addresses: [String]!
-    var cards: [String]! //The 0th element in cards will always be the string "Pay"
+    var cards: [String]!{didSet{print(cards)}}
+    
+    //The 0th element in cards will always be the string "Pay"
     
     var preferredAddress: Int! { didSet{ tableView.reloadData() } }
     var preferredCard: PaymentPreference = .ApplePay { didSet{ tableView.reloadData()} }
-
+    
+    var cardBeingProcessed: String?{didSet{ tableView.reloadData() }}//Will be not nil while a card is being verified by the backend
     
     //MARK: ViewDidLoad
     override func viewDidLoad() {
@@ -57,7 +60,15 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? addresses.count+1 : cards.count + 1
+        var cat = 0
+        if section == 0{
+            cat = addresses.count + 1
+        }
+        else{
+            cat = cardBeingProcessed == nil ? cards.count + 1 : cards.count + 2
+        }
+        print(cat)
+        return cat
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -103,8 +114,14 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             let str = indexPath.row == 0 ? "" : "Ending in "
         
             if indexPath.row < cards.count{
+                
                 return preferenceCellWithTitle(str + cards[indexPath.row], isPreferred: isPreferredCard(indexPath.row))
             }
+                
+            else if indexPath.row == cards.count && cardBeingProcessed != nil {
+                return preferenceCellBeingProcessed(cardBeingProcessed!)
+            }
+            
             else{
                 return newCell()
             }
@@ -147,7 +164,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
         for subview in cell.subviews{
-            if subview is UIImageView{
+            if subview is UIImageView || subview is CustomActivityIndicatorView{
                 subview.removeFromSuperview()
             }
         }
@@ -168,6 +185,29 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
 
         return cell
     }
+    
+    func preferenceCellBeingProcessed(title: String) -> UITableViewCell{
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
+        for subview in cell.subviews{
+            if subview is UIImageView || subview is CustomActivityIndicatorView{
+                subview.removeFromSuperview()
+            }
+        }
+        cell.backgroundColor = UIColor.blackColor()
+        cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
+        cell.textLabel?.text = title
+        cell.textLabel?.textAlignment = .Left
+        cell.textLabel?.textColor = UIColor.whiteColor()
+        
+        let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
+        let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
+        spinner.center = CGPoint(x: width-12, y: cellHeight/2)
+        cell.addSubview(spinner)
+        spinner.startAnimating()
+        
+        return cell
+    }
+    
     
     func newCell() -> UITableViewCell{
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell

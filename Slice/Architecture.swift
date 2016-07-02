@@ -38,11 +38,12 @@ internal struct Constants{
     static let sliceColor = UIColor(red: 238/255.0, green: 93/255.0, blue: 27/255.0, alpha: 1.0)
     static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
     
-    static let backendChargeURLString = "https://doorslice.herokuapp.com/api/newchargeuser/"
     static let accountCreationURLString = "https://doorslice.herokuapp.com/api/users"
     static let newCardURLString = "https://doorslice.herokuapp.com/api/newcard/"
     static let firstCardURLString = "https://doorslice.herokuapp.com/api/newstripeuser/"
     static let updateCardURLString = "https://doorslice.herokuapp.com/api/updatecard/"
+    static let chargeUserURLString = "https://doorslice.herokuapp.com/api/charge/"
+    
     //https://stormy-mesa-19767.herokuapp.com/api/newchargeuser/574cdcfae222261100d91c85
     
     static let appleMerchantId = "merchant.com.dormslice"

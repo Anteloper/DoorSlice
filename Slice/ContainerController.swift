@@ -14,6 +14,8 @@ protocol Payable {
     func amountPaid(amount: Double)
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed()
+    func cardPaymentSuccesful()
+    func cardPaymentFailed()
     
 }
 
@@ -35,6 +37,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     let amountVisibleOfSliceController: CGFloat = 110
     
     var amount = 0//Should only be touched by the amountPaid function which is called by paymentController
+    var orderDescription = ""
     
     var applePayCancelled = true
     
@@ -78,7 +81,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             
         else{
             
-            paymentController.chargeCard(loggedInUser.cardIDs[loggedInUser.cards![2]]!, userID: loggedInUser.userID)
             loggedInUser.paymentMethod = menuController!.preferredCard
             loggedInUser.preferredAddress = menuController?.preferredAddress
             animateCenterPanelXPosition(0, fromFullScreen: false) { finished in
@@ -142,13 +144,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         if card != nil{
             let lastFour = card!.last4()!
             if !loggedInUser.cards!.contains(lastFour){
-                loggedInUser.cards!.append(lastFour)
-                loggedInUser.paymentMethod = .CardIndex(loggedInUser.cards!.count-1)
-                menuController?.preferredCard = loggedInUser.paymentMethod!
-                menuController?.cards = loggedInUser.cards
+        
+                menuController?.cardBeingProcessed = lastFour
                 
                 let url = loggedInUser.cardIDs.count == 0 ? Constants.firstCardURLString : Constants.newCardURLString
-                print(url)
                 paymentController.saveNewCard(card!, url: url+loggedInUser.userID, lastFour: lastFour)
                 
             }
@@ -171,6 +170,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func payForOrder(cheese cheese: Double, pepperoni: Double) {
         if loggedInUser.paymentMethod != nil{
+            orderDescription = String(Int(cheese)) + "cheese, " + String(Int(pepperoni)) + "pepperoni"
             if case .ApplePay = loggedInUser.paymentMethod!{
                 if PaymentController.canApplePay(){
                     let paymentRequest = paymentController.createPaymentRequest(cheese: cheese, pepperoni: pepperoni)
@@ -183,7 +183,8 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
                 }
             }
             else{
-                
+                let amount = String(Int(((cheese*4 + pepperoni*4)*100)))
+                paymentController.chargeUser(Constants.chargeUserURLString+loggedInUser.userID, amount: amount, description: orderDescription)
             }
         }
             
@@ -191,7 +192,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             
         }
     }
-    
     
     //MARK: PKPaymentAuthorizationViewControllerDelegate Functions
     func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
@@ -202,7 +202,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     }
     
     func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
-        paymentController.applePayAuthorized(payment, userID:loggedInUser.userID, amount: amount, completion: completion)
+        paymentController.applePayAuthorized(payment, userID:loggedInUser.userID, amount: amount, description: orderDescription, completion: completion)
         applePayCancelled = false
         sliceController.orderCompleted()
     }
@@ -225,20 +225,35 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     }
     
     
+    //MARK: Payable Delegate Methods
     func amountPaid(am: Double) {
         amount = Int(am*100)
     }
 
     func storeCardID(cardID: String, lastFour: String){
+        loggedInUser.cards!.append(lastFour)
+        loggedInUser.paymentMethod = .CardIndex(loggedInUser.cards!.count-1)
+        menuController?.preferredCard = loggedInUser.paymentMethod!
+        menuController?.cards = loggedInUser.cards
+        menuController?.cardBeingProcessed = nil
         loggedInUser.cardIDs[lastFour] = cardID
     }
     
     
     //TODO:
     func cardStoreageFailed(){
-        
+        menuController?.cardBeingProcessed = nil
     }
-   
+    
+    func cardPaymentSuccesful(){
+        sliceController.orderCompleted()
+    }
+    
+    func cardPaymentFailed(){
+        sliceController.orderCancelled()
+    }
+    
+    
     
 }
 

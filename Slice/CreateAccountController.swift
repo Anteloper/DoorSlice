@@ -20,8 +20,12 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
     var fieldWidth: CGFloat!
     var rawNumber = ""
     
+    let phoneImage = UIImageView()
+    let passwordImage = UIImageView()
+    let confirmPasswordImage = UIImageView()
+    
     lazy private var activityIndicator : CustomActivityIndicatorView = {
-        return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading"))
+        return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
     
     override func viewDidLoad() {
@@ -32,8 +36,13 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         addPasswordField()
         addConfirmPasswordField()
         addCreateAccountButton()
+        imageViewSetup()
         phoneField.becomeFirstResponder()
         navBarSetup()
+    }
+    
+    func accountPressed(){
+        createAccount()
     }
     
     func createAccount(){
@@ -44,7 +53,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         let parameters = ["phone" : rawNumber, "password" : confirmPasswordField.text!]
         Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters).responseJSON { response in
             switch response.result{
-                case .Success:
+            case .Success:
                 self.activityIndicator.stopAnimating()
                 if let value = response.result.value{
                     let json = JSON(value)
@@ -59,8 +68,9 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
                         self.presentViewController(cc, animated: false, completion: nil)
                     }
                 }
-                case .Failure(let error):
-                    print(error)
+            case .Failure(let error):
+                self.activityIndicator.stopAnimating()
+                print(error)
             }
         }
     }
@@ -73,21 +83,21 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
     
     //MARK: TextField Setups
     func addPhoneField(){
-        phoneField = textFieldSetup(CGRect(x: view.frame.width/2-fieldWidth/2, y: 100, width: fieldWidth, height: fieldHeight))
+        phoneField = textFieldSetup(CGRect(x: 10, y: 100, width: fieldWidth, height: fieldHeight))
         phoneField.keyboardType = .PhonePad
         phoneField.placeholder = "Phone Number"
         view.addSubview(phoneField)
     }
     
     func addPasswordField(){
-        passwordField = textFieldSetup(CGRect(x: view.frame.width/2-fieldWidth/2, y: 110 + fieldHeight, width: fieldWidth, height: fieldHeight))
+        passwordField = textFieldSetup(CGRect(x: 10, y: 110 + fieldHeight, width: fieldWidth, height: fieldHeight))
         passwordField.secureTextEntry = true
         passwordField.placeholder = "Password"
         view.addSubview(passwordField)
     }
     
     func addConfirmPasswordField(){
-        confirmPasswordField = textFieldSetup(CGRect(x: view.frame.width/2-fieldWidth/2, y: 120 + fieldHeight*2, width: fieldWidth, height: fieldHeight))
+        confirmPasswordField = textFieldSetup(CGRect(x: 10, y: 120 + fieldHeight*2, width: fieldWidth, height: fieldHeight))
         confirmPasswordField.secureTextEntry = true
         confirmPasswordField.placeholder = "Confirm Password"
         view.addSubview(confirmPasswordField)
@@ -106,6 +116,19 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         return textField
     }
     
+    //MARK: ImageView Setups
+    
+    func imageViewSetup(){
+        phoneImage.frame = CGRect(x:view.frame.width-phoneField.frame.height, y:phoneField.frame.origin.y, width:phoneField.frame.height, height: phoneField.frame.height)
+        view.addSubview(phoneImage)
+        
+        passwordImage.frame = CGRect(x:view.frame.width-passwordField.frame.height, y:passwordImage.frame.origin.y, width:passwordField.frame.height, height: passwordField.frame.height)
+        view.addSubview(passwordImage)
+        
+        confirmPasswordImage.frame = CGRect(x:view.frame.width-confirmPasswordField.frame.height, y:confirmPasswordField.frame.origin.y, width:confirmPasswordField.frame.height, height: confirmPasswordField.frame.height)
+        view.addSubview(confirmPasswordImage)
+    }
+    
     
     //MARK: Button Setup
     func addCreateAccountButton(){
@@ -113,7 +136,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         createAccountButton.backgroundColor = Constants.sliceColor
         createAccountButton.setTitle("Create Account", forState: .Normal)
         createAccountButton.titleLabel?.font = UIFont(name: "GillSans-Light", size: 17)
-        createAccountButton.addTarget(self, action:#selector(createAccount) , forControlEvents: .TouchUpInside)
+        createAccountButton.addTarget(self, action:#selector(accountPressed) , forControlEvents: .TouchUpInside)
         view.addSubview(createAccountButton)
     }
     
@@ -140,6 +163,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         }
         else{
             self.view.endEditing(true)
+            accountPressed()
         }
         return true
     }
@@ -148,6 +172,15 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
         self.view.endEditing(true)
     }
     
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        if textField == passwordField{
+            
+        }
+        else if textField == confirmPasswordField{
+            
+        }
+    }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if textField == phoneField{
@@ -162,6 +195,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
             
             if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
                 textFieldShouldReturn(phoneField)
+                phoneImage.image = UIImage(imageLiteral: "check")
             }
             
             if length == 0 || (length > 10 && !hasLeadingOne) || length > 11{

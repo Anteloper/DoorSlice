@@ -23,7 +23,6 @@ class OrderDetailsView: UIView {
         addAddressLabel(address)
         addCardLabel(card)
         addCancel()
-        
     }
     
     

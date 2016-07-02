@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(Constants.userKey)
         Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
     
             guard let data = NSUserDefaults.standardUserDefaults().objectForKey(Constants.userKey) as? NSData else{
@@ -40,8 +39,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func noUserFound(){
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window?.rootViewController = nil
-        //window?.rootViewController = UINavigationController(rootViewController: CreateAccountController())
         window?.rootViewController = CreateAccountController()
+        
+        //window?.rootViewController = UINavigationController(rootController: CreateAccountController())
         window!.makeKeyAndVisible()
     }
     

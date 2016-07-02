@@ -61,7 +61,7 @@ class PaymentController{
 
     
     
-    func chargeCard(cardID: String, userID: String){
+    func changeCard(cardID: String, userID: String){
         print(cardID)
         
         Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID]).responseJSON{ response in
@@ -79,7 +79,22 @@ class PaymentController{
     }
     
     
-    
+    //Amount should be in cents, url should already have userID appended to it
+    //Default card should already be changed in the backend
+    func chargeUser(url: String, amount: String, description: String){
+        print(amount)
+        print(description)
+        let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
+        Alamofire.request(.POST, url, parameters: parameters).responseJSON{ response in
+            switch response.result{
+            case .Success:
+                self.delegate.cardPaymentSuccesful()
+                
+            case .Failure:
+                self.delegate.cardPaymentFailed()
+            }
+        }
+    }
     
     
     
@@ -93,7 +108,6 @@ class PaymentController{
         }
         return false
     }
-    
     
     
     func createPaymentRequest(cheese cheese: Double, pepperoni: Double) -> PKPaymentRequest{
@@ -113,12 +127,12 @@ class PaymentController{
         return paymentRequest
     }
     
-    func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, completion: ((PKPaymentAuthorizationStatus) -> Void)){
+    func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
         let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
         apiClient.createTokenWithPayment(payment, completion: { (token, error) -> Void in
             if error == nil {
                 if let token = token {
-                    self.createBackendChargeWithToken(token, userID: userID, amount: amount, completion: { (result, error) -> Void in
+                    self.createBackendChargeWithToken(token, userID: userID, amount: amount, description: description, completion: { (result, error) -> Void in
                         if result == STPBackendChargeResult.Success {
                             completion(PKPaymentAuthorizationStatus.Success)
                         }
@@ -133,34 +147,21 @@ class PaymentController{
             }
         })
     }
-
+    
+    
     //MARK: Charge Backend
-    func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, completion: STPTokenSubmissionHandler) {
+    func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
         
-        if let url = NSURL(string: Constants.backendChargeURLString + userID) {
-            
-            let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-            let request = NSMutableURLRequest(URL: url)
-            request.HTTPMethod = "POST"
-            let postBody = "stripeToken=\(token.tokenId)&amount=\(0)"
-            let postData = postBody.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-            
-            session.uploadTaskWithRequest(request, fromData: postData, completionHandler: { data, response, error in
-                let successfulResponse = (response as? NSHTTPURLResponse)?.statusCode == 200
-                print((response as! NSHTTPURLResponse).statusCode)
-                if successfulResponse && error == nil {
-                    completion(.Success, nil)
-                    
-                } else {
-                    if error != nil {
-                        completion(.Failure, error)
-                    } else {
-                        completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communicating with your payment backend."]))
-                    }
-                }
-            }).resume()
-            return
+        let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
+        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters).responseJSON { response in
+            switch response.result{
+            case .Success:
+                print(JSON(response.result.value!))
+                completion(.Success, nil)
+            case .Failure(let error):
+                print(error)
+                completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communication with your payment backend."]))
+            }
         }
     }
-    
 }
