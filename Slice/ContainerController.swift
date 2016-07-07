@@ -10,19 +10,10 @@
 import UIKit
 import Stripe
 
-protocol Payable {
-    func amountPaid(amount: Double)
-    func storeCardID(cardID: String, lastFour: String)
-    func cardStoreageFailed()
-    func cardPaymentSuccesful()
-    func cardPaymentFailed()
-    
-}
-
 
 //The overseeing ViewController for the entire project. Nothing in this controller is directly visible
 //Even the navigation bar belongs to the SliceController object it keeps track of. 
-//It is a delegate for the menuController, sliceController, and newCardController objects it contains
+//It is a delegate for the menuController, sliceController, newCardController, and paymentController objects it contains
 class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthorizationViewControllerDelegate {
     
     var sliceController: SliceController!
@@ -32,6 +23,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     let paymentController = PaymentController()
     
     var loggedInUser: User!
+    var paymentPreferenceChanged = false{didSet{print(paymentPreferenceChanged)}}
     
     var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
     let amountVisibleOfSliceController: CGFloat = 110
@@ -40,6 +32,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     var orderDescription = ""
     
     var applePayCancelled = true
+    var applePayFailed = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,6 +51,22 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     
     //MARK: Slideable Functions
+    
+    func getPaymentAndAddress() -> (String, String){
+        var digits = "Pay"
+        if loggedInUser.paymentMethod != nil{
+            switch loggedInUser.paymentMethod!{
+            case .CardIndex(let index):
+                if(loggedInUser.cards != nil){
+                    digits = loggedInUser.cards![index]
+                }
+            default:break
+            }
+        }
+        //TODO: Is there a situation where this or the force unwrap above could crash?
+        return(digits, loggedInUser.addresses![loggedInUser.preferredAddress!])
+    }
+    
     
     func toggleMenu() {
         
@@ -80,7 +89,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             
             
         else{
-            
+            //Check if changed and update preferenceChanged property so we can update card on backend if needed when they try to buy
+            if menuController!.preferredCard != (loggedInUser.paymentMethod == nil ? .CardIndex(23452) : loggedInUser.paymentMethod!) {
+                paymentPreferenceChanged = true
+            }
             loggedInUser.paymentMethod = menuController!.preferredCard
             loggedInUser.preferredAddress = menuController?.preferredAddress
             animateCenterPanelXPosition(0, fromFullScreen: false) { finished in
@@ -123,8 +135,8 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         return menuIsVisible
     }
     
-    func bringMenuToFullscreen() {
-        if(newCardController == nil){
+    func bringMenuToFullscreen(isCardInput isCardInput: Bool) {
+        if(newCardController == nil && isCardInput){
             newCardController = NewCardController()
             newCardController!.delegate = self
             view.insertSubview(newCardController!.view, atIndex: 1)
@@ -137,6 +149,9 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
                 }
             }
         }
+        else if !isCardInput{
+            menuController?.addAddressView()
+        }
     }
 
     
@@ -146,7 +161,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             if !loggedInUser.cards!.contains(lastFour){
         
                 menuController?.cardBeingProcessed = lastFour
-                
+        
                 let url = loggedInUser.cardIDs.count == 0 ? Constants.firstCardURLString : Constants.newCardURLString
                 paymentController.saveNewCard(card!, url: url+loggedInUser.userID, lastFour: lastFour)
                 
@@ -167,7 +182,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     }
     
     
+    //MARK: Payment Functions
     
+    //The beginning point for any payment process when the sliceController timer runs out. This function decides which
+    //payment method is appropriate and the calls the correct function
     func payForOrder(cheese cheese: Double, pepperoni: Double) {
         if loggedInUser.paymentMethod != nil{
             orderDescription = String(Int(cheese)) + "cheese, " + String(Int(pepperoni)) + "pepperoni"
@@ -175,8 +193,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
                 if PaymentController.canApplePay(){
                     let paymentRequest = paymentController.createPaymentRequest(cheese: cheese, pepperoni: pepperoni)
                     
-                    //Send it to an apple-made viewcontroller. This viewcontroller will take my PKPaymentRequest and
-                    //turn it into a PKPayment which is passed to the paymentAuthorizationViewController function
+                    //Send it to an apple-made viewcontroller. This will take my PKPaymentRequest and turn it into a PKPayment which is passed to function bleow
                     let paymentAuthVC = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
                     paymentAuthVC.delegate = self
                     sliceController.presentViewController(paymentAuthVC, animated: true, completion: nil)
@@ -184,7 +201,17 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             }
             else{
                 let amount = String(Int(((cheese*4 + pepperoni*4)*100)))
-                paymentController.chargeUser(Constants.chargeUserURLString+loggedInUser.userID, amount: amount, description: orderDescription)
+                sliceController.orderProcessing()
+                if paymentPreferenceChanged{
+                    let lastFour = loggedInUser.cards![loggedInUser.paymentMethod!.value()]
+                    paymentController.changeCard(loggedInUser.cardIDs[lastFour]!, userID: loggedInUser.userID){
+                        self.paymentController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: amount, description: self.orderDescription)
+                        self.paymentPreferenceChanged = false
+                    }
+                }
+                else{
+                    paymentController.chargeUser(Constants.chargeUserURLString+loggedInUser.userID, amount: amount, description: orderDescription)
+                }
             }
         }
             
@@ -194,34 +221,20 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     }
     
     //MARK: PKPaymentAuthorizationViewControllerDelegate Functions
-    func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
-        dismissViewControllerAnimated(true, completion: nil)
-        if(applePayCancelled){
-            sliceController.orderCancelled()
-        }
-    }
     
     func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
         paymentController.applePayAuthorized(payment, userID:loggedInUser.userID, amount: amount, description: orderDescription, completion: completion)
         applePayCancelled = false
-        sliceController.orderCompleted()
     }
     
-    func getPaymentAndAddress() -> (String, String){
-        var digits = "Pay"
-        if loggedInUser.paymentMethod != nil{
-            switch loggedInUser.paymentMethod!{
-            case .CardIndex(let index):
-                if(loggedInUser.cards != nil){
-                    digits = loggedInUser.cards![index]
-                }
-            default:break
-            }
+    func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
+        dismissViewControllerAnimated(true, completion: nil)
+        if(applePayCancelled || applePayFailed){
+            sliceController.orderCancelled()
         }
-        
-        //TODO: Is there a situation where this or the force unwrap above could crash?
-        
-        return(digits, loggedInUser.addresses![loggedInUser.preferredAddress!])
+        else{
+            sliceController.orderCompleted()
+        }
     }
     
     
@@ -237,6 +250,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         menuController?.cards = loggedInUser.cards
         menuController?.cardBeingProcessed = nil
         loggedInUser.cardIDs[lastFour] = cardID
+        paymentPreferenceChanged = true
     }
     
     

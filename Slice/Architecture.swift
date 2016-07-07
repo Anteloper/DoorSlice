@@ -17,12 +17,21 @@ protocol Slideable{
     func toggleMenu()
     func userTap()
     func menuCurrentlyShowing()->Bool
-    func bringMenuToFullscreen()
+    func bringMenuToFullscreen(isCardInput isCardInput: Bool)
     func returnFromFullscreen(withCard card: STPCardParams?)
     func payForOrder(cheese cheese: Double, pepperoni: Double)
     func getPaymentAndAddress() -> (String, String)
 }
 
+protocol Payable {
+    var applePayFailed: Bool{ get set }
+    func amountPaid(amount: Double)
+    func storeCardID(cardID: String, lastFour: String)
+    func cardStoreageFailed()
+    func cardPaymentSuccesful()
+    func cardPaymentFailed()
+    
+}
 
 protocol Timeable{
     func timerEnded(didComplete: Bool)
@@ -37,19 +46,16 @@ internal struct Constants{
     static let eucalyptus = UIColor(red: 38/255.0, green: 166/255.0, blue: 91/255.0, alpha: 1.0)
     static let sliceColor = UIColor(red: 238/255.0, green: 93/255.0, blue: 27/255.0, alpha: 1.0)
     static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
+    static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
     
+    static let testURLString = "https://doorslice.herokuapp.com/api/testauth"
+    static let authenticateURLString = "https://doorslice.herokuapp.com/api/authenticate"
     static let accountCreationURLString = "https://doorslice.herokuapp.com/api/users"
     static let newCardURLString = "https://doorslice.herokuapp.com/api/newcard/"
     static let firstCardURLString = "https://doorslice.herokuapp.com/api/newstripeuser/"
     static let updateCardURLString = "https://doorslice.herokuapp.com/api/updatecard/"
     static let chargeUserURLString = "https://doorslice.herokuapp.com/api/charge/"
-    
-    //https://stormy-mesa-19767.herokuapp.com/api/newchargeuser/574cdcfae222261100d91c85
-    
     static let appleMerchantId = "merchant.com.dormslice"
-    
-    
-    
     static let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
     
     static let userKey = "user"
@@ -191,7 +197,25 @@ enum CellCategory{
     case Card
 }
 
-enum PaymentPreference{
+enum PaymentPreference: Equatable{
+    func value()->Int{
+        switch self{
+        case .ApplePay:
+            return -1
+        case .CardIndex(let ind):
+            return ind
+        }
+    }
+    
     case CardIndex(Int)
     case ApplePay
+}
+
+func == (lhs: PaymentPreference, rhs: PaymentPreference) -> Bool{
+    switch(lhs, rhs){
+    case (.ApplePay, .ApplePay): return true
+    case (.ApplePay, .CardIndex(_)):return false
+    case (.CardIndex(let l), .CardIndex(let r)): return r==l
+    case (.CardIndex(_), .ApplePay): return false
+    }
 }

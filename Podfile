@@ -9,6 +9,7 @@ target 'Slice' do
   pod 'Stripe'
   pod 'Alamofire', '~> 3.4'
   pod 'SwiftyJSON'
+  pod 'JSONWebToken'
 
   target 'SliceTests' do
     inherit! :search_paths

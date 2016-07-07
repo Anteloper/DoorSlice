@@ -22,8 +22,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     let cancelButton = UIButton()
     var cancelPath = CircleView()
-    let cancelImage = UIImageView()
-    var cancelTimer = NSTimer()
+    
+    let fadeView = UIView()
+    lazy private var activityIndicator : CustomActivityIndicatorView = {return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))}()
     
     let pepperoniButton = UIButton()
     let cheeseButton = UIButton()
@@ -45,8 +46,10 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             }
         }
     }
-    
     var swipeCircles: [SwipeCircle]?
+    
+    //let cancelImage = UIImageView()
+    //var cancelTimer = NSTimer()
    
     //MARK: Slice Pressed and Add Progress Bar
     func slicePressed(){
@@ -189,7 +192,21 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     
     //MARK: Order Processing Functions
+    func orderProcessing(){
+        fadeView.frame = view.frame
+        fadeView.backgroundColor = UIColor.blackColor()
+        fadeView.alpha = 0.6
+        view.addSubview(fadeView)
+        
+        activityIndicator.center = view.center
+        view.addSubview(activityIndicator)
+        view.bringSubviewToFront(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
     func clearCurrentOrder(){
+        fadeView.removeFromSuperview()
+        activityIndicator.stopAnimating()
         cancelButton.removeFromSuperview()
         updateBar.removeFromSuperview()
         updateLabel.removeFromSuperview()
@@ -198,12 +215,15 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     }
     
     func orderCompleted(){
-        
         configureUpdateBar()
-        configureCancel()
-        
+       
+        //configureCancel()
+    
+        activityIndicator.stopAnimating()
+        fadeView.removeFromSuperview()
         orderProgressBar?.removeFromSuperview()
         cancelButton.removeFromSuperview()
+        
         
         UIView.animateWithDuration(0.5,
                                     delay: 0.0,
@@ -214,7 +234,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                                     completion: nil
                 
         )
-        
         updateLabel.frame = CGRect(origin: updateBar.frame.origin, size: CGSize(width: view.frame.width, height: view.frame.height/12))
         updateLabel.text =  order.totalSlices() == 1 ? "1 slice en route" : "\(order.totalSlices()) slices en route"
         view.addSubview(updateLabel)
@@ -229,7 +248,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     
     //MARK: Setup Functions
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationBarSetup()
@@ -305,8 +323,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         upArrowView.image = UIImage(imageLiteral: "uparrow")
         updateBar.addSubview(upArrowView)
         updateBar.bringSubviewToFront(upArrowView)
-       
-        
+
     }
     
     func configureCancel(){
@@ -314,9 +331,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         cancelButton.setBackgroundImage(UIImage(imageLiteral: "cancel2"), forState: .Normal)
         cancelButton.contentMode = .ScaleAspectFit
         cancelButton.frame = CGRect(x: 10, y: 73, width: view.frame.height/20, height: view.frame.height/20)
-        
         cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), forControlEvents: .TouchUpInside)
-  
         view.bringSubviewToFront(cancelButton)
     }
     
@@ -324,13 +339,10 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         let cat: CGFloat = 7/2
         let one = SwipeCircle(frame: CGRect(x: view.frame.width/2 - (10 + cat), y: currentButtonShowing.frame.maxY+30, width: 7, height: 7))
         let two = SwipeCircle(frame: CGRect(x: view.frame.width/2 + (10 - cat), y: currentButtonShowing.frame.maxY+30, width: 7, height: 7))
-        
         swipeCircles = [one, two]
         one.fill()
-        
         view.addSubview(swipeCircles![0])
         view.addSubview(swipeCircles![1])
-
     }
     
     
@@ -339,7 +351,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         if didComplete{
             delegate?.payForOrder(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
-
     }
  
 }

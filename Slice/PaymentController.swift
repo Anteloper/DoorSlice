@@ -29,14 +29,11 @@ class PaymentController{
     //MARK: Card Specific Functions
     
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
-
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
             if error != nil{
                 print("Something went wrong")
             }
-                
             else if let token = tokenOpt{
-                print("charging backend")
                 Alamofire.request(.POST, url, parameters: ["stripeToken" : token.tokenId]).responseJSON { response in
                     switch response.result{
                     case .Success:
@@ -60,20 +57,15 @@ class PaymentController{
     }
 
     
-    
-    func changeCard(cardID: String, userID: String){
+    func changeCard(cardID: String, userID: String, completion: ()->Void){
         print(cardID)
         
         Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID]).responseJSON{ response in
             switch response.result{
             case .Success:
-                print(response.response?.statusCode)
-                if let value = response.result.value{
-                    print(JSON(value))
-                }
+                completion()
             case .Failure:
-                break
-               // print(response.result.error)
+                self.delegate.cardPaymentFailed()
             }
         }
     }
@@ -89,7 +81,7 @@ class PaymentController{
             switch response.result{
             case .Success:
                 self.delegate.cardPaymentSuccesful()
-                
+            
             case .Failure:
                 self.delegate.cardPaymentFailed()
             }
@@ -135,15 +127,18 @@ class PaymentController{
                     self.createBackendChargeWithToken(token, userID: userID, amount: amount, description: description, completion: { (result, error) -> Void in
                         if result == STPBackendChargeResult.Success {
                             completion(PKPaymentAuthorizationStatus.Success)
+                            self.delegate.applePayFailed = false
                         }
                         else {
                             completion(PKPaymentAuthorizationStatus.Failure)
+                            self.delegate.applePayFailed = true
                         }
                     })
                 }
             }
             else {
                 completion(PKPaymentAuthorizationStatus.Failure)
+                self.delegate.applePayFailed = true
             }
         })
     }

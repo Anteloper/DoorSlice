@@ -9,6 +9,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>CryptoSwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>JSONWebToken.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Slice.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,12 +47,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>13E6C47326FA737764164CF211859CE3</key>
+		<key>2D39429C9CB6C2108044B8E45A88B099</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>29BB87BAE793BEACA1494AC0FFEB93B6</key>
+		<key>34C073D448A23CA3A97EA55CC489BD6F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -52,7 +62,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>79AFD18A76405B403C730F38F1A18074</key>
+		<key>73A5535D0CE110D2F409284CC5CE551A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -63,6 +73,16 @@
 			<true/>
 		</dict>
 		<key>7F471D809E1F2CEBDAA679C7344DE58B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>914603A9CA925AED8343A1DDF01A22F1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AE9C64428C990F972477E1609C6D7D63</key>
 		<dict>
 			<key>primary</key>
 			<true/>

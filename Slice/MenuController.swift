@@ -81,11 +81,11 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 80
+        return cellHeight/2
     }
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 80))
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: cellHeight/2))
         headerView.backgroundColor = Constants.tiltColor
         headerView.alpha = 1.0
         
@@ -114,14 +114,11 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             let str = indexPath.row == 0 ? "" : "Ending in "
         
             if indexPath.row < cards.count{
-                
                 return preferenceCellWithTitle(str + cards[indexPath.row], isPreferred: isPreferredCard(indexPath.row))
             }
-                
             else if indexPath.row == cards.count && cardBeingProcessed != nil {
                 return preferenceCellBeingProcessed(cardBeingProcessed!)
             }
-            
             else{
                 return newCell()
             }
@@ -135,15 +132,10 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                 preferredAddress = indexPath.row
             }
             else{
-                /*//TODO: Nicer animation
                 for subview in view.subviews{
                     subview.removeFromSuperview()
                 }
-                delegate!.bringMenuToFullscreen(){ finished in
-                    let newView = NewAddressView(frame: self.view.frame)
-                    newView.delegate = self.delegate!
-                    self.view = newView
-                }*/
+                delegate!.bringMenuToFullscreen(isCardInput: false)
             }
         }
         else{
@@ -151,13 +143,17 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                 preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
             }
             else{
-                delegate!.bringMenuToFullscreen()
+                delegate!.bringMenuToFullscreen(isCardInput: true)
             }
         }
-        
-        
     }
     
+    
+    func addAddressView(){
+        let newView = NewAddressView(frame: self.view.frame)
+        newView.delegate = self.delegate!
+        self.view = newView
+    }
     
     //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{

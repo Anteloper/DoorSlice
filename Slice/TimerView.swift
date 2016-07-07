@@ -39,7 +39,7 @@ class TimerView: UIView {
         lineLayer.strokeEnd = 0.0
         
         layer.addSublayer(lineLayer)
-        
+
     }
     
 
@@ -67,7 +67,6 @@ class TimerView: UIView {
         //Linear animation
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
         
-        
         //So that the value is correct when the animation ends
         lineLayer.strokeEnd = 1.0
         
@@ -77,8 +76,6 @@ class TimerView: UIView {
         
     }
 
-    
-    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
