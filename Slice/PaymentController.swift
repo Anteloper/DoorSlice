@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  PaymentController.swift
 //  Slice
 //
 //  Created by Oliver Hill on 6/22/16.
@@ -17,39 +17,47 @@ enum STPBackendChargeResult {
 typealias STPTokenSubmissionHandler = (STPBackendChargeResult?, NSError?) -> Void
 
 
-//A bag of functions to actually charge the user. Delegate is used soley to pass back the amount
+//A bag of functions to do the all of the networking and charge the user. Delegate is used soley to pass back the amount
 //Being charged when paying with apple pay because it is calculated in the createPaymentRequest function
 
 
-class PaymentController{
+class NetworkingController{
     
     var delegate: Payable!
+    var headers: [String : String]!
+    
+    //MARK: Save Order
+    //Used for both Apple Pay and card payment
+    func saveOrder(cheese: String, pepperoni: String, url: String, cardID: String, completion: ()->Void){
+        let parameters = ["cheese" : cheese, "pepperoni" : pepperoni, "cardUsed" : cardID]
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+            completion()
+        }
+    }
     
     
     //MARK: Card Specific Functions
-    
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
             if error != nil{
-                print("Something went wrong")
+                self.delegate.cardStoreageFailed(trueFailure: true)
             }
             else if let token = tokenOpt{
-                Alamofire.request(.POST, url, parameters: ["stripeToken" : token.tokenId]).responseJSON { response in
+                let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
+                Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
                     switch response.result{
                     case .Success:
                         if let value = response.result.value{
-                            print(JSON(value))
-                            
-                            let cardID = JSON(value)["card"].stringValue
+                            let cardID = JSON(value)["card"]["cardID"].stringValue
                             if cardID != ""{
                                 self.delegate.storeCardID(cardID, lastFour: lastFour)
                             }
                             else{
-                                self.delegate.cardStoreageFailed()
+                                self.delegate.cardStoreageFailed(trueFailure: false)
                             }
                         }
                     case .Failure:
-                        print(response.result.error)
+                        self.delegate.cardStoreageFailed(trueFailure: true)
                     }
                 }
             }
@@ -58,9 +66,7 @@ class PaymentController{
 
     
     func changeCard(cardID: String, userID: String, completion: ()->Void){
-        print(cardID)
-        
-        Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID]).responseJSON{ response in
+        Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
                 completion()
@@ -70,14 +76,11 @@ class PaymentController{
         }
     }
     
-    
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
     func chargeUser(url: String, amount: String, description: String){
-        print(amount)
-        print(description)
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, url, parameters: parameters).responseJSON{ response in
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
                 self.delegate.cardPaymentSuccesful()
@@ -91,7 +94,6 @@ class PaymentController{
     
     
     //MARK: Apple Pay Functions
-    
     static func canApplePay() -> Bool{
         if let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId){
             if Stripe.canSubmitPaymentRequest(paymentRequest){
@@ -148,15 +150,63 @@ class PaymentController{
     func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
         
         let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters).responseJSON { response in
+        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
             switch response.result{
             case .Success:
-                print(JSON(response.result.value!))
                 completion(.Success, nil)
-            case .Failure(let error):
-                print(error)
+            case .Failure:
                 completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communication with your payment backend."]))
             }
         }
     }
+    
+    //MARK: Addresses
+    func saveAddress(add: Address, userID: String){
+        let url = Constants.newAddressURLString+userID
+        let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
+
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+            switch response.result{
+            case .Success:
+                if let value = response.result.value{
+                    let id = JSON(value)["Data"]["_id"].stringValue
+                    if id != ""{
+                        self.delegate.addressSaveSucceeded(add, orderID: id)
+                    }
+                    else{
+                       self.delegate.addressSaveFailed()
+                    }
+                }
+                else{
+                    self.delegate.addressSaveFailed()
+                }
+            case .Failure:
+                self.delegate.addressSaveFailed()
+            }
+        }
+    }
+    
+    func deleteAddress(url: String, completion: (Bool)->Void){
+        Alamofire.request(.DELETE, url, parameters: nil, encoding: .URL, headers: headers).responseJSON{ response in
+            switch response.result{
+            case .Success:
+                completion(true)
+            case .Failure:
+                completion(false)
+            }
+        }
+    }
+    
+    func deleteCard(url: String, card: String, completion: (Bool)->Void){
+        let parameters = ["cardID" : card]
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+            switch response.result{
+            case .Success:
+                completion(true)
+            case .Failure:
+                completion(false)
+            }
+        }
+    }
 }
+

@@ -12,44 +12,42 @@ import Stripe
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(Constants.userKey)
+        
         Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
-    
-            guard let data = NSUserDefaults.standardUserDefaults().objectForKey(Constants.userKey) as? NSData else{
+        noUserFound()
+        guard let user = NSKeyedUnarchiver.unarchiveObjectWithFile(Constants.userFilePath()) as? User else{
             noUserFound()
             return true
         }
         
-        let cc = ContainerController()
-        if let user = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? User{
+        window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        if user.isLoggedIn{
+            let cc = ContainerController()
             cc.loggedInUser = user
-            window = UIWindow(frame: UIScreen.mainScreen().bounds)
             window?.rootViewController = cc
-            window!.makeKeyAndVisible()
+            
         }
         else{
-            noUserFound()
+            let lc = LoginController()
+            lc.shouldShowBackButton = false
+            window?.rootViewController = WelcomeController()
         }
-   
+        window!.makeKeyAndVisible()
         return true
     }
     
+    
     func noUserFound(){
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.rootViewController = nil
-        window?.rootViewController = CreateAccountController()
-        
-        //window?.rootViewController = UINavigationController(rootController: CreateAccountController())
+        window?.rootViewController = WelcomeController()
         window!.makeKeyAndVisible()
     }
     
     
     func application(application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
         let windows = UIApplication.sharedApplication().windows
-        
         for window in windows {
             window.removeConstraints(window.constraints)
         }

@@ -18,23 +18,14 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     var centerSliceController: SliceController!
     
     var orderProgressBar: OrderProgressView?
-    var orderInfoScreen: OrderDetailsView?
-    
     let cancelButton = UIButton()
-    var cancelPath = CircleView()
     
     let fadeView = UIView()
     lazy private var activityIndicator : CustomActivityIndicatorView = {return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))}()
     
     let pepperoniButton = UIButton()
     let cheeseButton = UIButton()
-    
-    var updateBar = UIView()
-    let updateLabel = UILabel()
-    
-    var updateBarIsShowing = false
-    var orderDetailsViewIsExpanded = false{didSet{(print(orderDetailsViewIsExpanded)); print("menuCurrentlyShowing: ", delegate!.menuCurrentlyShowing())}}
-    
+
     var order = Order()
     
     var currentButtonShowing: UIButton!{
@@ -47,99 +38,73 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         }
     }
     var swipeCircles: [SwipeCircle]?
-    
-    //let cancelImage = UIImageView()
-    //var cancelTimer = NSTimer()
    
     //MARK: Slice Pressed and Add Progress Bar
     func slicePressed(){
         if !delegate!.menuCurrentlyShowing(){
-            
-            //Animate
-            currentButtonShowing.transform = CGAffineTransformMakeScale(0, 0)
-            
             if orderProgressBar == nil || orderProgressBar?.superview == nil{
                 self.addProgressBar()
             }
+       
+            if order.totalSlices() < 8{
+                currentButtonShowing.transform = CGAffineTransformMakeScale(0, 0)
+                
+                let sliceType: Slice = currentButtonShowing == cheeseButton ? .Cheese : .Pepperoni
+                order.add(sliceType)
             
-            let sliceType: Slice = currentButtonShowing == cheeseButton ? .Cheese : .Pepperoni
-            order.add(sliceType)
+                orderProgressBar?.resetTimer()
+                orderProgressBar?.addSlice(sliceType)
+                orderProgressBar?.numSlices += 1
             
             
-            orderProgressBar?.resetTimer()
-            orderProgressBar?.addSlice(sliceType)
-            orderProgressBar?.numSlices += 1
-            
-            
-            UIView.animateWithDuration(0.3,
-                                       delay: 0.0,
-                                       usingSpringWithDamping: 0.5,
-                                       initialSpringVelocity: 15,
-                                       options: .CurveLinear,
-                                       animations: { self.currentButtonShowing.transform = CGAffineTransformIdentity},
-                                       completion: nil
-            )
+                UIView.animateWithDuration(0.2,
+                                           delay: 0.0,
+                                           usingSpringWithDamping: 0.5,
+                                           initialSpringVelocity: 15,
+                                           options: .CurveLinear,
+                                           animations: { self.currentButtonShowing.transform = CGAffineTransformIdentity},
+                                           completion: nil
+                )
+            }
+            else{
+                orderProgressBar?.timer.pause()
+                let alert = UIAlertController(title: "Overload!",
+                                              message: "We have an 8 Slice maximum for now, sorry!",
+                                              preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: { _ in self.orderProgressBar?.timer.resume()}))
+                self.presentViewController(alert, animated: true, completion: nil)
+            }
         }
-            
         else{
-            delegate?.toggleMenu()
+            delegate?.toggleMenu(nil)
         }
         
     }
     
     func addProgressBar(){
-        
         view.addSubview(self.cancelButton)
         orderProgressBar = OrderProgressView(frame: view.frame)
         orderProgressBar!.delegate = self
         view.addSubview(orderProgressBar!)
         view.sendSubviewToBack(orderProgressBar!)
         view.bringSubviewToFront(cancelButton)
-        
     }
     
     
     //MARK: Swipe and Swipe Handling Functions
     func didSwipe(recognizer: UIPanGestureRecognizer){
-        if !delegate!.menuCurrentlyShowing(){
-            if recognizer.state == .Ended{
+        if recognizer.state == .Ended{
+            if !delegate!.menuCurrentlyShowing(){
                 let point = recognizer.translationInView(view)
                 //Horizontal swipe
-                if(abs(point.x) >= abs(point.y)) && !orderDetailsViewIsExpanded{
+                if(abs(point.x) >= abs(point.y)){
                     swapButton(newButtonIsCheese: currentButtonShowing != cheeseButton, comingFromRight: point.x < 0)
                 }
-                //Vertical swipe
-                else if abs(point.y) >= abs(point.x){
-                    //Upward
-                    if point.y <= 0 && updateBarIsShowing && !orderDetailsViewIsExpanded{
-                        addOrderScreen()
-                        orderDetailsViewIsExpanded = true
-                    }
-                    //Downward
-                    else if point.y >= 0 {
-                        orderInfoScreen?.dismiss()
-                        orderDetailsViewIsExpanded = false
-                    }
-                }
+            }
+            else{
+                delegate!.toggleMenu(nil)
             }
         }
-        else{
-            //delegate!.toggleMenu()
-        }
-    }
-    
-    //Brings up order details screen
-    func addOrderScreen(){
-        print("yep")
-        let detailFrame  = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: view.frame.height*2/3)
-        
-        orderInfoScreen = OrderDetailsView(withframe: detailFrame, pepperoniSlices: Int(order.pepperoniSlices), cheeseSlices: Int(order.cheeseSlices), address: delegate!.getPaymentAndAddress().1, card: delegate!.getPaymentAndAddress().0)
-
-        view.addSubview(orderInfoScreen!)
-        UIView.animateWithDuration(0.4, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 5.0,
-                                   options: [],
-                                   animations: {self.orderInfoScreen!.frame.origin = CGPoint(x: 0, y: self.view.frame.height/3)},
-                                   completion: nil)
     }
     
     //Animates the new button in and the old one out
@@ -181,12 +146,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     //MARK Touches Began
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if !delegate!.menuCurrentlyShowing() && orderDetailsViewIsExpanded{
-            if !CGRectContainsPoint(orderInfoScreen!.frame, (touches.first?.locationInView(view))!){
-                orderInfoScreen!.dismiss()
-                orderDetailsViewIsExpanded = false
-            }
-        }
         delegate?.userTap()
     }
     
@@ -208,37 +167,17 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         fadeView.removeFromSuperview()
         activityIndicator.stopAnimating()
         cancelButton.removeFromSuperview()
-        updateBar.removeFromSuperview()
-        updateLabel.removeFromSuperview()
         orderProgressBar?.removeFromSuperview()
-        
     }
     
     func orderCompleted(){
-        configureUpdateBar()
-       
-        //configureCancel()
-    
         activityIndicator.stopAnimating()
         fadeView.removeFromSuperview()
         orderProgressBar?.removeFromSuperview()
         cancelButton.removeFromSuperview()
-        
-        
-        UIView.animateWithDuration(0.5,
-                                    delay: 0.0,
-                                    usingSpringWithDamping: 0.5,
-                                    initialSpringVelocity: 15,
-                                    options: .CurveLinear,
-                                    animations: { self.updateBar.frame.origin = CGPoint(x: 0, y: self.view.frame.height-self.updateBar.frame.height) },
-                                    completion: nil
-                
-        )
-        updateLabel.frame = CGRect(origin: updateBar.frame.origin, size: CGSize(width: view.frame.width, height: view.frame.height/12))
-        updateLabel.text =  order.totalSlices() == 1 ? "1 slice en route" : "\(order.totalSlices()) slices en route"
-        view.addSubview(updateLabel)
-        updateBarIsShowing = true
+        order.clear()
 
+        
     }
     
     func orderCancelled(){
@@ -250,6 +189,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Setup Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = Constants.darkBlue
         navigationBarSetup()
         configureSlices()
         configureCancel()
@@ -257,30 +197,25 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         view.addSubview(pepperoniButton)
         currentButtonShowing = pepperoniButton
         configureSwipeCircles()
-        view.backgroundColor = UIColor.whiteColor()
     }
     
     func navigationBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.backgroundColor = UIColor.clearColor()
-        titleLabel.font = UIFont(name: "GillSans-Light", size: 25)
-        titleLabel.textColor = Constants.tiltColor
-        titleLabel.alpha = 0.8
+        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE")
         titleLabel.textAlignment = .Center
-        titleLabel.text = "Slice"
         navigationItem.titleView = titleLabel
         
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(SliceController.toggleMenu), forControlEvents: .TouchUpInside)
-        menuButton.frame = CGRect(x: 0, y:0, width: 25, height: 25)
+        menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
-        
     }
     
     //Called by menu press
     func toggleMenu(){
-        delegate?.toggleMenu()
+        delegate?.toggleMenu(nil)
     }
     
     func addGestureRecognizer(){
@@ -294,43 +229,23 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         pepperoniButton.contentMode = .ScaleAspectFit
         pepperoniButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
         pepperoniButton.adjustsImageWhenHighlighted = false
+        pepperoniButton.alpha = 1.0
         pepperoniButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
         
         cheeseButton.setBackgroundImage(UIImage(imageLiteral: "cheese"), forState: .Normal)
         cheeseButton.adjustsImageWhenHighlighted = false
         cheeseButton.contentMode = .ScaleAspectFit
         cheeseButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
+        cheeseButton.alpha = 1.0
         cheeseButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
     }
     
-    func configureUpdateBar(){
-        //Set properties of updateBar off screen
-        updateBar = UIView(frame: CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: view.frame.height/10))
-        updateBar.alpha = 0.8
-        updateBar.backgroundColor = Constants.tiltColor
-        view.addSubview(updateBar)
-        
-        
-        //Set all properties except text of updateLabel
-        updateLabel.alpha = 0.8
-        updateLabel.backgroundColor = UIColor.clearColor()
-        updateLabel.textColor = UIColor.whiteColor()
-        updateLabel.font = UIFont(name: "GillSans-Light", size: 30)
-        updateLabel.textAlignment = .Center
-        
-        //Add upArrow ImageView
-        let upArrowView = UIImageView(frame: CGRect(x: view.frame.width/2-20, y:view.frame.height/10-20, width: 40, height: 20))
-        upArrowView.image = UIImage(imageLiteral: "uparrow")
-        updateBar.addSubview(upArrowView)
-        updateBar.bringSubviewToFront(upArrowView)
-
-    }
     
     func configureCancel(){
         //cancelButton
-        cancelButton.setBackgroundImage(UIImage(imageLiteral: "cancel2"), forState: .Normal)
+        cancelButton.setBackgroundImage(UIImage(imageLiteral: "cancel"), forState: .Normal)
         cancelButton.contentMode = .ScaleAspectFit
-        cancelButton.frame = CGRect(x: 10, y: 73, width: view.frame.height/20, height: view.frame.height/20)
+        cancelButton.frame = CGRect(x: 10, y: 73, width: 34, height: 34)
         cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), forControlEvents: .TouchUpInside)
         view.bringSubviewToFront(cancelButton)
     }

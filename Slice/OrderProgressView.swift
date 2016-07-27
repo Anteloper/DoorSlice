@@ -25,7 +25,7 @@ class OrderProgressView: UIView{
         self.frame = frame
         
         backgroundColor = UIColor.clearColor()
-        alpha = 0.3
+        alpha = 1.0
         
         timer = TimerView(frame: frame)
         timer.delegate = delegate
@@ -44,14 +44,10 @@ class OrderProgressView: UIView{
     }
     
     func addSlice(ofType: Slice){
-        
-        
         let topSlice = UIButton(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: 40, height: 40))
-        let image = ofType == .Cheese ? UIImage(imageLiteral: "cheese") : UIImage(imageLiteral: "pepperoni")
+        let image = ofType == .Cheese ? UIImage(imageLiteral: "smallCheese") : UIImage(imageLiteral: "smallPepperoni")
         topSlice.setBackgroundImage(image, forState: .Normal)
-        topSlice.addTarget(self, action: Selector(self.removeSlice(topSlice)), forControlEvents: .TouchUpInside)
         topSlice.alpha = 1
-      
         addSubview(topSlice)
         sendSubviewToBack(topSlice)
         UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*40), y: 70) } )
@@ -59,12 +55,6 @@ class OrderProgressView: UIView{
         bringSubviewToFront(topSlice)
     }
     
-    func removeSlice(slice: UIButton){
-        /*print("cat")
-        slice.removeFromSuperview()
-        slice.setNeedsDisplay()
-        numSlices -= 1*/
-    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

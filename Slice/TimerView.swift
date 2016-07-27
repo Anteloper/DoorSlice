@@ -22,7 +22,7 @@ class TimerView: UIView {
         super.init(frame: frame)
     
         self.backgroundColor = UIColor.clearColor()
-        alpha = 1.0
+        alpha = 0.7
         
         let linePath = UIBezierPath()
         
@@ -33,7 +33,7 @@ class TimerView: UIView {
         lineLayer = CAShapeLayer()
         lineLayer.path = linePath.CGPath
         lineLayer.fillColor = UIColor.clearColor().CGColor
-        lineLayer.strokeColor = UIColor.greenColor().CGColor
+        lineLayer.strokeColor = Constants.tiltColorFade.CGColor
         lineLayer.lineWidth = 60
         lineLayer.opacity = 1.0
         lineLayer.strokeEnd = 0.0
@@ -76,11 +76,24 @@ class TimerView: UIView {
         
     }
 
+    func pause(){
+        let pausedTime = lineLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
+        lineLayer.speed = 0.0
+        lineLayer.timeOffset = pausedTime
+        
+    }
+    
+    func resume(){
+        let pausedTime = lineLayer.timeOffset
+        lineLayer.speed = 1.0
+        lineLayer.timeOffset = 0.0
+        lineLayer.beginTime = 0.0
+        let timeSincePause = layer.convertTime(CACurrentMediaTime(), fromLayer: nil)-pausedTime
+        layer.beginTime = timeSincePause
+        
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-
-    
 }

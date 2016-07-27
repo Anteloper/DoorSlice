@@ -9,9 +9,8 @@
 import UIKit
 import QuartzCore
 
+//Spinner Class. To use just init, set center, and call startAnimating and stopAnimating. 
 class CustomActivityIndicatorView: UIView {
-    
-    // MARK - Variables
     
     lazy private var animationLayer : CALayer = {
         return CALayer()
@@ -20,8 +19,7 @@ class CustomActivityIndicatorView: UIView {
     var isAnimating : Bool = false
     var hidesWhenStopped : Bool = true
     
-    // MARK - Init
-    
+    //MARK: Initializers
     init(image : UIImage) {
         let frame : CGRect = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
         
@@ -42,8 +40,8 @@ class CustomActivityIndicatorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK - Func
     
+    //MARK: Animation Functions
     func addRotation(forLayer layer : CALayer) {
         let rotation : CABasicAnimation = CABasicAnimation(keyPath:"transform.rotation.z")
         

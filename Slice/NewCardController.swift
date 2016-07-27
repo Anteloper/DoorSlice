@@ -9,7 +9,8 @@
 import UIKit
 import Stripe
 
-class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate {
+
+class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGestureRecognizerDelegate{
     
     let paymentTextField = STPPaymentCardTextField()
     var delegate: Slideable?
@@ -17,25 +18,36 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.blackColor()
+        
+        view.backgroundColor = Constants.darkBlue
         paymentTextField.textColor = UIColor.whiteColor()
         paymentTextField.frame = CGRect(x: 15, y: 100, width: view.frame.width-30, height: 44)
         paymentTextField.delegate = self
         view.addSubview(paymentTextField)
         addCancel()
+        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
+        swipe.delegate = self
+        view.addGestureRecognizer(swipe)
+        
     }
     
+    func didSwipe(recognizer: UIPanGestureRecognizer){
+        if recognizer.state == .Ended{
+            let point = recognizer.translationInView(view)
+            if(abs(point.x) >= abs(point.y)) && point.x > 40{
+                exit()
+            }
+        }
+    }
+
     func addCancel(){
-        let cancelButton = UIButton(frame: CGRect(x: 0, y: 10, width: 80, height: 40))
-        cancelButton.setTitle("Cancel", forState: .Normal)
-        cancelButton.titleLabel?.font = UIFont(name: "GillSans-Light", size: 20)
-        cancelButton.titleLabel?.textColor = UIColor.whiteColor()
-        cancelButton.addTarget(self, action: #selector(self.exit), forControlEvents: .TouchUpInside)
+        let cancelButton = Constants.getBackButton()
+        cancelButton.addTarget(self, action: #selector(self.exit), forControlEvents: .  TouchUpInside)
         view.addSubview(cancelButton)
     }
     
     func exit(){
-        self.delegate!.returnFromFullscreen(withCard: nil)
+        self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
     }
     
     func paymentCardTextFieldDidChange(textField: STPPaymentCardTextField) {
@@ -69,7 +81,7 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate {
                                                 checkView.alpha = 0.0
                                                 }, completion:{
                                                     if($0){
-                                                        self.delegate!.returnFromFullscreen(withCard: textField.cardParams)
+                                                        self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil)
                                                     }
                                                 }
                                             )

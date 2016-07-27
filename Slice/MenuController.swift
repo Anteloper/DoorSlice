@@ -8,8 +8,6 @@
 
 import UIKit
 
-
-
 class MenuController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
     
     var delegate: Slideable?
@@ -19,23 +17,33 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     let cellHeight: CGFloat = 80
     
     //User Info
-    var addresses: [String]!
-    var cards: [String]!{didSet{print(cards)}}
+    var addresses: [Address]!
+    var cards: [String]!
     
     //The 0th element in cards will always be the string "Pay"
-    
     var preferredAddress: Int! { didSet{ tableView.reloadData() } }
     var preferredCard: PaymentPreference = .ApplePay { didSet{ tableView.reloadData()} }
     
     var cardBeingProcessed: String?{didSet{ tableView.reloadData() }}//Will be not nil while a card is being verified by the backend
+    var addressBeingProcessed: Address?{didSet{ tableView.reloadData() }}
+    
+    let cardBeginning = "\u{2022}\u{2022}\u{2022}\u{2022} "
+    
     
     //MARK: ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.blackColor()
+        view.backgroundColor = Constants.darkBlue
         tableViewSetup()
     }
     
+    func getCircleView(origin: CGPoint) -> PreferenceLight{
+        let circleView = PreferenceLight(frame: CGRect(origin: origin, size: CGSize(width: 10, height: 10)))
+        circleView.backgroundColor = Constants.tiltColor
+        circleView.layer.cornerRadius = circleView.frame.height/2
+        circleView.clipsToBounds = true
+        return circleView
+    }
     
     //MARK: TableView Setup
     func tableViewSetup(){
@@ -43,12 +51,13 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                                  y: 64,
                                  width: menuWidth ?? view.frame.width-Constants.sliceControllerShowing,
                                  height: view.frame.size.height-64)
-        tableView.backgroundView?.backgroundColor = UIColor.blackColor()
-        tableView.backgroundColor = UIColor.blackColor()
+        tableView.backgroundView?.backgroundColor = Constants.darkBlue
+        tableView.backgroundColor = Constants.darkBlue
         tableView.delegate = self
         tableView.dataSource = self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "InfoCell")
         tableView.showsVerticalScrollIndicator = false
+        tableView.allowsSelectionDuringEditing = false
         self.view.addSubview(tableView)
     }
     
@@ -60,39 +69,45 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var cat = 0
         if section == 0{
-            cat = addresses.count + 1
+            return addressBeingProcessed == nil ? addresses.count + 1 : addresses.count + 2
+        }
+        else if section == 1{
+            return cardBeingProcessed == nil ? cards.count + 1 : cards.count + 2
         }
         else{
-            cat = cardBeingProcessed == nil ? cards.count + 1 : cards.count + 2
+            return 2
         }
-        print(cat)
-        return cat
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
-    
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return section == 0 ? "Deliver To" : "Pay With"
+        if section == 0{
+            return "Deliver To"
+        }
+        else if section == 1{
+            return "Pay With"
+        }
+        else{
+            return "Account"
+        }
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeight/2
+        return cellHeight*3/4
     }
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: cellHeight/2))
-        headerView.backgroundColor = Constants.tiltColor
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: cellHeight*3/4))
+        headerView.backgroundColor = Constants.seaFoam
         headerView.alpha = 1.0
         
         let title = UILabel(frame: headerView.frame)
-        title.font = UIFont(name: "GillSans-Light", size: 20)
-        title.text = section == 0 ? "Deliver To" : "Pay With"
-        title.textColor = UIColor.whiteColor()
+        let message = section == 2 ? "ACCOUNT" : (section == 0 ? "DELIVER TO" : "PAY WITH")
+        title.attributedText =  getAttributedCellTitle(message)
         title.backgroundColor = UIColor.clearColor()
         title.textAlignment = .Center
         
@@ -104,79 +119,104 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0{
             if indexPath.row < addresses.count{
-                return preferenceCellWithTitle(addresses[indexPath.row], isPreferred: indexPath.row == preferredAddress)
+                return preferenceCellWithTitle((addresses[indexPath.row]).getName(), isPreferred: indexPath.row == preferredAddress)
+            }
+            else if indexPath.row == addresses.count && addressBeingProcessed != nil{
+                return preferenceCellBeingProcessed(addressBeingProcessed!.getName())
             }
             else{
                 return newCell()
             }
         }
-        else{
-            let str = indexPath.row == 0 ? "" : "Ending in "
-        
+        else if indexPath.section == 1{
+            let str = indexPath.row != 0 ? cardBeginning : ""
+            
             if indexPath.row < cards.count{
                 return preferenceCellWithTitle(str + cards[indexPath.row], isPreferred: isPreferredCard(indexPath.row))
             }
             else if indexPath.row == cards.count && cardBeingProcessed != nil {
-                return preferenceCellBeingProcessed(cardBeingProcessed!)
+                return preferenceCellBeingProcessed(cardBeginning + cardBeingProcessed!)
             }
             else{
                 return newCell()
             }
         }
+        else{
+            return indexPath.row == 0 ? accountCell("ORDER HISTORY", isRed: false) :  accountCell("LOGOUT", isRed: true)
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
+        //toScreen: 1 for newCard, 2 for newAddress, 3 for orderHistory
         if indexPath.section == 0{
-            if indexPath.row <= addresses.count{
+            if indexPath.row < addresses.count{
                 preferredAddress = indexPath.row
             }
             else{
-                for subview in view.subviews{
-                    subview.removeFromSuperview()
-                }
-                delegate!.bringMenuToFullscreen(isCardInput: false)
+                delegate!.bringMenuToFullscreen(toScreen: 2)
             }
         }
-        else{
-            if indexPath.row < (cards == nil ?  0 : cards.count){
+        else if indexPath.section == 1{
+            if indexPath.row < cards.count{
                 preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
             }
             else{
-                delegate!.bringMenuToFullscreen(isCardInput: true)
+                delegate!.bringMenuToFullscreen(toScreen: 1)
             }
+        }
+        else{
+            indexPath.row == 0 ? delegate!.bringMenuToFullscreen(toScreen: 3) : delegate!.logOutUser()
+        }
+    }
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        if indexPath.section == 0{
+            if indexPath.row < addresses.count || (indexPath.row == addresses.count && addressBeingProcessed != nil){
+                return true
+            }
+        }
+        else if indexPath.section == 1 && indexPath.row != 0{
+            if indexPath.row < cards.count || (indexPath.row == cards.count && cardBeingProcessed != nil){
+                return true
+            }
+        }
+        return false
+    }
+    
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete{
+            if indexPath.section == 0{
+                delegate?.addressRemoved(indexPath.row)
+                addresses.removeAtIndex(indexPath.row)
+                
+            }
+            else{
+                delegate?.cardRemoved(indexPath.row)
+                cards.removeAtIndex(indexPath.row)
+            }
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+            
         }
     }
     
-    
-    func addAddressView(){
-        let newView = NewAddressView(frame: self.view.frame)
-        newView.delegate = self.delegate!
-        self.view = newView
-    }
     
     //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{
         
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
         for subview in cell.subviews{
-            if subview is UIImageView || subview is CustomActivityIndicatorView{
+            if subview is PreferenceLight || subview is CustomActivityIndicatorView{
                 subview.removeFromSuperview()
             }
         }
         
-        cell.backgroundColor = UIColor.blackColor()
-        cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
-        cell.textLabel?.text = title
+        cell.backgroundColor = Constants.darkBlue
+        cell.textLabel?.attributedText = getAttributedCellTitle(title)
         cell.textLabel?.textAlignment = .Left
-        cell.textLabel?.textColor = UIColor.whiteColor()
-        
         let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
      
         if isPreferred{
-            let preferenceLight = UIImageView(frame: CGRect(x: width - 20, y: cellHeight/2 - 5, width: 10, height: 10))
-            preferenceLight.image = UIImage(imageLiteral: "circle")
-            cell.addSubview(preferenceLight)
+            cell.addSubview(getCircleView(CGPoint(x: width - 20, y: cellHeight/2 - 5)))
         }
 
         return cell
@@ -185,16 +225,13 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     func preferenceCellBeingProcessed(title: String) -> UITableViewCell{
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
         for subview in cell.subviews{
-            if subview is UIImageView || subview is CustomActivityIndicatorView{
+            if subview is PreferenceLight || subview is CustomActivityIndicatorView{
                 subview.removeFromSuperview()
             }
         }
-        cell.backgroundColor = UIColor.blackColor()
-        cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
-        cell.textLabel?.text = title
+        cell.backgroundColor = Constants.darkBlue
+        cell.textLabel?.attributedText = getAttributedCellTitle(title)
         cell.textLabel?.textAlignment = .Left
-        cell.textLabel?.textColor = UIColor.whiteColor()
-        
         let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
         let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
         spinner.center = CGPoint(x: width-12, y: cellHeight/2)
@@ -207,12 +244,42 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func newCell() -> UITableViewCell{
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
-        cell.backgroundColor = UIColor.blackColor()
+        for subview in cell.subviews{
+            if subview is PreferenceLight || subview is CustomActivityIndicatorView{
+                subview.removeFromSuperview()
+            }
+        }
+        cell.backgroundColor = Constants.darkBlue
         cell.textLabel?.textAlignment = .Center
-        cell.textLabel?.textColor = Constants.eucalyptus
-        cell.textLabel?.font = UIFont(name: "GillSans-Light", size: 20)
+        cell.textLabel?.textColor = Constants.seaFoam
+        cell.textLabel?.font = UIFont(name: "Myriad Pro", size: 20)
         cell.textLabel?.text = "+"
         return cell
+    }
+    
+    func accountCell(text: String, isRed: Bool) -> UITableViewCell{
+        let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
+        for subview in cell.subviews{
+            if subview is PreferenceLight || subview is CustomActivityIndicatorView{
+                subview.removeFromSuperview()
+            }
+        }
+        
+        cell.backgroundColor = Constants.darkBlue
+        cell.textLabel?.attributedText = getAttributedCellTitle(text)
+        if isRed{
+            cell.textLabel?.textColor = Constants.lightRed
+        }
+        cell.textLabel?.textAlignment = .Center
+        return cell
+    }
+    
+    func getAttributedCellTitle(text: String) -> NSAttributedString{
+        let attributedString = NSMutableAttributedString(string: text)
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(4.0), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 16)!, range: (attributedString.string as NSString).rangeOfString(text))
+        return attributedString
     }
     
     
@@ -224,7 +291,8 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             return row == pref
         }
     }
-  
     
 }
 
+class PreferenceLight: UIView{
+}

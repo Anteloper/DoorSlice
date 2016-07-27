@@ -9,152 +9,157 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-import JWT
 
-class CreateAccountController: UIViewController, UITextFieldDelegate{
+class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate{
     var webtoken: String?
     var userID: String?
     
-    var phoneField = UITextField()
-    var passwordField = UITextField()
-    var confirmPasswordField = UITextField()
-    let createAccountButton = UIButton()
     let fieldHeight: CGFloat = 40
     var fieldWidth: CGFloat!
     var rawNumber = ""
     
-    let phoneImage = UIImageView()
-    let passwordImage = UIImageView()
-    let confirmPasswordImage = UIImageView()
+    var phoneField = UITextField()
+    var passwordField = UITextField()
+    var confirmPasswordField = UITextField()
+
+    let phoneViewLeft = UIImageView()
+    let passViewLeft = UIImageView()
+    let confirmViewLeft = UIImageView()
+    
+    let goButton = UIButton()
+
+    var viewIsRaised = false
+    var keyboardHeight: CGFloat?
+    var keyboardShouldMoveScreen = false //True for iphone 5 and smaller
+    var hasSetUp = false
     
     lazy private var activityIndicator : CustomActivityIndicatorView = {
         return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
+
     
-    
-    override func viewDidLoad() {
-        fieldWidth = view.frame.width*4/5
-        view.backgroundColor = UIColor.blackColor()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        addPhoneField()
-        addPasswordField()
-        addConfirmPasswordField()
-        addCreateAccountButton()
-        imageViewSetup()
-        phoneField.becomeFirstResponder()
-        navBarSetup()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0 //Check Screen size
+        view.backgroundColor = Constants.darkBlue
+        addObservers()
+        if !hasSetUp{
+            setup()
+        }
     }
     
-    func accountPressed(){
-        
-        createAccount()
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        UIView.animateWithDuration(0.5, animations: {self.phoneField.alpha = 1.0; self.phoneViewLeft.alpha = 1.0})
+        UIView.animateWithDuration(0.5, delay: 0.2, options: [], animations: {self.passwordField.alpha = 1.0; self.passViewLeft.alpha = 1.0}, completion: nil)
+        UIView.animateWithDuration(0.5, delay: 0.4, options: [], animations: {self.confirmPasswordField.alpha = 1.0; self.confirmViewLeft.alpha = 1.0} , completion: nil)
+    }
+    
+    //MARK: Account Creation and Setup
+    func createAccountPressed(){
+        if rawNumber.characters.count >= 10{
+            if passwordField.text?.characters.count >= 5{
+                if confirmPasswordField.text == passwordField.text{
+                    createAccount()
+                }
+                else{
+                    shakeTextField(confirmPasswordField,leftView: confirmViewLeft, enterTrue: true)
+                }
+            }
+            else{
+                shakeTextField(passwordField,leftView: passViewLeft, enterTrue: true)
+            }
+        }
+        else{
+            shakeTextField(phoneField, leftView: phoneViewLeft, enterTrue: true)
+        }
+    }
+    
+    //Runs twice per call when enterTrue is true
+    func shakeTextField(textField: UITextField, leftView: UIImageView, enterTrue: Bool){
+        UIView.animateWithDuration(0.1, animations: {
+            textField.frame.origin.x += 10
+            leftView.frame.origin.x += 10
+            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
+                textField.frame.origin.x -= 10
+                leftView.frame.origin.x -= 10
+                }, completion: { _ in
+                    UIView.animateWithDuration(0.1, animations: {
+                        textField.frame.origin.x += 10
+                        leftView.frame.origin.x += 10
+                        }, completion: { _ in
+                            UIView.animateWithDuration(0.1, animations: {
+                                textField.frame.origin.x -= 10
+                                leftView.frame.origin.x -= 10
+                                }, completion: { _ in
+                                    if enterTrue{
+                                        self.shakeTextField(textField, leftView: leftView, enterTrue: false)
+                                    }
+                                })
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
     
     func createAccount(){
         view.addSubview(activityIndicator)
         activityIndicator.center = view.center
         activityIndicator.startAnimating()
-        
-        let parameters = ["phone" : rawNumber, "password" : confirmPasswordField.text!]
-        //Request to /Users
-        Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters).responseJSON { response in
+
+        Alamofire.request(.POST, Constants.sendCodeURLString, parameters: ["phone" : rawNumber]).responseJSON{ response in
+            self.activityIndicator.stopAnimating()
             switch response.result{
             case .Success:
                 if let value = response.result.value{
-                    self.userID = JSON(value)["userID"].stringValue
-                    
-                    //Request to /Authenticate
-                    Alamofire.request(.POST, Constants.authenticateURLString, parameters: parameters).responseJSON { response in
-                        switch response.result{
-                        case .Success:
-                            self.webtoken = (JSON(response.result.value!))["token"].stringValue
-                            self.activityIndicator.stopAnimating()
-                            self.accountCreated()
-                        
-                        case .Failure:
-                            self.activityIndicator.stopAnimating()
-                            self.failure()
+                    if JSON(value)["success"].boolValue{
+                        let ec = EnterCodeController()
+                        ec.code = JSON(value)["message"].stringValue
+                        ec.phoneNumber = self.rawNumber
+                        ec.password = self.confirmPasswordField.text!
+                        ec.shouldPromptPasswordChange = false
+                        self.presentViewController(ec, animated: false, completion: nil)
+                    }
+                    else{
+                        self.accountExists()
                     }
                 }
-            }
             case .Failure:
-                self.activityIndicator.stopAnimating()
                 self.failure()
             }
         }
     }
     
     func accountCreated(){
-        let add = ["56 Montgomery Place", "40 Cedar Street", "333 E 53rd Street"]
-        print(userID)
-        let newUser = User(phoneNumber: self.phoneField.text!, password: self.confirmPasswordField.text!, userID: userID!, addresses: add)
-        let cc = ContainerController()
-        cc.loggedInUser = newUser
-        self.presentViewController(cc, animated: false, completion: nil)
+        let ec = EnterCodeController()
+        ec.shouldPromptPasswordChange = false
+        ec.phoneNumber = rawNumber
+        ec.password = confirmPasswordField.text!
+        presentViewController(ec, animated: false, completion: nil)
     }
     
-
+    func accountExists(){
+        let alert = UIAlertController(title: "Phone Number Already In Use", message: "Did you mean to login?", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .Default , handler: {_ in self.activityIndicator.stopAnimating()}))
+        alert.addAction(UIAlertAction(title: "Login", style: .Default, handler: { _ in self.login() }))
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func login(){
+        self.activityIndicator.stopAnimating()
+        let lc = LoginController()
+        lc.shouldShowBackButton = true
+        lc.rawNumber = rawNumber
+        presentViewController(lc, animated: false, completion: nil)
+    }
+    
     func failure(){
         activityIndicator.stopAnimating()
-    }
-    
-
-    //MARK: TextField Setups
-    func addPhoneField(){
-        phoneField = textFieldSetup(CGRect(x: 10, y: 100, width: fieldWidth, height: fieldHeight))
-        phoneField.keyboardType = .PhonePad
-        phoneField.text = " Phone Number"
-        view.addSubview(phoneField)
-    }
-    
-    func addPasswordField(){
-        passwordField = textFieldSetup(CGRect(x: 10, y: 140 + fieldHeight, width: fieldWidth, height: fieldHeight))
-        passwordField.text = " Password"
-        view.addSubview(passwordField)
-    }
-    
-    func addConfirmPasswordField(){
-        confirmPasswordField = textFieldSetup(CGRect(x: 10, y: 180 + fieldHeight*2, width: fieldWidth, height: fieldHeight))
-        confirmPasswordField.text = " Confirm Password"
-        view.addSubview(confirmPasswordField)
-    }
-
-    
-    func textFieldSetup(frame: CGRect) -> UITextField{
-        let textField = UITextField(frame: frame)
-        textField.backgroundColor = UIColor.whiteColor()
-        textField.layer.cornerRadius = fieldHeight/8
-        textField.contentVerticalAlignment = .Center
-        textField.clipsToBounds = true
-        textField.delegate = self
-        textField.textColor = UIColor.lightGrayColor()
-        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
-        textField.font = UIFont(name: "GillSans-Light", size: 17)
-        return textField
-    }
-    
-    //MARK: ImageView Setups
-    
-    func imageViewSetup(){
-        phoneImage.frame = CGRect(x:view.frame.width-phoneField.frame.height, y:phoneField.frame.origin.y+phoneField.frame.height/4, width:phoneField.frame.height/2, height: phoneField.frame.height/2)
-        view.addSubview(phoneImage)
-        
-        passwordImage.frame = CGRect(x:view.frame.width-passwordField.frame.height, y:passwordField.frame.origin.y+passwordField.frame.height/4, width:passwordField.frame.height/2, height: passwordField.frame.height/2)
-        view.addSubview(passwordImage)
-        
-        confirmPasswordImage.frame = CGRect(x:view.frame.width-confirmPasswordField.frame.height, y:confirmPasswordField.frame.origin.y+phoneField.frame.height/4, width:confirmPasswordField.frame.height/2, height: confirmPasswordField.frame.height/2)
-        view.addSubview(confirmPasswordImage)
-    }
-    
-    
-    //MARK: Button Setup
-    func addCreateAccountButton(){
-        createAccountButton.frame = CGRect(x: 0, y: confirmPasswordField.frame.maxY+100, width: view.frame.width, height: fieldHeight)
-        createAccountButton.backgroundColor = Constants.tiltColor
-        createAccountButton.setTitle("Create Account", forState: .Normal)
-        createAccountButton.titleLabel?.font = UIFont(name: "GillSans-Light", size: 17)
-        createAccountButton.addTarget(self, action:#selector(accountPressed) , forControlEvents: .TouchUpInside)
-        view.addSubview(createAccountButton)
+        let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+        presentViewController(alert, animated: true, completion: nil)
     }
     
     
@@ -171,74 +176,152 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
     }
     
 
-    //MARK: TextField Delegate Functions
-    func textFieldDidBeginEditing(textField: UITextField) {
-        textField.textColor = UIColor.grayColor()
-        if textField == passwordField || textField == confirmPasswordField{
-            textField.secureTextEntry = true
-            textField.text = ""
+    //MARK: TextField Setup
+    func setupTextField(frame: CGRect)->UITextField{
+        let textField = UITextField(frame: frame)
+        textField.delegate = self
+        textField.backgroundColor = Constants.darkBlue
+        textField.textAlignment = .Center
+        textField.textColor = UIColor.whiteColor()
+        textField.leftViewMode = UITextFieldViewMode.Always
+        textField.font = UIFont(name: "Myriad Pro", size: 18)
+        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), forControlEvents: UIControlEvents.EditingChanged)
+        
+        textField.backgroundColor = UIColor.clearColor()
+        textField.layer.cornerRadius = 5
+        textField.layer.borderWidth = 1.0
+        textField.layer.borderColor = UIColor.whiteColor().CGColor
+        
+        view.addSubview(textField)
+        return textField
+    }
+    
+
+    func addObservers(){
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        
+    }
+    
+    //MARK: TextField Management
+    func textFieldDidChange(textField: UITextField){
+        if textField == passwordField{
+            if textField.text?.characters.count == 5{
+                UIView.animateWithDuration(1.0, animations: {self.passwordField.layer.borderColor = Constants.seaFoam.CGColor})
+            }
+                
+            else if (textField.text?.characters.count)! < 5 && UIColor(CGColor: passwordField.layer.borderColor!) != Constants.lightRed{
+                UIView.animateWithDuration(1.0, animations: {
+                    self.passwordField.layer.borderColor = Constants.lightRed.CGColor
+                    self.goButton.titleLabel?.textColor = UIColor.whiteColor()
+                })
+                
+            }
+            
+            if UIColor(CGColor: confirmPasswordField.layer.borderColor!) == Constants.seaFoam{
+                if passwordField.text != confirmPasswordField.text{
+                    UIView.animateWithDuration(1.0, animations: {
+                        self.confirmPasswordField.layer.borderColor = Constants.lightRed.CGColor
+                        self.goButton.titleLabel?.textColor = UIColor.whiteColor()
+                    })
+                }
+            }
+        }
+        else{
+            if textField.text == passwordField.text && textField.text?.characters.count >= 5{
+                UIView.animateWithDuration(1.0, animations: {self.confirmPasswordField.layer.borderColor = Constants.seaFoam.CGColor})
+            }
+            else if textField.text != passwordField.text && UIColor(CGColor: confirmPasswordField.layer.borderColor!) != Constants.lightRed{
+                UIView.animateWithDuration(1.0, animations: {
+                    self.confirmPasswordField.layer.borderColor = Constants.lightRed.CGColor
+                    self.goButton.titleLabel?.textColor = UIColor.whiteColor()
+                })
+            }
+        }
+        if UIColor(CGColor: phoneField.layer.borderColor!) == Constants.seaFoam{
+            if UIColor(CGColor: passwordField.layer.borderColor!) == Constants.seaFoam{
+                if UIColor(CGColor: confirmPasswordField.layer.borderColor!) == Constants.seaFoam{
+                    UIView.animateWithDuration(1.0, animations: {self.goButton.titleLabel?.textColor = Constants.seaFoam})
+                }
+            }
         }
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if textField == phoneField{
-            self.passwordField.becomeFirstResponder()
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.text = ""
+        if textField != phoneField{
+            textField.secureTextEntry = true
         }
-        else if textField == passwordField{
-            self.confirmPasswordField.becomeFirstResponder()
+    }
+    
+    
+    func keyboardWillShow(notification: NSNotification) {
+        if keyboardShouldMoveScreen && confirmPasswordField.isFirstResponder() && !viewIsRaised {
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+                keyboardHeight = keyboardSize.height
+                self.view.frame.origin.y -= keyboardSize.height
+                viewIsRaised = true
+            }
         }
-        else{
-            self.view.endEditing(true)
-            accountPressed()
+    }
+    
+    func keyboardWillHide(notification: NSNotification?) {
+        if viewIsRaised{
+            if let keyboardSize = (notification?.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+                self.view.frame.origin.y += keyboardSize.height
+                viewIsRaised = false
+            }
+            else{
+                self.view.frame.origin.y += keyboardHeight!
+                viewIsRaised = false
+            }
+        }
+    }
+    
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        if keyboardShouldMoveScreen && (textField == phoneField || textField == passwordField) && viewIsRaised{
+            keyboardWillHide(nil)
         }
         return true
     }
     
-    func textFieldDidChange(textField: UITextField){
-        if textField == passwordField{
-            if passwordField.text!.characters.count < 8 {
-                passwordImage.image = UIImage(imageLiteral: "circleRed")
-            }
-            else{
-                passwordImage.image = UIImage(imageLiteral: "circleGreen")
-            }
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if textField == phoneField{
+            passwordField.becomeFirstResponder()
         }
-        else if textField == confirmPasswordField{
-            if confirmPasswordField.text!.characters.count < 8{
-                confirmPasswordImage.image = UIImage(imageLiteral: "circleRed")
-            }
-            else{
-                confirmPasswordImage.image = UIImage(imageLiteral: "circleGreen")
-            }
+        else if textField == passwordField{
+            confirmPasswordField.becomeFirstResponder()
         }
+        else{
+            confirmPasswordField.resignFirstResponder()
+            createAccountPressed()
+        }
+        return true
     }
     
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        phoneField.resignFirstResponder()
+        passwordField.resignFirstResponder()
+        confirmPasswordField.resignFirstResponder()
+    }
     
-
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if textField == phoneField{
-            let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string) as NSString
+            let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
             let components = newString.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet)
-            
             let decimalString = components.joinWithSeparator("") as NSString
-            rawNumber = String(decimalString)
             let length = decimalString.length
-
-            let hasLeadingOne = length > 0 && String(decimalString)[String(decimalString).startIndex] == "1"
-            
-            if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
-                textFieldShouldReturn(phoneField)
-                phoneImage.image = UIImage(imageLiteral: "circleGreen")
-            }
-            else{
-                phoneImage.image = UIImage(imageLiteral: "circleRed")
-            }
+            let hasLeadingOne = length > 0 && decimalString.hasPrefix("1")
+            rawNumber = String(decimalString)
             
             if length == 0 || (length > 10 && !hasLeadingOne) || length > 11{
                 let newLength = (textField.text! as NSString).length + (string as NSString).length - range.length as Int
                 return (newLength > 10) ? false : true
-                
             }
+            if length == 1{
+                UIView.animateWithDuration(1.0, animations: {self.phoneField.layer.borderColor = Constants.lightRed.CGColor})
+            }
+            
             var index = 0 as Int
             let formattedString = NSMutableString()
             
@@ -246,31 +329,98 @@ class CreateAccountController: UIViewController, UITextFieldDelegate{
                 formattedString.appendString("1 ")
                 index += 1
             }
+            
             if (length - index) > 3{
                 let areaCode = decimalString.substringWithRange(NSMakeRange(index, 3))
                 formattedString.appendFormat("(%@) ", areaCode)
                 index += 3
             }
+            
             if length - index > 3{
                 let prefix = decimalString.substringWithRange(NSMakeRange(index, 3))
-                formattedString.appendFormat("%@ ", prefix)
+                formattedString.appendFormat("%@-", prefix)
                 index += 3
             }
             
             let remainder = decimalString.substringFromIndex(index)
             formattedString.appendString(remainder)
-                textField.text! = formattedString as String
+            textField.text = formattedString as String
+            
+            if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
+                UIView.animateWithDuration(1.0, animations: {self.phoneField.layer.borderColor = Constants.seaFoam.CGColor})
+                textFieldShouldReturn(phoneField)
+            }
             return false
         }
-            
-        else{
-            return true
-        }
-        
+        return true
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        self.view.endEditing(true)
-    }
+    
+    //MARK: Setup
+    func setup(){
+        let logoWidth = view.frame.width/3
+        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 50, width: logoWidth, height: logoWidth))
+        logoView.contentMode = .ScaleAspectFit
+        logoView.image = UIImage(imageLiteral: "logo")
+        view.addSubview(logoView)
+        
+        phoneField = setupTextField(CGRect(x: view.frame.width/4, y: logoView.frame.maxY+60, width: view.frame.width/2, height: 40))
+        phoneField.alpha = 0.0
+        phoneField.keyboardType = .NumberPad
+        
+        passwordField = setupTextField(CGRect(x: view.frame.width/4, y: phoneField.frame.maxY+40, width: view.frame.width/2, height: 40))
+        passwordField.alpha = 0.0
+        passwordField.secureTextEntry = true
+        
+        confirmPasswordField = setupTextField(CGRect(x: view.frame.width/4, y: passwordField.frame.maxY+40, width: view.frame.width/2, height: 40))
+        confirmPasswordField.alpha = 0.0
+        confirmPasswordField.secureTextEntry = true
+        
+        phoneViewLeft.image = UIImage(imageLiteral: "phone")
+        phoneViewLeft.alpha = 0.0
+        phoneViewLeft.frame = CGRect(x:phoneField.frame.minX-40, y: phoneField.frame.minY+5,  width: 30, height: 30)
+        view.addSubview(phoneViewLeft)
+        
+        passViewLeft.image =  UIImage(imageLiteral: "padlock")
+        passViewLeft.alpha = 0.0
+        passViewLeft.frame = CGRect(x:passwordField.frame.minX-40, y: passwordField.frame.minY+5, width: 30, height: 30)
+        view.addSubview(passViewLeft)
+        
+        confirmViewLeft.image = UIImage(imageLiteral: "padlock")
+        confirmViewLeft.alpha = 0.0
+        confirmViewLeft.frame = CGRect(x: confirmPasswordField.frame.minX-40, y: confirmPasswordField.frame.minY+5, width: 30, height: 30)
+        view.addSubview(confirmViewLeft)
+  
+        goButton.frame = CGRect(x: view.frame.width/4, y: 4*view.frame.height/5, width: view.frame.width/2, height: 40)
+        goButton.addTarget(self, action: #selector(createAccountPressed), forControlEvents: .TouchUpInside)
+        let attributedString = NSMutableAttributedString(string: "REGISTER")
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString("REGISTER"))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(6.0), range: (attributedString.string as NSString).rangeOfString("REGISTER"))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 16)!, range: (attributedString.string as NSString).rangeOfString("REGISTER"))
+        goButton.setAttributedTitle(attributedString, forState: .Normal)
+        goButton.backgroundColor = UIColor.clearColor()
+        view.addSubview(goButton)
+        
+        let backButton = Constants.getBackButton()
+        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
+        view.addSubview(backButton)
+        hasSetUp = true
+        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
+        swipe.delegate = self
+        view.addGestureRecognizer(swipe)
 
+    }
+    
+    func didSwipe(recognizer: UIPanGestureRecognizer){
+        if recognizer.state == .Ended{
+            let point = recognizer.translationInView(view)
+            if(abs(point.x) >= abs(point.y)) && point.x > 0{
+                presentViewController(WelcomeController(), animated: false, completion: nil)
+            }
+        }
+    }
+    
+    func backPressed(){
+        presentViewController(WelcomeController(), animated: false, completion: nil)
+    }
 }

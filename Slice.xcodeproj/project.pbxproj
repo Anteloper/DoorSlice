@@ -8,12 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		4A23467671720EECB0814E4D /* Pods_SliceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93ADE48F4D49EC316C4A0431 /* Pods_SliceTests.framework */; };
+		4C10F62A1D3ABF3B00BA7869 /* ForgotPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */; };
+		4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */; };
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
 		4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */; };
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
-		4C84A9741D1333570017A14E /* OrderDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C84A9731D1333570017A14E /* OrderDetailsView.swift */; };
+		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
+		4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69F0C41D36F55D00810525 /* WelcomeController.swift */; };
+		4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D071D2EC2F7009C2CA5 /* User.swift */; };
+		4CB29D0C1D2EC314009C2CA5 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0B1D2EC314009C2CA5 /* Order.swift */; };
+		4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */; };
+		4CB29D101D2EC337009C2CA5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0F1D2EC337009C2CA5 /* Constants.swift */; };
+		4CB29D131D2EDF68009C2CA5 /* NewAddressController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D121D2EDF68009C2CA5 /* NewAddressController.swift */; };
+		4CB29D191D2EE036009C2CA5 /* ActiveAddresses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D181D2EE036009C2CA5 /* ActiveAddresses.swift */; };
+		4CB29D1B1D301C22009C2CA5 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D1A1D301C22009C2CA5 /* Address.swift */; };
 		4CB6DFE91D2216FF0050FABF /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6DFE81D2216FF0050FABF /* LoginController.swift */; };
 		4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */; };
+		4CDAFE2B1D442F5400659C93 /* PastOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2A1D442F5400659C93 /* PastOrder.swift */; };
+		4CDAFE2D1D443BD100659C93 /* OrderHistoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */; };
+		4CDAFE2F1D44462C00659C93 /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2E1D44462C00659C93 /* OrderCell.swift */; };
 		4CF756721D0A177C00746AEE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756711D0A177C00746AEE /* AppDelegate.swift */; };
 		4CF756771D0A177C00746AEE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CF756751D0A177C00746AEE /* Main.storyboard */; };
 		4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CF756781D0A177C00746AEE /* Assets.xcassets */; };
@@ -23,8 +36,6 @@
 		4CF756A01D0A17DA00746AEE /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF7569F1D0A17DA00746AEE /* ContainerController.swift */; };
 		4CF756A21D0A17FA00746AEE /* SliceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A11D0A17FA00746AEE /* SliceController.swift */; };
 		4CF756A41D0A182800746AEE /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A31D0A182800746AEE /* MenuController.swift */; };
-		4CF756A61D0A184B00746AEE /* NewAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A51D0A184B00746AEE /* NewAddressView.swift */; };
-		4CF756A81D0A187300746AEE /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A71D0A187300746AEE /* CircleView.swift */; };
 		4CF756AA1D0B47C700746AEE /* SwipeCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A91D0B47C700746AEE /* SwipeCircle.swift */; };
 		4CF756AE1D0B5E3200746AEE /* Architecture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756AD1D0B5E3200746AEE /* Architecture.swift */; };
 		4CF756B01D0C81BF00746AEE /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756AF1D0C81BF00746AEE /* TimerView.swift */; };
@@ -32,8 +43,8 @@
 		5EB10D2BD6E04A8E5A58F05F /* Pods_SliceUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C2B173548C9DECE8DE59FFC /* Pods_SliceUITests.framework */; };
 		61C1F1791E51EC31C08336DF /* Pods_Slice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC43251F3D0E09BAA59F85EB /* Pods_Slice.framework */; };
 		8AD39C5F364ADAC1652A44A0 /* Pods_SliceUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 841CF323B5AA43020DE9DA66 /* Pods_SliceUITests.framework */; };
-		9671084DF34A9E3F103D92D6 /* Pods_Slice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B2211C3F6987B645CF7C1A /* Pods_Slice.framework */; };
 		B34526046B9B237D2F958A58 /* Pods_SliceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA731D18382834A1B4B9A352 /* Pods_SliceTests.framework */; };
+		D3A23AF3BAC151AB1F9A39F3 /* Pods_Slice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B2211C3F6987B645CF7C1A /* Pods_Slice.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,13 +68,26 @@
 		0994275DD35EDEA04417FC0C /* Pods-Slice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slice.release.xcconfig"; path = "Pods/Target Support Files/Pods-Slice/Pods-Slice.release.xcconfig"; sourceTree = "<group>"; };
 		33A394B26772E85C624333AE /* Pods-Slice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slice.release.xcconfig"; path = "Pods/Target Support Files/Pods-Slice/Pods-Slice.release.xcconfig"; sourceTree = "<group>"; };
 		35B2211C3F6987B645CF7C1A /* Pods_Slice.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Slice.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordController.swift; sourceTree = "<group>"; };
+		4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterCodeController.swift; sourceTree = "<group>"; };
 		4C4499621D13548F00CDB2A0 /* NewCardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCardController.swift; sourceTree = "<group>"; };
 		4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
-		4C84A9731D1333570017A14E /* OrderDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderDetailsView.swift; sourceTree = "<group>"; };
+		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
+		4C69F0C41D36F55D00810525 /* WelcomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
+		4CB29D071D2EC2F7009C2CA5 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		4CB29D0B1D2EC314009C2CA5 /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
+		4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		4CB29D0F1D2EC337009C2CA5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		4CB29D121D2EDF68009C2CA5 /* NewAddressController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAddressController.swift; sourceTree = "<group>"; };
+		4CB29D181D2EE036009C2CA5 /* ActiveAddresses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActiveAddresses.swift; sourceTree = "<group>"; };
+		4CB29D1A1D301C22009C2CA5 /* Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		4CB6DFE81D2216FF0050FABF /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateAccountController.swift; sourceTree = "<group>"; };
+		4CDAFE2A1D442F5400659C93 /* PastOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PastOrder.swift; sourceTree = "<group>"; };
+		4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderHistoryController.swift; sourceTree = "<group>"; };
+		4CDAFE2E1D44462C00659C93 /* OrderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 		4CF7566E1D0A177C00746AEE /* Slice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CF756711D0A177C00746AEE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4CF756761D0A177C00746AEE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -79,8 +103,6 @@
 		4CF7569F1D0A17DA00746AEE /* ContainerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
 		4CF756A11D0A17FA00746AEE /* SliceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliceController.swift; sourceTree = "<group>"; };
 		4CF756A31D0A182800746AEE /* MenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
-		4CF756A51D0A184B00746AEE /* NewAddressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAddressView.swift; sourceTree = "<group>"; };
-		4CF756A71D0A187300746AEE /* CircleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		4CF756A91D0B47C700746AEE /* SwipeCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeCircle.swift; sourceTree = "<group>"; };
 		4CF756AD1D0B5E3200746AEE /* Architecture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Architecture.swift; sourceTree = "<group>"; };
 		4CF756AF1D0C81BF00746AEE /* TimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
@@ -108,7 +130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				61C1F1791E51EC31C08336DF /* Pods_Slice.framework in Frameworks */,
-				9671084DF34A9E3F103D92D6 /* Pods_Slice.framework in Frameworks */,
+				D3A23AF3BAC151AB1F9A39F3 /* Pods_Slice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +194,7 @@
 		4C44995E1D13364000CDB2A0 /* Extras */ = {
 			isa = PBXGroup;
 			children = (
+				4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */,
 				4C47CD031D1B396200AEEB97 /* Slice.entitlements */,
 				4CF756751D0A177C00746AEE /* Main.storyboard */,
 				4CF756781D0A177C00746AEE /* Assets.xcassets */,
@@ -191,6 +214,20 @@
 				26469D06D2E4200D096CF473 /* Frameworks */,
 			);
 			name = "Tests Products Pods Frameworks";
+			sourceTree = "<group>";
+		};
+		4CB29D111D2EC445009C2CA5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4CF756AD1D0B5E3200746AEE /* Architecture.swift */,
+				4CB29D1A1D301C22009C2CA5 /* Address.swift */,
+				4CB29D071D2EC2F7009C2CA5 /* User.swift */,
+				4CDAFE2A1D442F5400659C93 /* PastOrder.swift */,
+				4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */,
+				4CB29D0B1D2EC314009C2CA5 /* Order.swift */,
+				4CB29D181D2EE036009C2CA5 /* ActiveAddresses.swift */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		4CF756651D0A177C00746AEE = {
@@ -217,7 +254,8 @@
 			isa = PBXGroup;
 			children = (
 				4CF756711D0A177C00746AEE /* AppDelegate.swift */,
-				4CF756AD1D0B5E3200746AEE /* Architecture.swift */,
+				4CB29D0F1D2EC337009C2CA5 /* Constants.swift */,
+				4CB29D111D2EC445009C2CA5 /* Models */,
 				4CF756B71D10AAE500746AEE /* Controllers */,
 				4CF756B91D10AB0A00746AEE /* Views */,
 				4C44995E1D13364000CDB2A0 /* Extras */,
@@ -246,13 +284,19 @@
 		4CF756B71D10AAE500746AEE /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				4C69F0C41D36F55D00810525 /* WelcomeController.swift */,
 				4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */,
 				4CB6DFE81D2216FF0050FABF /* LoginController.swift */,
+				4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */,
+				4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */,
 				4CF7569F1D0A17DA00746AEE /* ContainerController.swift */,
+				4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */,
 				4CF756A11D0A17FA00746AEE /* SliceController.swift */,
 				4CF756A31D0A182800746AEE /* MenuController.swift */,
+				4CB29D121D2EDF68009C2CA5 /* NewAddressController.swift */,
 				4C4499621D13548F00CDB2A0 /* NewCardController.swift */,
-				4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */,
+				4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */,
+				4CDAFE2E1D44462C00659C93 /* OrderCell.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -261,10 +305,7 @@
 			isa = PBXGroup;
 			children = (
 				4CF756B11D0C828700746AEE /* OrderProgressView.swift */,
-				4C84A9731D1333570017A14E /* OrderDetailsView.swift */,
 				4CF756AF1D0C81BF00746AEE /* TimerView.swift */,
-				4CF756A51D0A184B00746AEE /* NewAddressView.swift */,
-				4CF756A71D0A187300746AEE /* CircleView.swift */,
 				4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */,
 				4CF756A91D0B47C700746AEE /* SwipeCircle.swift */,
 			);
@@ -399,6 +440,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */,
 				4CF7567C1D0A177C00746AEE /* LaunchScreen.storyboard in Resources */,
 				4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */,
 				4CF756771D0A177C00746AEE /* Main.storyboard in Resources */,
@@ -550,20 +592,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CF756B01D0C81BF00746AEE /* TimerView.swift in Sources */,
+				4C10F62A1D3ABF3B00BA7869 /* ForgotPasswordController.swift in Sources */,
+				4CDAFE2F1D44462C00659C93 /* OrderCell.swift in Sources */,
 				4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */,
+				4CB29D0C1D2EC314009C2CA5 /* Order.swift in Sources */,
+				4CDAFE2B1D442F5400659C93 /* PastOrder.swift in Sources */,
+				4CB29D131D2EDF68009C2CA5 /* NewAddressController.swift in Sources */,
 				4CF756A41D0A182800746AEE /* MenuController.swift in Sources */,
-				4C84A9741D1333570017A14E /* OrderDetailsView.swift in Sources */,
 				4CF756B21D0C828700746AEE /* OrderProgressView.swift in Sources */,
 				4CF756A21D0A17FA00746AEE /* SliceController.swift in Sources */,
+				4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */,
 				4CF756721D0A177C00746AEE /* AppDelegate.swift in Sources */,
+				4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */,
 				4CF756AE1D0B5E3200746AEE /* Architecture.swift in Sources */,
+				4CB29D101D2EC337009C2CA5 /* Constants.swift in Sources */,
 				4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */,
 				4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */,
-				4CF756A61D0A184B00746AEE /* NewAddressView.swift in Sources */,
-				4CF756A81D0A187300746AEE /* CircleView.swift in Sources */,
+				4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */,
+				4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */,
 				4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */,
 				4CF756A01D0A17DA00746AEE /* ContainerController.swift in Sources */,
+				4CDAFE2D1D443BD100659C93 /* OrderHistoryController.swift in Sources */,
 				4CF756AA1D0B47C700746AEE /* SwipeCircle.swift in Sources */,
+				4CB29D191D2EE036009C2CA5 /* ActiveAddresses.swift in Sources */,
+				4CB29D1B1D301C22009C2CA5 /* Address.swift in Sources */,
 				4CB6DFE91D2216FF0050FABF /* LoginController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -709,7 +761,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Slice/Slice.entitlements;
 				INFOPLIST_FILE = Slice/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Oliver.Slice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -723,7 +775,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Slice/Slice.entitlements;
 				INFOPLIST_FILE = Slice/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Oliver.Slice;
 				PRODUCT_NAME = "$(TARGET_NAME)";

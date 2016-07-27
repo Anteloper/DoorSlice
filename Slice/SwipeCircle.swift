@@ -22,7 +22,6 @@ class SwipeCircle: UIView {
         clipsToBounds = true
         layer.borderColor = UIColor.grayColor().CGColor
         layer.borderWidth = 1.0
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -31,9 +30,11 @@ class SwipeCircle: UIView {
     
     func fill(){
         backgroundColor = Constants.tiltColor
+        layer.borderColor = UIColor.clearColor().CGColor
     }
     func unfill(){
         backgroundColor = UIColor.clearColor()
+        layer.borderColor = UIColor.grayColor().CGColor
     }
     
 }
