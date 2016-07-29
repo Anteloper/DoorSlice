@@ -23,6 +23,7 @@ class User: NSObject, NSCoding{
     var isLoggedIn: Bool{didSet{saveToDefaults()}}
     var orderHistory: [PastOrder]{didSet{saveToDefaults()}}
     var jwt: String {didSet{saveToDefaults()}}
+    var hasPromptedRating: Bool? {didSet{saveToDefaults()}}
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),

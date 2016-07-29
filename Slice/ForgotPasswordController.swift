@@ -140,18 +140,26 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
             activityIndicator.startAnimating()
             let parameters = ["phone" : rawNumber!]
             Alamofire.request(.POST, Constants.sendPassodeURLString, parameters: parameters).responseJSON { response in
+                debugPrint(response)
                 self.activityIndicator.stopAnimating()
                 switch response.result{
                 case .Success:
                     if let value = response.result.value{
                         let json = JSON(value)
-                        let code = json["code"].stringValue
-                        let ec = EnterCodeController()
-                        ec.code = code
-                        ec.placeHolder = self.placeHolder
-                        ec.shouldPromptPasswordChange = true
-                        ec.phoneNumber = self.rawNumber!
-                        self.presentViewController(ec, animated: false, completion: nil)
+                        if json["success"].boolValue{
+                            let code = json["code"].stringValue
+                            let ec = EnterCodeController()
+                            ec.code = code
+                            ec.placeHolder = self.placeHolder
+                            ec.shouldPromptPasswordChange = true
+                            ec.phoneNumber = self.rawNumber!
+                            self.presentViewController(ec, animated: false, completion: nil)
+                        }
+                        else{
+                            let alert = UIAlertController(title: "No Account Found", message: "No acccount with this phone number was found.", preferredStyle: .Alert)
+                            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+                            self.presentViewController(alert, animated: false, completion: nil)
+                        }
                     }
                 case .Failure:
                     self.isSending = false

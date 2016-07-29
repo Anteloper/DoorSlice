@@ -52,7 +52,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
-        print(loggedInUser.cards)
     }
     
     

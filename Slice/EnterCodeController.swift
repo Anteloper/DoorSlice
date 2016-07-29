@@ -357,7 +357,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
 
     
     func addPasswordTextFields(){
-        newPassField = setupTextField(CGRect(x: view.frame.width/4, y: codeFields[1].frame.maxY+40, width: view.frame.width/2, height: 40))
+        newPassField = setupTextField(CGRect(x: view.frame.width/4, y: codeFields[1].frame.maxY+70, width: view.frame.width/2, height: 40))
         newPassField.alpha = 0.0
         newPassField.secureTextEntry = true
         

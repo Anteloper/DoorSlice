@@ -44,7 +44,6 @@
 		61C1F1791E51EC31C08336DF /* Pods_Slice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC43251F3D0E09BAA59F85EB /* Pods_Slice.framework */; };
 		8AD39C5F364ADAC1652A44A0 /* Pods_SliceUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 841CF323B5AA43020DE9DA66 /* Pods_SliceUITests.framework */; };
 		B34526046B9B237D2F958A58 /* Pods_SliceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA731D18382834A1B4B9A352 /* Pods_SliceTests.framework */; };
-		D3A23AF3BAC151AB1F9A39F3 /* Pods_Slice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B2211C3F6987B645CF7C1A /* Pods_Slice.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -130,7 +129,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				61C1F1791E51EC31C08336DF /* Pods_Slice.framework in Frameworks */,
-				D3A23AF3BAC151AB1F9A39F3 /* Pods_Slice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,12 +757,15 @@
 			baseConfigurationReference = ABBE0A82337655C5DE1570AC /* Pods-Slice.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Slice/Slice.entitlements;
 				INFOPLIST_FILE = Slice/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Oliver.Slice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -773,12 +774,14 @@
 			baseConfigurationReference = 33A394B26772E85C624333AE /* Pods-Slice.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Slice/Slice.entitlements;
 				INFOPLIST_FILE = Slice/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Oliver.Slice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};
