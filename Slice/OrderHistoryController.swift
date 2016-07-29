@@ -23,7 +23,7 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
-        if orderHistory.count == 0{
+        if orderHistory.count != 0{
             setupTableView()
             orderHistory = orderHistory.reverse()
         }
