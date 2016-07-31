@@ -17,20 +17,20 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     var sliceController: SliceController!
     var navController: UINavigationController!
     var menuController: MenuController?
-    var newCardController: NewCardController?
-    var newAddressController: NewAddressController?
+    var newCardController: UINavigationController?
+    var newAddressController: UINavigationController?
     let networkController = NetworkingController()
-    var orderHistoryController: OrderHistoryController?
-    
+    var orderHistoryController: UINavigationController?
+
     var loggedInUser: User!
     var paymentPreferenceChanged = false
     
     var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
     let amountVisibleOfSliceController: CGFloat = 110
     
-    var amount = 0//Should only be touched by the amountPaid function which is called by paymentController
+    var amount = 0//Should only be mutated by the amountPaid function which is called by paymentController
     
-    //These two are to be set by the payForOrder function
+    //These two are to be mutated by the payForOrder function
     var cheeseSlices = 0
     var pepperoniSlices = 0
     
@@ -40,6 +40,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     var applePayCancelled = true
     var applePayFailed = false
     
+    //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
@@ -52,6 +53,20 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
+ 
+
+        
+    }
+    
+    func promptUserFeedBack() {
+        //if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
+          //  if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
+            //    if NSDate().timeIntervalSinceDate(lastOrder) > 900{
+               // SweetAlert().showAlert("Test")
+              //  self.successfulOrder()
+             //   }
+            //}
+        //}
     }
     
     
@@ -160,20 +175,22 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     //1 for NewCard, 2 for NewAddress, 3 for OrderHistory
     func bringMenuToFullscreen(toScreen screen: Int) {
         if newCardController == nil && screen == 1{
-            newCardController = NewCardController()
-            newCardController!.delegate = self
+            let nc = NewCardController()
+            nc.delegate = self
+            newCardController = UINavigationController(rootViewController: nc)
             prepareControllerForFullsreen(newCardController!)
             animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
                 if($0){
                     self.menuController?.removeFromParentViewController()
-                    self.newCardController?.paymentTextField.becomeFirstResponder()
+                    nc.paymentTextField.becomeFirstResponder()
                 }
             }
         }
         else if newAddressController == nil && screen == 2{
-            newAddressController = NewAddressController()
-            newAddressController!.delegate = self
-            newAddressController?.data = activeAddresses.getData()
+            let na = NewAddressController()
+            na.delegate = self
+            na.data = activeAddresses.getData()
+            newAddressController = UINavigationController(rootViewController: na)
             prepareControllerForFullsreen(newAddressController!)
             animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
                 if($0){
@@ -182,9 +199,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             }
         }
         else if orderHistoryController == nil && screen == 3{
-            orderHistoryController = OrderHistoryController()
-            orderHistoryController!.delegate = self
-            orderHistoryController!.orderHistory = loggedInUser.orderHistory
+            let oc = OrderHistoryController()
+            oc.delegate = self
+            oc.orderHistory = loggedInUser.orderHistory
+            orderHistoryController = UINavigationController(rootViewController: oc)
             prepareControllerForFullsreen(orderHistoryController!)
             animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
                 if ($0){
@@ -433,43 +451,36 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
 
     //MARK: Alerts
     func successfulOrder(){
-        let alert = UIAlertController(title: "Pizza On The Way", message: "You can check the details of your order in your order history", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Take Me There", style: .Default, handler:{ _ in self.toggleMenu(){
-            self.bringMenuToFullscreen(toScreen: 3)
-            }}))
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: false, completion: nil)
+        loggedInUser.hasPromptedRating = false
+        
+        SweetAlert().showAlert("ORDER PLACED", subTitle: "You can check the details of your order in your order history", style: AlertStyle.Success, buttonTitle:"Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There",
+            otherButtonColor: Constants.tiltColor) {
+            if !($0) {
+               self.toggleMenu(){
+                    self.bringMenuToFullscreen(toScreen: 3)
+                }
+            }
+        }
     }
     
     func saveNotSuccesful(isCard isCard: Bool, internetError: Bool){
-        let titleString = isCard ? "Card Save Not Succesful" : "Address Save Not Succesful"
-        let message = internetError ? "Check your internet connection and try again" : "Check your card details and try again"
-        let alert = UIAlertController(title: titleString, message: message, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        let string = isCard ? "Card" : "Address"
+        SweetAlert().showAlert("SAVE FAILED", subTitle: "\(string) could not be saved. Check your internet connection and try again.", style: AlertStyle.Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     func duplicate(isCard isCard: Bool){
         let string = isCard ? "card" : "address"
-        let titleString = isCard ? "Duplicate Card" : "Duplicate Address"
-        let alert = UIAlertController(title: titleString, message: "You already have this " + string + " on file", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        SweetAlert().showAlert("DUPLICATE", subTitle: "You already have this \(string) on file", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     func failedDeleteAlert(isCard: Bool){
-        let titleString = isCard ? "Failed to Delete Card" : "Failed To Delete Address"
-        let alert = UIAlertController(title: titleString, message: "Check your internet and try again later", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        self.presentViewController(alert, animated: false, completion: nil)
+        let string = isCard ? "Card" : "Address"
+        SweetAlert().showAlert("DELETE FAILED", subTitle: "\(string) could not be deleted. Check your internet and try again later", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     //Logs the user out and forces them to Re-login. Hopefully will fix any bug
     func catchall(){
-        let alert = UIAlertController(title: "Something Went Wrong On Our End", message: "Please log in again, we apologize for the inconvenience", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: { _ in self.logOutUser()}))
-        presentViewController(alert, animated: false, completion: nil)
-
+        SweetAlert().showAlert("ERROR", subTitle: "Something went wrong on our end. Please log in again.", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor, action: {_ in self.logOutUser()})
     }
     
     //Returns true if the user has a valid address and payment method, false otherwise. Means force unwrapping options is ok in payForOrder
@@ -477,25 +488,26 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         if case .ApplePay = loggedInUser.paymentMethod!{
             if !NetworkingController.canApplePay(){
                 let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
-                let alert = UIAlertController(title: "Apple Pay Not Set Up", message: messageString, preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
                 let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {self.bringMenuToFullscreen(toScreen: 1)} : nil
-                alert.addAction(UIAlertAction(title: "Take Me There", style: .Default , handler: {_ in self.toggleMenu(toggleCompleted)}))
-                self.presentViewController(alert, animated: true, completion: {_ in self.sliceController?.orderCancelled()})
+                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
+                    if !($0){
+                        self.toggleMenu(toggleCompleted)
+                    }
+                }
+                self.sliceController?.orderCancelled()
                 return false
             }
         }
-        
         if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
-            let alert = UIAlertController(title: "No Adress Entered", message: "Enter a delivery address in the menu and then place your order.", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: {_ in self.sliceController.orderCancelled()}))
-            alert.addAction(UIAlertAction(title: "Take Me There", style: .Default, handler: {_ in self.toggleMenu(){
-                self.bringMenuToFullscreen(toScreen:2)}}))
-            self.presentViewController(alert, animated: true, completion: {_ in self.sliceController?.orderCancelled()})
+            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
+                if !($0){
+                    self.toggleMenu({self.bringMenuToFullscreen(toScreen: 2)})
+                }
+            }
+            self.sliceController?.orderCancelled()
             return false
         }
         return true
     }
     
 }
-

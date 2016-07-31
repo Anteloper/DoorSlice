@@ -18,7 +18,7 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navBarSetup()
         view.backgroundColor = Constants.darkBlue
         paymentTextField.textColor = UIColor.whiteColor()
         paymentTextField.frame = CGRect(x: 15, y: 100, width: view.frame.width-30, height: 44)
@@ -29,6 +29,20 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
         
+    }
+    
+    func navBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
+        titleLabel.textAlignment = .Center
+        navigationItem.titleView = titleLabel
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton.addTarget(self, action: #selector(exit), forControlEvents: .TouchUpInside)
+        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){

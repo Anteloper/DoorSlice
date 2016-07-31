@@ -23,13 +23,13 @@ class User: NSObject, NSCoding{
     var isLoggedIn: Bool{didSet{saveToDefaults()}}
     var orderHistory: [PastOrder]{didSet{saveToDefaults()}}
     var jwt: String {didSet{saveToDefaults()}}
-    var hasPromptedRating: Bool? {didSet{saveToDefaults()}}
+    var hasPromptedRating: Bool? {didSet{saveToDefaults()}}//If nil or true, don't ask for slice rating
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String, orderHistory: [PastOrder] = [PastOrder]()){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil){
         
         self.userID = userID
         self.addresses = addresses
@@ -40,12 +40,12 @@ class User: NSObject, NSCoding{
         self.paymentMethod = paymentMethod ?? PaymentPreference.ApplePay
         self.hasCreatedFirstCard = hasCreatedFirstCard
         self.isLoggedIn = isLoggedIn
-        self.orderHistory = orderHistory
         self.jwt = jwt
+        self.orderHistory = orderHistory
+        self.hasPromptedRating = hasPromptedRating
         super.init()
         self.saveToDefaults()
     }
-    
     
     required convenience init?(coder decoder: NSCoder){
         guard let addresses = decoder.decodeObjectForKey("addresses") as? [Address],
@@ -54,8 +54,8 @@ class User: NSObject, NSCoding{
             let cardIDs = decoder.decodeObjectForKey("cardIDs") as? [String : String],
             let userID = decoder.decodeObjectForKey("userID") as? String,
             let jwt = decoder.decodeObjectForKey("jwt") as? String,
-            let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder] else
-        {
+            let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder],
+            let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool? else{
                 return nil
         }
         let pref = decoder.decodeIntegerForKey("paymentMethod")
@@ -71,7 +71,8 @@ class User: NSObject, NSCoding{
                   hasCreatedFirstCard: decoder.decodeBoolForKey("hasCreated"),
                   isLoggedIn: decoder.decodeBoolForKey("isLoggedIn"),
                   jwt: jwt,
-                  orderHistory: orderHistory
+                  orderHistory: orderHistory,
+                  hasPromptedRating: hasPromptedRating
         )
         
     }
@@ -83,11 +84,12 @@ class User: NSObject, NSCoding{
         aCoder.encodeInteger(self.preferredAddress ?? -1, forKey: "preferredAddress")
         aCoder.encodeObject(self.cards, forKey: "cards")
         aCoder.encodeObject(self.cardIDs, forKey: "cardIDs")
-        aCoder.encodeInteger(preferenceToInt(self.paymentMethod), forKey: "paymentMethod")
-        aCoder.encodeBool(hasCreatedFirstCard, forKey: "hasCreated")
-        aCoder.encodeBool(isLoggedIn, forKey: "isLoggedIn")
-        aCoder.encodeObject(jwt, forKey: "jwt")
-        aCoder.encodeObject(orderHistory, forKey: "orderHistory")
+        aCoder.encodeInteger(self.preferenceToInt(self.paymentMethod), forKey: "paymentMethod")
+        aCoder.encodeBool(self.hasCreatedFirstCard, forKey: "hasCreated")
+        aCoder.encodeBool(self.isLoggedIn, forKey: "isLoggedIn")
+        aCoder.encodeObject(self.jwt, forKey: "jwt")
+        aCoder.encodeObject(self.orderHistory, forKey: "orderHistory")
+        aCoder.encodeObject(self.hasPromptedRating, forKey: "hasPrompted")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

@@ -12,6 +12,7 @@
 		4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */; };
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
 		4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */; };
+		4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */; };
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
 		4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69F0C41D36F55D00810525 /* WelcomeController.swift */; };
@@ -72,6 +73,7 @@
 		4C4499621D13548F00CDB2A0 /* NewCardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCardController.swift; sourceTree = "<group>"; };
 		4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
+		4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweetAlert.swift; sourceTree = "<group>"; };
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
 		4C69F0C41D36F55D00810525 /* WelcomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				4CF756AF1D0C81BF00746AEE /* TimerView.swift */,
 				4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */,
 				4CF756A91D0B47C700746AEE /* SwipeCircle.swift */,
+				4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -607,6 +610,7 @@
 				4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */,
 				4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */,
 				4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */,
+				4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */,
 				4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */,
 				4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */,
 				4CF756A01D0A17DA00746AEE /* ContainerController.swift in Sources */,
@@ -706,7 +710,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -745,7 +749,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

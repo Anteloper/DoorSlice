@@ -17,29 +17,23 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(view.frame.width)
         view.backgroundColor = Constants.darkBlue
-        addTitleLabel()
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
+        
+        navBarSetup()
+        
         view.addGestureRecognizer(swipe)
-        if orderHistory.count != 0{
+        if orderHistory.count == 0{
             setupTableView()
             orderHistory = orderHistory.reverse()
+            addTitleLabel()
         }
         else{
-            let trueMidY = (view.frame.height - 170)/2
-            let origin = CGPoint(x: view.frame.midX - 300, y: trueMidY - 150)
-            let size = CGSize(width: 600, height: 600)
-            
-            
-            let emptyDataSetView = UIImageView(frame: CGRect(origin: origin, size: size))
-            emptyDataSetView.image = UIImage(imageLiteral: "noOrders")
-
-            view.addSubview(emptyDataSetView)
+            emptyDataSet()
         }
     }
-
+    
     func didSwipe(recognizer: UIPanGestureRecognizer){
         if recognizer.state == .Ended{
             let point = recognizer.translationInView(view)
@@ -51,13 +45,9 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
 
     func addTitleLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: 20, width: view.frame.width, height: 150))
-        label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY")
+        label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY", size: 16, kern: 6.0)
         label.textAlignment = .Center
         view.addSubview(label)
-        
-        let backButton = Constants.getBackButton()
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(backButton)
     }
     
     func backPressed(){
@@ -92,5 +82,48 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         return cell
     }
     
+    func navBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
+        titleLabel.textAlignment = .Center
+        navigationItem.titleView = titleLabel
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
+        backButton.frame = CGRect(x: 0, y: -4, width: 20, height: 20)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+    }
+    
+    func emptyDataSet(){
+        
+        let emptyDataSetView = UIImageView(frame:CGRect(x: view.frame.midX-100, y:150, width: 200, height: 200))
+        emptyDataSetView.image = UIImage(imageLiteral: "noOrders")
+        emptyDataSetView.layer.minificationFilter = kCAFilterTrilinear
+        view.addSubview(emptyDataSetView)
+        view.sendSubviewToBack(emptyDataSetView)
+        
+        let label = UILabel(frame: CGRect(x:0, y: emptyDataSetView.frame.maxY+20, width: view.frame.width, height: 20))
+        label.attributedText = Constants.getTitleAttributedString("THIS IS YOUR ORDER HISTORY", size: 17, kern: 4.0)
+        label.textAlignment = .Center
+        print(view.frame.width)
+        
+        let separation = (view.frame.width - 320)/2
+    
+        view.addSubview(label)
+        
+        
+        let secondLabel = UILabel(frame: CGRect(x: separation, y: label.frame.maxY+15, width: 320, height: 40))
+        secondLabel.numberOfLines = 0
+        let text = "WHEN YOU ORDER SOME PIZZA IT WILL SHOW UP HERE"
+        let cat = Constants.getTitleAttributedString(text, size: 17, kern: 4.0)
+        cat.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: (cat.string as NSString).rangeOfString(text))
+        secondLabel.attributedText = cat
+        secondLabel.lineBreakMode = .ByWordWrapping
+        secondLabel.textAlignment = .Center
+        view.addSubview(secondLabel)
+        
+    }
     
 }

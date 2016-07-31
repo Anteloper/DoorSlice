@@ -17,7 +17,6 @@ internal struct Constants{
         return filePath.path!
     }
     
-    
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
     static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
@@ -25,6 +24,7 @@ internal struct Constants{
     static let tiltColorFade = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 0.8)
     static let darkBlue = UIColor(red: 30/255.0, green: 39/255.0, blue: 68/255.0, alpha: 1.0)
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
+    static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
     
     static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
@@ -51,18 +51,16 @@ internal struct Constants{
     static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/"
     static let deleteCardURLString = "https://doorslice.herokuapp.com/api/payments/removeCard/"
     
-    
-    
-    static func getTitleAttributedString(text: String)->NSAttributedString{
+    static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(6.0), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 16)!, range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
         return attributedString
     }
-    
+
     static func getBackButton()->UIButton{
-        let backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 75, height: 32))
+        let backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 20, height: 20))
         backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
         return backButton
     }

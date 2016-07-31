@@ -202,7 +202,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     func navigationBarSetup(){
         navigationController?.navigationBar.barTintColor = Constants.darkBlue
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE")
+        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         

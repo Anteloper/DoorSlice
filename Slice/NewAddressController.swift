@@ -34,6 +34,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Constants.darkBlue
+        navBarSetup()
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0
         schoolPicker.dataSource = self
         schoolPicker.delegate = self
@@ -50,6 +51,20 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
        
+    }
+    
+    func navBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
+        titleLabel.textAlignment = .Center
+        navigationItem.titleView = titleLabel
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton.addTarget(self, action: #selector(exitWithoutAddress), forControlEvents: .TouchUpInside)
+        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){
