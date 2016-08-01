@@ -20,11 +20,10 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         view.backgroundColor = Constants.darkBlue
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
-        
         navBarSetup()
         
         view.addGestureRecognizer(swipe)
-        if orderHistory.count == 0{
+        if orderHistory.count != 0{
             setupTableView()
             orderHistory = orderHistory.reverse()
             addTitleLabel()
@@ -44,7 +43,7 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func addTitleLabel(){
-        let label = UILabel(frame: CGRect(x: 0, y: 20, width: view.frame.width, height: 150))
+        let label = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 100))
         label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY", size: 16, kern: 6.0)
         label.textAlignment = .Center
         view.addSubview(label)
@@ -54,7 +53,8 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
     }
     func setupTableView(){
-        tableView.frame = CGRect(x: 0, y: 150, width: view.frame.width, height: view.frame.height-150)
+        tableView.frame = CGRect(x: 0, y: 160, width: view.frame.width, height: view.frame.height-160)
+        self.automaticallyAdjustsScrollViewInsets = false
         tableView.backgroundColor = Constants.darkBlue
         tableView.delegate = self
         tableView.dataSource = self
@@ -123,7 +123,6 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         secondLabel.lineBreakMode = .ByWordWrapping
         secondLabel.textAlignment = .Center
         view.addSubview(secondLabel)
-        
     }
     
 }

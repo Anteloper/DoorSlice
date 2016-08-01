@@ -16,6 +16,7 @@ class WelcomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Constants.darkBlue
+        UIApplication.sharedApplication().statusBarHidden = true
         let logoWidth = view.frame.width/2
         let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 85, width: logoWidth, height: logoWidth))
         logoView.contentMode = .ScaleAspectFit
@@ -84,5 +85,9 @@ class WelcomeController: UIViewController {
     
     func login(){
         presentViewController(LoginController(), animated: false, completion: nil)
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
     }
 }

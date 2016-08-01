@@ -27,9 +27,10 @@ class NetworkingController{
     var headers: [String : String]!
     
     //MARK: Save Order
-    //Used for both Apple Pay and card payment
-    func saveOrder(cheese: String, pepperoni: String, url: String, cardID: String, completion: ()->Void){
-        let parameters = ["cheese" : cheese, "pepperoni" : pepperoni, "cardUsed" : cardID]
+    //Used for both Apple Pay and card payment. Price is in dollars (6.49 = $6.49)
+    func saveOrder(cheese: String, pepperoni: String, url: String, cardID: String, price: String, completion: ()->Void){
+        print(String(price))
+        let parameters = ["cheese" : cheese, "pepperoni" : pepperoni, "cardUsed" : cardID, "price" : String(price)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
             completion()
         }
@@ -78,6 +79,7 @@ class NetworkingController{
     
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
+    //Amount is in cents (649 = $6.49)
     func chargeUser(url: String, amount: String, description: String){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
@@ -108,15 +110,14 @@ class NetworkingController{
         let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId)!
         if cheese != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Cheese slices",
-                amount:NSDecimalNumber(double: cheese*4.00)))
+                amount:NSDecimalNumber(double: cheese*3.00)))
         }
         if pepperoni != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Pepperoni slices",
-                amount:NSDecimalNumber(double: pepperoni*4.00)))
+                amount:NSDecimalNumber(double: pepperoni*3.59)))
         }
-        let total = cheese*4 + pepperoni*4
+        let total = cheese*3 + pepperoni*3.59
         paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "DoorSlice Order", amount: NSDecimalNumber(double: total)))
-        delegate.amountPaid(total)
         
         return paymentRequest
     }
@@ -166,7 +167,9 @@ class NetworkingController{
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
 
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+            debugPrint(response)
             switch response.result{
+                
             case .Success:
                 if let value = response.result.value{
                     let id = JSON(value)["Data"]["_id"].stringValue

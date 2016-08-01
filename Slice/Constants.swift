@@ -13,7 +13,7 @@ internal struct Constants{
     
     static func userFilePath() -> String{
         let paths = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
-        let filePath = paths[0].URLByAppendingPathComponent("finalPath.plist")
+        let filePath = paths[0].URLByAppendingPathComponent("stagingPath.plist")
         return filePath.path!
     }
     
@@ -66,7 +66,7 @@ internal struct Constants{
     }
     
     static let appleMerchantId = "merchant.com.dormslice"
-    static let userKey = "finalUserKey"
+    static let userKey = "stagingKey"
     static let applePayCardID = "applePay"
     
     static let schools = ["GEORGETOWN UNIVERSITY",  "COLUMBIA UNIVERSITY"]

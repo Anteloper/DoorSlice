@@ -12,12 +12,14 @@ class PastOrder: NSObject, NSCoding, NSCopying{
     var address: Address
     var cheeseSlices: Int
     var pepperoniSlices: Int
+    var price: Double{didSet{print(price)}}
     var timeOrdered: NSDate
     var paymentMethod: String
     
-    init(address: Address, cheeseSlices: Int = 0, pepperoniSlices: Int = 0, timeOrdered: NSDate = NSDate(), paymentMethod: String){
+    init(address: Address, cheeseSlices: Int = 0, pepperoniSlices: Int = 0, price: Double, timeOrdered: NSDate = NSDate(), paymentMethod: String){
         self.address = address
         self.cheeseSlices = cheeseSlices
+        self.price = price
         self.pepperoniSlices = pepperoniSlices
         self.timeOrdered = timeOrdered
         self.paymentMethod = paymentMethod
@@ -26,6 +28,7 @@ class PastOrder: NSObject, NSCoding, NSCopying{
     required override init(){
         address = Address()
         cheeseSlices = 0
+        price = 0
         pepperoniSlices = 0
         timeOrdered = NSDate()
         paymentMethod = ""
@@ -34,6 +37,7 @@ class PastOrder: NSObject, NSCoding, NSCopying{
         self.address = order.address
         self.cheeseSlices = order.cheeseSlices
         self.pepperoniSlices = order.pepperoniSlices
+        self.price = order.price
         self.timeOrdered = order.timeOrdered
         self.paymentMethod = order.paymentMethod
     }
@@ -45,18 +49,19 @@ class PastOrder: NSObject, NSCoding, NSCopying{
         guard let address = decoder.decodeObjectForKey("address") as? Address,
             let cheeseSlices = decoder.decodeObjectForKey("cheeseSlices") as? Int,
             let pepperoniSlices = decoder.decodeObjectForKey("pepperoniSlices") as? Int,
+            let price = decoder.decodeObjectForKey("price") as? Double,
             let timeOrdered = decoder.decodeObjectForKey("timeOrdered") as? NSDate,
-            let paymentMethod = decoder.decodeObjectForKey("paymentMethod") as? String else
-        {
+            let paymentMethod = decoder.decodeObjectForKey("paymentMethod") as? String else{
             return nil
         }
-        self.init(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, timeOrdered: timeOrdered, paymentMethod: paymentMethod)
+        self.init(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: price, timeOrdered: timeOrdered, paymentMethod: paymentMethod)
     }
     
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(self.address, forKey: "address")
         aCoder.encodeObject(self.cheeseSlices, forKey: "cheeseSlices")
         aCoder.encodeObject(self.pepperoniSlices, forKey: "pepperoniSlices")
+        aCoder.encodeObject(self.price, forKey: "price")
         aCoder.encodeObject(self.timeOrdered, forKey: "timeOrdered")
         aCoder.encodeObject(self.paymentMethod, forKey: "paymentMethod")
     }

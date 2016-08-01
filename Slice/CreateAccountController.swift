@@ -40,6 +40,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        UIApplication.sharedApplication().statusBarHidden = true
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0 //Check Screen size
         view.backgroundColor = Constants.darkBlue
         addObservers()
@@ -117,6 +118,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
                     if JSON(value)["success"].boolValue{
                         let ec = EnterCodeController()
                         ec.code = JSON(value)["message"].stringValue
+                        print(ec.code)
                         ec.phoneNumber = self.rawNumber
                         ec.password = self.confirmPasswordField.text!
                         ec.shouldPromptPasswordChange = false
@@ -141,10 +143,11 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     }
     
     func accountExists(){
-        let alert = UIAlertController(title: "Phone Number Already In Use", message: "Did you mean to login?", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: .Default , handler: {_ in self.activityIndicator.stopAnimating()}))
-        alert.addAction(UIAlertAction(title: "Login", style: .Default, handler: { _ in self.login() }))
-        presentViewController(alert, animated: true, completion: nil)
+        SweetAlert().showAlert("ACCOUNT EXISTS", subTitle: "This phone number is already registered with an account. Did you mean to login?", style: .Error, buttonTitle: "Dismiss", buttonColor: Constants.tiltColor, otherButtonTitle: "Login", otherButtonColor: Constants.tiltColor){
+            if !($0){
+                self.login()
+            }
+        }
     }
     
     func login(){
@@ -157,9 +160,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     func failure(){
         activityIndicator.stopAnimating()
-        let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     

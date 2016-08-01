@@ -26,6 +26,7 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.sharedApplication().statusBarHidden = true
         view.backgroundColor = Constants.darkBlue
         setup()
     }
@@ -156,16 +157,12 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
                             self.presentViewController(ec, animated: false, completion: nil)
                         }
                         else{
-                            let alert = UIAlertController(title: "No Account Found", message: "No acccount with this phone number was found.", preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                            self.presentViewController(alert, animated: false, completion: nil)
+                            SweetAlert().showAlert("NO ACCOUNT", subTitle: "No account with this phone number was found", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
                         }
                     }
                 case .Failure:
                     self.isSending = false
-                    let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
                 }
             }
         }

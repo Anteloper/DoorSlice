@@ -27,10 +27,9 @@ protocol Slideable{
 
 }
 
-//Objects that conform to this protocol can call paymentController functions
+//Objects that conform to this protocol can call networkController functions
 protocol Payable {
     var applePayFailed: Bool{ get set }
-    func amountPaid(amount: Double)
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed(trueFailure trueFailure: Bool)
     func cardPaymentSuccesful()

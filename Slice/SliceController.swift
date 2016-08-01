@@ -68,11 +68,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             }
             else{
                 orderProgressBar?.timer.pause()
-                let alert = UIAlertController(title: "Overload!",
-                                              message: "We have an 8 Slice maximum for now, sorry!",
-                                              preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: { _ in self.orderProgressBar?.timer.resume()}))
-                self.presentViewController(alert, animated: true, completion: nil)
+                SweetAlert().showAlert("OVERLOAD", subTitle: "We have an 8 slice maximum for now, sorry!", style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor){
+                    _ in self.orderProgressBar?.timer.resume()
+                }
             }
         }
         else{
@@ -267,5 +265,4 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             delegate?.payForOrder(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }
- 
 }

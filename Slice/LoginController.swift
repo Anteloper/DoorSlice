@@ -29,6 +29,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     //MARK: LifeCycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.sharedApplication().statusBarHidden = true
         view.backgroundColor = Constants.darkBlue
         
     }
@@ -77,11 +78,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                     }
                 }
             case .Failure:
-                self.activityIndicator.stopAnimating()
-                let titleString = "Failed To Send Login Request"
-                let alert = UIAlertController(title: titleString, message: "Check your internet connection and try again", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
             }
         }
     }
@@ -147,8 +144,9 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
             }
             let cheese = order["cheese"].intValue
             let pepperoni = order["pepperoni"].intValue
+            let price = order["price"].doubleValue
             let timeOrdered = stringToDate(order["orderDate"].stringValue)
-            orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, timeOrdered: timeOrdered, paymentMethod: lastFour))
+            orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, price: price, timeOrdered: timeOrdered, paymentMethod: lastFour))
         }
         
         let user = User(userID: userID, addresses: addresses,

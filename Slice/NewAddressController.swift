@@ -296,13 +296,6 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         schoolField.attributedText = getAttributedTitle(Array(data.keys)[selectedSchool], size: 15, kern: textFieldKern, isGreen: false)
     }
     
-    func invalidCharacters(){
-        shakeTextField(roomField, enterTrue: true)
-        let alert = UIAlertController(title: "Invalid Character Used", message: "Please use only letters and numbers when entering your room number", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: false, completion: nil)
-    }
-    
     //MARK: Return Functions
     func exitWithoutAddress(){
         delegate?.returnFromFullscreen(withCard: nil, orAddress: nil)

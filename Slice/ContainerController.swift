@@ -28,7 +28,9 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
     let amountVisibleOfSliceController: CGFloat = 110
     
-    var amount = 0//Should only be mutated by the amountPaid function which is called by paymentController
+    private var amount = 0.00 //The amount in dollars (6.49 represents $6.49)
+    func getAmountInt()->Int{ return Int(amount*100) }//The amount in cents. (649 represents $6.49)
+    func getAmountString()->String {return String(amount)}// The double as a string (6.49 represents $6.49)
     
     //These two are to be mutated by the payForOrder function
     var cheeseSlices = 0
@@ -53,9 +55,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
- 
-
-        
     }
     
     func promptUserFeedBack() {
@@ -68,7 +67,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             //}
         //}
     }
-    
     
     //MARK: Slideable Functions
     func getPaymentAndAddress() -> (String, String){
@@ -327,6 +325,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese cheese: Double, pepperoni: Double) {
         if checkValidity(){
+            amount = (cheese*3 + pepperoni*3.49)
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
             orderDescription = String(Int(cheese)) + "cheese, " + String(Int(pepperoni)) + "pepperoni"
@@ -334,7 +333,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             if case .ApplePay = loggedInUser.paymentMethod!{
                 if NetworkingController.canApplePay(){
                     let paymentRequest = networkController.createPaymentRequest(cheese: cheese, pepperoni: pepperoni)
-                    //Send it to an apple-made viewcontroller. This will take my PKPaymentRequest and turn it into a PKPayment which is passed to function bleow
+                    //Send it to an apple-made viewcontroller. This will take my PKPaymentRequest and turn it into a PKPayment which is passed to function below. This function will save order and charge user on the backend
                     let paymentAuthVC = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
                     paymentAuthVC.delegate = self
                     sliceController.presentViewController(paymentAuthVC, animated: true, completion: nil)
@@ -343,17 +342,16 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             else{
                 let lastFour = loggedInUser.cards![loggedInUser.paymentMethod!.value()]
                 let id = loggedInUser.cardIDs[lastFour]!
-                let amount = String(Int(((cheese*4 + pepperoni*4)*100)))
                 if let currentAddressID = loggedInUser.addressIDs[loggedInUser.addresses![loggedInUser.preferredAddress!].getName()]{
                     sliceController.orderProcessing()
                     if paymentPreferenceChanged{
                         networkController.changeCard(id, userID: loggedInUser.userID){
                             self.paymentPreferenceChanged = false
-                            self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), amount: amount, addressID: currentAddressID, cardID: id)
+                            self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                         }
                     }
                     else{
-                        self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), amount: amount, addressID: currentAddressID, cardID: id)
+                        self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                     }
                 }
                 //If the cardID couldnt be found in the dictionary. Should never reach this point
@@ -365,9 +363,9 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     }
     
     //Saves the order to the backend then submits a charge token to the backend
-    func saveOrderThenCharge(cheese: Int, pepperoni: Int, amount: String, addressID: String, cardID: String){
-        networkController.saveOrder(String(cheese), pepperoni: String(pepperoni), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID){
-            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: amount, description: self.orderDescription)
+    func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
+        networkController.saveOrder(String(cheese), pepperoni: String(pepperoni), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
+            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: self.getAmountString(), description: self.orderDescription)
         }
     }
     
@@ -376,8 +374,8 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
         let name = loggedInUser.addresses![loggedInUser.preferredAddress!].getName()
         let addID = loggedInUser.addressIDs[name]
-        networkController.saveOrder(String(cheeseSlices), pepperoni: String(pepperoniSlices), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addID!, cardID: Constants.applePayCardID){
-            self.networkController.applePayAuthorized(payment, userID: self.loggedInUser.userID, amount: self.amount, description: self.orderDescription, completion: completion)
+        networkController.saveOrder(String(cheeseSlices), pepperoni: String(pepperoniSlices), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addID!, cardID: Constants.applePayCardID, price: getAmountString()){
+            self.networkController.applePayAuthorized(payment, userID: self.loggedInUser.userID, amount: self.getAmountInt(), description: self.orderDescription, completion: completion)
             self.applePayCancelled = false
         }
     }
@@ -389,7 +387,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         }
         else{
             let payString = loggedInUser.paymentMethod?.value() == -1 ? "applePay" : loggedInUser!.cards![(loggedInUser.paymentMethod?.value())!]
-            let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, timeOrdered: NSDate(), paymentMethod: payString)
+            let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
             loggedInUser.orderHistory.append(order)
             sliceController.orderCompleted()
             successfulOrder()
@@ -398,10 +396,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     
     //MARK: Payable Delegate Methods
-    func amountPaid(am: Double) {
-        amount = Int(am*100)
-    }
-
     func storeCardID(cardID: String, lastFour: String){
         loggedInUser.hasCreatedFirstCard = true
         loggedInUser.cards!.append(lastFour)
@@ -421,7 +415,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func cardPaymentSuccesful(){
         let payString = loggedInUser.paymentMethod?.value() == -1 ? "applePay" : loggedInUser!.cards![(loggedInUser.paymentMethod?.value())!]
-        let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, timeOrdered: NSDate(), paymentMethod: payString)
+        let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
         loggedInUser.orderHistory.append(order)
         sliceController.orderCompleted()
         successfulOrder()
@@ -429,9 +423,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func cardPaymentFailed(){
         sliceController.orderCancelled()
-        let alert = UIAlertController(title: "Order Not Placed", message: "Check your internet connection and try again", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: false, completion: nil)
+        failedPayment()
     }
     
     func addressSaveFailed() {
@@ -463,6 +455,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         }
     }
     
+    func failedPayment(){
+        SweetAlert().showAlert("ORDER FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
+    }
+    
     func saveNotSuccesful(isCard isCard: Bool, internetError: Bool){
         let string = isCard ? "Card" : "Address"
         SweetAlert().showAlert("SAVE FAILED", subTitle: "\(string) could not be saved. Check your internet connection and try again.", style: AlertStyle.Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
@@ -470,7 +466,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func duplicate(isCard isCard: Bool){
         let string = isCard ? "card" : "address"
-        SweetAlert().showAlert("DUPLICATE", subTitle: "You already have this \(string) on file", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
+        SweetAlert().showAlert("DUPLICATE", subTitle: "You already have this \(string) on file", style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     func failedDeleteAlert(isCard: Bool){
@@ -489,7 +485,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             if !NetworkingController.canApplePay(){
                 let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
                 let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {self.bringMenuToFullscreen(toScreen: 1)} : nil
-                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
+                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
                     if !($0){
                         self.toggleMenu(toggleCompleted)
                     }
@@ -499,7 +495,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
             }
         }
         if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
-            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
+            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor, otherButtonTitle: "Take Me There", otherButtonColor: Constants.tiltColor){
                 if !($0){
                     self.toggleMenu({self.bringMenuToFullscreen(toScreen: 2)})
                 }
@@ -509,5 +505,4 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         }
         return true
     }
-    
 }

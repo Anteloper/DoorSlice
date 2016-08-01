@@ -41,6 +41,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Constants.darkBlue
+        UIApplication.sharedApplication().statusBarHidden = true
         setup()
     }
     
@@ -81,10 +82,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                 }
                 
             case .Failure:
-                let titleString = "Request To Change Password Failed"
-                let alert = UIAlertController(title: titleString, message: "Check your internet connection and try again", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
             }
         }
     }
@@ -125,10 +123,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     }
     
     func failure(){
-        activityIndicator.stopAnimating()
-        let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
     //MARK: TextField Management

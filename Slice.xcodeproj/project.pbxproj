@@ -11,7 +11,7 @@
 		4C10F62A1D3ABF3B00BA7869 /* ForgotPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */; };
 		4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */; };
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
-		4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */; };
+		4C47CD021D1AEDB000AEEB97 /* NetworkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* NetworkController.swift */; };
 		4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */; };
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
@@ -71,7 +71,7 @@
 		4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordController.swift; sourceTree = "<group>"; };
 		4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterCodeController.swift; sourceTree = "<group>"; };
 		4C4499621D13548F00CDB2A0 /* NewCardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCardController.swift; sourceTree = "<group>"; };
-		4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentController.swift; sourceTree = "<group>"; };
+		4C47CD011D1AEDB000AEEB97 /* NetworkController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
 		4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweetAlert.swift; sourceTree = "<group>"; };
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
@@ -290,7 +290,7 @@
 				4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */,
 				4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */,
 				4CF7569F1D0A17DA00746AEE /* ContainerController.swift */,
-				4C47CD011D1AEDB000AEEB97 /* PaymentController.swift */,
+				4C47CD011D1AEDB000AEEB97 /* NetworkController.swift */,
 				4CF756A11D0A17FA00746AEE /* SliceController.swift */,
 				4CF756A31D0A182800746AEE /* MenuController.swift */,
 				4CB29D121D2EDF68009C2CA5 /* NewAddressController.swift */,
@@ -607,7 +607,7 @@
 				4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */,
 				4CF756AE1D0B5E3200746AEE /* Architecture.swift in Sources */,
 				4CB29D101D2EC337009C2CA5 /* Constants.swift in Sources */,
-				4C47CD021D1AEDB000AEEB97 /* PaymentController.swift in Sources */,
+				4C47CD021D1AEDB000AEEB97 /* NetworkController.swift in Sources */,
 				4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */,
 				4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */,
 				4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */,

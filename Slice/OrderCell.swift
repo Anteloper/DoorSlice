@@ -11,20 +11,33 @@ import UIKit
 class OrderCell: UITableViewCell {
     var order: PastOrder!
     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    
+    let topLabelY:CGFloat = 12
+    let midLabelY:CGFloat = 42
+    let bottomLabelY: CGFloat = 72
+    let labelHeight:CGFloat = 25
+    
     var maxX: CGFloat = 14
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        for subview in self.subviews{
+            if subview is UIImageView || subview is UILabel{
+                subview.removeFromSuperview()
+            }
+        }
         backgroundColor = Constants.darkBlue
         addSlices()
         addAddress()
-        addTimeOrdered()
+        addPrice()
+        addRightSideLabels()
     }
     
+    //MARK: Left Side
     func addSlices(){
         if order.pepperoniSlices != 0{
             for pepp in 0...order.pepperoniSlices-1{
-                let imageView = UIImageView(frame: CGRect(x: 15 + pepp*28, y: 12, width: 25, height: 25))
+                let imageView = UIImageView(frame: CGRect(x: CGFloat(15 + pepp*28), y: topLabelY, width: labelHeight, height: labelHeight))
                 imageView.image = UIImage(imageLiteral: "tinyPepperoni")
                 maxX = imageView.frame.maxX
                 addSubview(imageView)
@@ -33,22 +46,37 @@ class OrderCell: UITableViewCell {
         }
         if order.cheeseSlices != 0{
             for cheese in 0...order.cheeseSlices-1{
-                let imageView = UIImageView(frame: CGRect(x: Int(maxX+3) + cheese*28, y: 12, width: 25, height: 25))
+                let imageView = UIImageView(frame: CGRect(x: (maxX+3) + CGFloat(cheese*28), y: topLabelY, width: labelHeight, height: labelHeight))
                 imageView.image = UIImage(imageLiteral: "tinyCheese")
                 addSubview(imageView)
             }
         }
     }
     
-    func addTimeOrdered(){
-        let dateLabel = UILabel(frame: CGRect(x: maxX, y: 12, width: frame.width - (maxX+5), height: 25))
+    func addPrice(){
+        let label = UILabel(frame: CGRect(x: 20, y: midLabelY, width: frame.width*3/5, height: labelHeight))
+        label.attributedText = getAttributedText("$\(order.price)", size: 14, kern: 5.0, color: UIColor.whiteColor())
+        addSubview(label)
+    }
+    
+    
+    func addAddress(){
+        let label = UILabel(frame: CGRect(x: 20, y: bottomLabelY, width: frame.width*3/5, height: labelHeight))
+        label.attributedText = getAttributedText(order.address.getName(), size: 14, kern: 5.0, color: UIColor.whiteColor())
+        addSubview(label)
+    }
+    
+    
+    //MARK: Right Side
+    func addRightSideLabels(){
+        let dateLabel = UILabel(frame: CGRect(x: maxX, y: topLabelY, width: frame.width - (maxX+5), height: labelHeight))
         dateLabel.textAlignment = .Right
         let components = NSCalendar.currentCalendar().components([.Day , .Month , .Year, .Hour, .Minute], fromDate: order.timeOrdered)
         let dateString = "\(months[components.month-1]) \(components.day), \(components.year)"
         dateLabel.attributedText = getAttributedText(dateString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(dateLabel)
         
-        let timeLabel = UILabel(frame: CGRect(x: maxX, y: dateLabel.frame.maxY, width: frame.width - (maxX+5), height: 25))
+        let timeLabel = UILabel(frame: CGRect(x: maxX, y: midLabelY, width: frame.width - (maxX+5), height: labelHeight))
         timeLabel.textAlignment = .Right
         
         let formatter = NSDateFormatter()
@@ -57,18 +85,12 @@ class OrderCell: UITableViewCell {
         timeLabel.attributedText = getAttributedText(timeString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(timeLabel)
         
-        let payLabel = UILabel(frame: CGRect(x: maxX, y: timeLabel.frame.maxY, width: frame.width - (maxX+5), height: 25))
+        let payLabel = UILabel(frame: CGRect(x: maxX, y: bottomLabelY, width: frame.width - (maxX+5), height: labelHeight))
         payLabel.textAlignment = .Right
-        let payString = order.paymentMethod == "applePay" ? "Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} "+order.paymentMethod
+        
+        let payString = order.paymentMethod == "" ? "" : order.paymentMethod == "applePay" ? "Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
         payLabel.attributedText = getAttributedText(payString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(payLabel)
-    }
-    
-    
-    func addAddress(){
-        let label = UILabel(frame: CGRect(x: 20, y: 50, width: frame.width*3/5, height: 50))
-        label.attributedText = getAttributedText(order.address.getName(), size: 14, kern: 5.0, color: UIColor.whiteColor())
-        addSubview(label)
     }
     
     func getAttributedText(text:String, size: CGFloat, kern: Double, color: UIColor)->NSMutableAttributedString{
