@@ -239,6 +239,7 @@ public class SweetAlert: UIViewController {
     
     public func showAlert(title: String, subTitle: String?, style: AlertStyle,buttonTitle: String,buttonColor: UIColor,otherButtonTitle:
         String?, otherButtonColor: UIColor?,action: ((isOtherButton: Bool) -> Void)? = nil) {
+        
         userAction = action
         let window: UIWindow = UIApplication.sharedApplication().keyWindow!
         window.addSubview(view)
@@ -345,6 +346,8 @@ public class SweetAlert: UIViewController {
     }
 }
 
+
+
 // MARK: -
 
 // MARK: Animatable Views
@@ -437,10 +440,8 @@ class CancelAnimatedView: AnimatableView {
         animation.fillMode = kCAFillModeForwards
         self.circleLayer.addAnimation(animation, forKey: "transform")
         
-        
         var scale = CATransform3DIdentity;
         scale = CATransform3DScale(scale, 0.3, 0.3, 0)
-        
         
         let crossAnimation = CABasicAnimation(keyPath: "transform")
         crossAnimation.duration = 0.3;

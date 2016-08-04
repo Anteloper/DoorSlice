@@ -141,7 +141,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
             activityIndicator.startAnimating()
             let parameters = ["phone" : rawNumber!]
             Alamofire.request(.POST, Constants.sendPassodeURLString, parameters: parameters).responseJSON { response in
-                debugPrint(response)
                 self.activityIndicator.stopAnimating()
                 switch response.result{
                 case .Success:

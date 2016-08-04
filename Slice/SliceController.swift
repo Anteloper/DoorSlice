@@ -14,6 +14,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Properties
     var delegate: Slideable?
     
+    //TODO: Do these matter?
     var centerNavController: UINavigationController!
     var centerSliceController: SliceController!
     
@@ -126,6 +127,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             
         )
         
+        
     }
     
     //Returns an array where the first point is the beginning point for the new button sliding in
@@ -199,16 +201,28 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     func navigationBarSetup(){
         navigationController?.navigationBar.barTintColor = Constants.darkBlue
+    
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
+        
         
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(SliceController.toggleMenu), forControlEvents: .TouchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
+        
+
+       /* let loyaltyView = UIButton(type: .Custom)
+        loyaltyView.frame = CGRect(x: 0, y: 0, width: 26, height: 26)
+        loyaltyView.backgroundColor = UIColor.clearColor()
+        loyaltyView.layer.borderColor = Constants.seaFoam.CGColor
+        loyaltyView.layer.borderWidth = 1.0
+        loyaltyView.layer.cornerRadius = loyaltyView.frame.width/2
+        loyaltyView.clipsToBounds = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loyaltyView)*/
     }
     
     //Called by menu press
@@ -262,6 +276,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Timeable Protocol Functions
     func timerEnded(didComplete: Bool) {
         if didComplete{
+            //TODO:
+            /*let bView = navigationItem.rightBarButtonItem?.valueForKey("view") as? UIView
+            orderProgressBar?.addToLoyalty(bView!.frame)*/
             delegate?.payForOrder(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }

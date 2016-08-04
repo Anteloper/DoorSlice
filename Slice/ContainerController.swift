@@ -12,7 +12,7 @@ import Stripe
 //The overseeing ViewController for the entire project. Nothing in this controller is directly visible
 //Even the navigation bar belongs to the SliceController object it keeps track of. 
 //It is a delegate for the menuController, sliceController, newCardController, and paymentController objects it contains
-class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthorizationViewControllerDelegate {
+class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPaymentAuthorizationViewControllerDelegate {
     
     var sliceController: SliceController!
     var navController: UINavigationController!
@@ -59,13 +59,14 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func promptUserFeedBack() {
         //if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
-          //  if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
-            //    if NSDate().timeIntervalSinceDate(lastOrder) > 900{
-               // SweetAlert().showAlert("Test")
-              //  self.successfulOrder()
-             //   }
+            //if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
+               // if NSDate().timeIntervalSinceDate(lastOrder) > 900{
+                    let rc = RatingController()
+                    rc.delegate = self
+                    rc.showAlert()
+               // }
             //}
-        //}
+       // }
     }
     
     //MARK: Slideable Functions
@@ -219,7 +220,6 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     
     func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?) {
         
-        
         if card != nil{
             let lastFour = card!.last4()!
             if !loggedInUser.cards!.contains(lastFour){
@@ -243,6 +243,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
                 }
             }
         }
+        
         animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){ didComplete in
             if didComplete{
                 self.newCardController?.view.removeFromSuperview()
@@ -256,7 +257,11 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         }
     }
     
-
+    //Called after a user tries to select an address with no internet
+    func retrieveAddresses(){
+        activeAddresses = ActiveAddresses()
+    }
+    
     func cardRemoved(index: Int) {
         let lastFour = loggedInUser.cards![index]
         let url = Constants.deleteCardURLString + loggedInUser.userID
@@ -362,9 +367,10 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         }
     }
     
-    //Saves the order to the backend then submits a charge token to the backend
+    //Saves the order to the backend then submits a charge token to the backend. 
+    //Called only when a card is the payment method
     func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
-        networkController.saveOrder(String(cheese), pepperoni: String(pepperoni), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
+        networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
             self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: self.getAmountString(), description: self.orderDescription)
         }
     }
@@ -374,7 +380,7 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
     func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
         let name = loggedInUser.addresses![loggedInUser.preferredAddress!].getName()
         let addID = loggedInUser.addressIDs[name]
-        networkController.saveOrder(String(cheeseSlices), pepperoni: String(pepperoniSlices), url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addID!, cardID: Constants.applePayCardID, price: getAmountString()){
+        networkController.saveOrder(cheeseSlices, pepperoni: pepperoniSlices, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addID!, cardID: Constants.applePayCardID, price: getAmountString()){
             self.networkController.applePayAuthorized(payment, userID: self.loggedInUser.userID, amount: self.getAmountInt(), description: self.orderDescription, completion: completion)
             self.applePayCancelled = false
         }
@@ -440,7 +446,22 @@ class ContainerController: UIViewController, Slideable, Payable, PKPaymentAuthor
         loggedInUser.addressIDs[add.getName()] = orderID
     }
     
-
+    //Called if the order saves succesfully and the user is charged. Adds the users loyalty slices to their profile
+    func addLoyalty(slices: Int){
+        
+    }
+    
+    func removeLoyalty(slices: Int){
+        
+    }
+    
+    //MARK: Rateable Delegate Functions
+    func dismissed(withRating rating: Int, comment: String?) {
+        loggedInUser.hasPromptedRating = true
+        networkController.rateLastOrder(loggedInUser.userID, stars: rating, comment: comment)
+    }
+    
+    
     //MARK: Alerts
     func successfulOrder(){
         loggedInUser.hasPromptedRating = false

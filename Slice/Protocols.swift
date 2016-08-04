@@ -20,6 +20,7 @@ protocol Slideable{
     func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?)
     func payForOrder(cheese cheese: Double, pepperoni: Double)
     func getPaymentAndAddress() -> (String, String)
+    func retrieveAddresses()
     func cardRemoved(index: Int)
     func addressRemoved(index: Int)
     func logOutUser()
@@ -36,8 +37,14 @@ protocol Payable {
     func cardPaymentFailed()
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
+    func addLoyalty(slices: Int)
+    func removeLoyalty(slices: Int)
 }
 
 protocol Timeable{
-    func timerEnded(didComplete: Bool)
+   func timerEnded(didComplete: Bool)
+}
+
+protocol Rateable{
+    func dismissed(withRating rating: Int, comment: String?)
 }

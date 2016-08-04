@@ -107,10 +107,7 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         let label = UILabel(frame: CGRect(x:0, y: emptyDataSetView.frame.maxY+20, width: view.frame.width, height: 20))
         label.attributedText = Constants.getTitleAttributedString("THIS IS YOUR ORDER HISTORY", size: 17, kern: 4.0)
         label.textAlignment = .Center
-        print(view.frame.width)
-        
         let separation = (view.frame.width - 320)/2
-    
         view.addSubview(label)
         
         

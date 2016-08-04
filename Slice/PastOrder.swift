@@ -12,7 +12,7 @@ class PastOrder: NSObject, NSCoding, NSCopying{
     var address: Address
     var cheeseSlices: Int
     var pepperoniSlices: Int
-    var price: Double{didSet{print(price)}}
+    var price: Double
     var timeOrdered: NSDate
     var paymentMethod: String
     

@@ -45,12 +45,21 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         dormPicker.frame = CGRect(x: 0, y: dormField.frame.maxY, width: view.frame.width, height : 130)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        checkData()
         addCancel()
         addSave()
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
        
+    }
+    
+    func checkData(){
+        if data == nil{
+            SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor){ _ in
+                self.exitWithoutAddress(true)
+            }
+        }
     }
     
     func navBarSetup(){
@@ -71,7 +80,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         if recognizer.state == .Ended{
             let point = recognizer.translationInView(view)
             if(abs(point.x) >= abs(point.y)) && point.x > 40{
-                exitWithoutAddress()
+                exitWithoutAddress(false)
             }
         }
     }
@@ -297,8 +306,13 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     //MARK: Return Functions
-    func exitWithoutAddress(){
-        delegate?.returnFromFullscreen(withCard: nil, orAddress: nil)
+    func exitWithoutAddress(networkError: Bool){
+        if networkError{
+            delegate?.retrieveAddresses()
+        }
+       
+        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+
     }
     
     func exitWithAddress(){

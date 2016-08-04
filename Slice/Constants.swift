@@ -20,6 +20,7 @@ internal struct Constants{
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
     static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
+    static let tiltColorDark = UIColor(red: 0/255.0, green: 140/255.0, blue: 200/255.0, alpha: 1.0)
     static let seaFoam = UIColor(red: 40/255.0, green: 231/255.0, blue: 169/255.0, alpha: 1.0)
     static let tiltColorFade = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 0.8)
     static let darkBlue = UIColor(red: 30/255.0, green: 39/255.0, blue: 68/255.0, alpha: 1.0)
@@ -31,6 +32,8 @@ internal struct Constants{
     static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
 
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
+    static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"
+    
     static let sendPassodeURLString = "https://doorslice.herokuapp.com/api/sendPassCode"
     static let resetPasswordURLString = "https://doorslice.herokuapp.com/api/resetPass"
     

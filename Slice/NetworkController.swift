@@ -28,11 +28,16 @@ class NetworkingController{
     
     //MARK: Save Order
     //Used for both Apple Pay and card payment. Price is in dollars (6.49 = $6.49)
-    func saveOrder(cheese: String, pepperoni: String, url: String, cardID: String, price: String, completion: ()->Void){
-        print(String(price))
-        let parameters = ["cheese" : cheese, "pepperoni" : pepperoni, "cardUsed" : cardID, "price" : String(price)]
+    func saveOrder(cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: ()->Void){
+        let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
             completion()
+            switch response.result{
+            case .Success:
+                self.delegate!.addLoyalty(cheese+pepperoni)
+            case .Failure:
+                self.delegate!.removeLoyalty(cheese+pepperoni)
+            }
         }
     }
     
@@ -167,7 +172,6 @@ class NetworkingController{
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
 
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
-            debugPrint(response)
             switch response.result{
                 
             case .Success:
@@ -211,5 +215,12 @@ class NetworkingController{
             }
         }
     }
+    
+    func rateLastOrder(userID: String, stars: Int, comment: String?){
+        let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
+        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters)
+    }
 }
+
+
 

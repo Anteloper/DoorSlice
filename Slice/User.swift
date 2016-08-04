@@ -24,12 +24,13 @@ class User: NSObject, NSCoding{
     var orderHistory: [PastOrder]{didSet{saveToDefaults()}}
     var jwt: String {didSet{saveToDefaults()}}
     var hasPromptedRating: Bool? {didSet{saveToDefaults()}}//If nil or true, don't ask for slice rating
+    var loyaltySlices: Int
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0){
         
         self.userID = userID
         self.addresses = addresses
@@ -43,6 +44,7 @@ class User: NSObject, NSCoding{
         self.jwt = jwt
         self.orderHistory = orderHistory
         self.hasPromptedRating = hasPromptedRating
+        self.loyaltySlices = loyaltySlices
         super.init()
         self.saveToDefaults()
     }
@@ -55,7 +57,8 @@ class User: NSObject, NSCoding{
             let userID = decoder.decodeObjectForKey("userID") as? String,
             let jwt = decoder.decodeObjectForKey("jwt") as? String,
             let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder],
-            let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool? else{
+            let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool?,
+            let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int else{
                 return nil
         }
         let pref = decoder.decodeIntegerForKey("paymentMethod")
@@ -72,7 +75,8 @@ class User: NSObject, NSCoding{
                   isLoggedIn: decoder.decodeBoolForKey("isLoggedIn"),
                   jwt: jwt,
                   orderHistory: orderHistory,
-                  hasPromptedRating: hasPromptedRating
+                  hasPromptedRating: hasPromptedRating,
+                  loyaltySlices: loyaltySlices
         )
         
     }
@@ -90,6 +94,7 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.jwt, forKey: "jwt")
         aCoder.encodeObject(self.orderHistory, forKey: "orderHistory")
         aCoder.encodeObject(self.hasPromptedRating, forKey: "hasPrompted")
+        aCoder.encodeObject(self.loyaltySlices, forKey: "loyaltySlices")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

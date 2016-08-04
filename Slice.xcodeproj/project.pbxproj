@@ -16,6 +16,7 @@
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
 		4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69F0C41D36F55D00810525 /* WelcomeController.swift */; };
+		4C716A661D4EDAFF006EF253 /* RatingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C716A651D4EDAFF006EF253 /* RatingController.swift */; };
 		4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D071D2EC2F7009C2CA5 /* User.swift */; };
 		4CB29D0C1D2EC314009C2CA5 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0B1D2EC314009C2CA5 /* Order.swift */; };
 		4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */; };
@@ -77,6 +78,7 @@
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
 		4C69F0C41D36F55D00810525 /* WelcomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
+		4C716A651D4EDAFF006EF253 /* RatingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingController.swift; sourceTree = "<group>"; };
 		4CB29D071D2EC2F7009C2CA5 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4CB29D0B1D2EC314009C2CA5 /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
 		4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 				4C4499621D13548F00CDB2A0 /* NewCardController.swift */,
 				4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */,
 				4CDAFE2E1D44462C00659C93 /* OrderCell.swift */,
+				4C716A651D4EDAFF006EF253 /* RatingController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -618,6 +621,7 @@
 				4CF756AA1D0B47C700746AEE /* SwipeCircle.swift in Sources */,
 				4CB29D191D2EE036009C2CA5 /* ActiveAddresses.swift in Sources */,
 				4CB29D1B1D301C22009C2CA5 /* Address.swift in Sources */,
+				4C716A661D4EDAFF006EF253 /* RatingController.swift in Sources */,
 				4CB6DFE91D2216FF0050FABF /* LoginController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

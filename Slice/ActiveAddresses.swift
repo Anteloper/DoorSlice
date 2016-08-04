@@ -31,7 +31,7 @@ class ActiveAddresses{
         }
     }
     
-    func getData() -> [String : [String]] {
-        return data ?? ["Columbia University" : Constants.columbiaDorms, "Georgetown University" : Constants.georgetownDorms]
+    func getData() -> [String : [String]]? {
+        return data
     }
 }
