@@ -25,12 +25,13 @@ class User: NSObject, NSCoding{
     var jwt: String {didSet{saveToDefaults()}}
     var hasPromptedRating: Bool? {didSet{saveToDefaults()}}//If nil or true, don't ask for slice rating
     var loyaltySlices: Int
+    var hasSeenTutorial: Bool
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false){
         
         self.userID = userID
         self.addresses = addresses
@@ -45,6 +46,7 @@ class User: NSObject, NSCoding{
         self.orderHistory = orderHistory
         self.hasPromptedRating = hasPromptedRating
         self.loyaltySlices = loyaltySlices
+        self.hasSeenTutorial = hasSeenTutorial
         super.init()
         self.saveToDefaults()
     }
@@ -58,9 +60,11 @@ class User: NSObject, NSCoding{
             let jwt = decoder.decodeObjectForKey("jwt") as? String,
             let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder],
             let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool?,
-            let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int else{
+            let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int,
+            let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool
+            else{
                 return nil
-        }
+            }
         let pref = decoder.decodeIntegerForKey("paymentMethod")
         let prefEnum = pref == -1 ? PaymentPreference.ApplePay : PaymentPreference.CardIndex(pref)
         
@@ -76,7 +80,8 @@ class User: NSObject, NSCoding{
                   jwt: jwt,
                   orderHistory: orderHistory,
                   hasPromptedRating: hasPromptedRating,
-                  loyaltySlices: loyaltySlices
+                  loyaltySlices: loyaltySlices,
+                  hasSeenTutorial: hasSeenTutorial
         )
         
     }
@@ -95,6 +100,7 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.orderHistory, forKey: "orderHistory")
         aCoder.encodeObject(self.hasPromptedRating, forKey: "hasPrompted")
         aCoder.encodeObject(self.loyaltySlices, forKey: "loyaltySlices")
+        aCoder.encodeObject(self.hasSeenTutorial, forKey: "hasSeenTutorial")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

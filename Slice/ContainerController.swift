@@ -58,15 +58,19 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func promptUserFeedBack() {
-        //if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
-            //if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
-               // if NSDate().timeIntervalSinceDate(lastOrder) > 900{
+        let c = ReceiptController()
+        c.delegate = self
+        c.showAlert()
+        
+        if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
+            if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
+                if NSDate().timeIntervalSinceDate(lastOrder) > 900{
                     let rc = RatingController()
                     rc.delegate = self
                     rc.showAlert()
-               // }
-            //}
-       // }
+                }
+            }
+        }
     }
     
     //MARK: Slideable Functions
@@ -461,6 +465,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         networkController.rateLastOrder(loggedInUser.userID, stars: rating, comment: comment)
     }
     
+    func addEmail(email: String) {
+        networkController.addEmail(loggedInUser.userID, email: email)
+    }
     
     //MARK: Alerts
     func successfulOrder(){

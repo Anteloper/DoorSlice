@@ -27,10 +27,9 @@ internal struct Constants{
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
-    
     static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
     static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
-
+  
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
     static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"
     
@@ -41,8 +40,7 @@ internal struct Constants{
     static let sendCodeURLString = "https://doorslice.herokuapp.com/api/sendCode"
     static let authenticateURLString = "https://doorslice.herokuapp.com/api/users/authenticate"
     static let loginURLString = "https://doorslice.herokuapp.com/api/users/login"
-    
-    static let testAuthURLString = "https://doorslice.herokuapp.com/api/users/"
+    static let addEmailURLString = "https://doorslice.herokuapp.com/api/users/addEmail/"
     
     static let getAddressesURLString = "https://doorslice.herokuapp.com/api/addresses"
     static let newAddressURLString = "https://doorslice.herokuapp.com/api/address/"
@@ -53,6 +51,7 @@ internal struct Constants{
     static let updateCardURLString = "https://doorslice.herokuapp.com/api/payments/updateDefaultCard/"
     static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/"
     static let deleteCardURLString = "https://doorslice.herokuapp.com/api/payments/removeCard/"
+    
     
     static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)

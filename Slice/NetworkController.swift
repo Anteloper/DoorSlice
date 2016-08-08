@@ -127,6 +127,7 @@ class NetworkingController{
         return paymentRequest
     }
     
+    
     func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
         let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
         apiClient.createTokenWithPayment(payment, completion: { (token, error) -> Void in
@@ -218,7 +219,14 @@ class NetworkingController{
     
     func rateLastOrder(userID: String, stars: Int, comment: String?){
         let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
-        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters)
+        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers)
+    }
+    
+    //TODO: error handle
+    func addEmail(userID: String, email: String){
+        Alamofire.request(.POST, Constants.addEmailURLString + userID, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
+            debugPrint(response)
+        }
     }
 }
 

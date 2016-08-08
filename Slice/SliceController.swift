@@ -256,6 +256,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     func configureCancel(){
         //cancelButton
         cancelButton.setBackgroundImage(UIImage(imageLiteral: "cancel"), forState: .Normal)
+        cancelButton.layer.minificationFilter = kCAFilterTrilinear
         cancelButton.contentMode = .ScaleAspectFit
         cancelButton.frame = CGRect(x: 10, y: 73, width: 34, height: 34)
         cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), forControlEvents: .TouchUpInside)

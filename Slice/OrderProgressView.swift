@@ -46,14 +46,18 @@ class OrderProgressView: UIView{
     }
     
     func addSlice(ofType: Slice){
-        let topSlice = UIButton(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: 40, height: 40))
+        let size:CGFloat = frame.width >= 375 ? 40 : 33
+        let yVal:CGFloat = frame.width >= 375 ? 70 : 75
+        let topSlice = UIButton(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: size, height: size))
+        topSlice.layer.minificationFilter = kCAFilterTrilinear
         let image = ofType == .Cheese ? UIImage(imageLiteral: "smallCheese") : UIImage(imageLiteral: "smallPepperoni")
         topSlice.setBackgroundImage(image, forState: .Normal)
         topSlice.alpha = 1
         addSubview(topSlice)
         sendSubviewToBack(topSlice)
         slices.append(topSlice)
-        UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*40), y: 70) } )
+        
+        UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*size), y: yVal) } )
         bringSubviewToFront(topSlice)
         
         let overlapView = UIImageView(frame: topSlice.frame)
@@ -63,7 +67,6 @@ class OrderProgressView: UIView{
     }
     
     func addToLoyalty(frame: CGRect){
-        print(frame)
         for slice in slices{
             slice.removeFromSuperview()
         }

@@ -47,4 +47,5 @@ protocol Timeable{
 
 protocol Rateable{
     func dismissed(withRating rating: Int, comment: String?)
+    func addEmail(email: String)
 }

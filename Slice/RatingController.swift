@@ -8,14 +8,14 @@
 
 import UIKit
 
-class RatingController: UIViewController, UITextFieldDelegate {
+class RatingController: UIViewController, UITextViewDelegate {
     
     var contentView = UIView()
     var strongSelf: RatingController?
     var titleLabel = UILabel()
     var button = UIButton()
     var ratingControl = RatingControl()
-    var textField = UITextField()
+    var textField = UITextView()
     var okayButton = UIButton()
     var delegate: Rateable!
     
@@ -39,7 +39,6 @@ class RatingController: UIViewController, UITextFieldDelegate {
     }
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
     
     func setupContentView(){
         contentView.frame = CGRect(x: view.frame.width/2-150, y: view.frame.height/2-150, width: 300, height: 300)
@@ -55,6 +54,12 @@ class RatingController: UIViewController, UITextFieldDelegate {
         titleLabel.textAlignment = .Center
         titleLabel.frame = CGRect(x:0, y:0, width: 300, height: 60)
         contentView.addSubview(titleLabel)
+        
+        let line = CALayer()
+        line.frame = CGRect(x: 15, y: 50, width: 270, height: 1)
+        line.backgroundColor = Constants.darkBlue.CGColor
+        line.opacity = 0.5
+        contentView.layer.addSublayer(line)
     }
     
     func addRatingControl(){
@@ -63,19 +68,42 @@ class RatingController: UIViewController, UITextFieldDelegate {
     }
     
     func addTextField(){
-        textField.frame = CGRect(x: 15, y: 147, width: 270, height: 70)
+        textField.frame = CGRect(x: 15, y: 160, width: 270, height: 70)
         textField.font = UIFont(name: "Myriad Pro", size: 18)
         textField.textColor = Constants.darkBlue
-        textField.backgroundColor = Constants.tiltColorDark
+        textField.backgroundColor = UIColor.whiteColor()
         textField.textAlignment = .Center
         textField.layer.cornerRadius = 5
         textField.clipsToBounds = true
         textField.layer.borderColor = UIColor(white: 0.8, alpha: 0.0).CGColor
         textField.layer.borderWidth = 1.0
-        textField.text = "Leave a comment (optional)"
         textField.delegate = self
         contentView.addSubview(textField)
+        
+        let lineLeft = CALayer()
+        lineLeft.frame = CGRect(x: 15, y: 145, width: 80, height: 1)
+        lineLeft.opacity = 0.5
+        lineLeft.backgroundColor = Constants.darkBlue.CGColor
+        contentView.layer.addSublayer(lineLeft)
+        
+        let label = UILabel(frame: CGRect(x: 100, y: 130, width: 100, height: 30))
+        label.attributedText = Constants.getTitleAttributedString("COMMENTS", size: 10, kern: 6.0)
+        label.textAlignment = .Center
+        contentView.addSubview(label)
+        
+        let lineRight = CALayer()
+        lineRight.frame = CGRect(x: 205, y: 145, width: 80, height: 1)
+        lineRight.opacity = 0.5
+        lineRight.backgroundColor = Constants.darkBlue.CGColor
+        contentView.layer.addSublayer(lineRight)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide), name: UIKeyboardWillHideNotification, object: nil)
     }
+    
+    func keyboardWillShow(){ UIView.animateWithDuration(0.5, animations: { self.contentView.frame.origin.y -= 100 }) }
+    
+    func keyboardWillHide(){UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})}
     
     func addOkayButton(){
         okayButton.frame = CGRect(x: -5, y: 255, width: 320, height: 40)
@@ -101,13 +129,6 @@ class RatingController: UIViewController, UITextFieldDelegate {
         return true
     }
     
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        if textField.text == "Leave a comment (optional)"{
-            textField.text = ""
-            textField.textColor = UIColor.whiteColor()
-        }
-        return true
-    }
     
     func showAlert(){
         view.alpha = 0;
@@ -132,12 +153,13 @@ class RatingController: UIViewController, UITextFieldDelegate {
     }
     
     func okayPressed(){
-        print("pressed")
+
         let stars = ratingControl.rating
         if stars == 0{
             ratingControl.invalidRating()
         }
         else{
+            if textField.isFirstResponder() { textField.resignFirstResponder() }
             delegate.dismissed(withRating: stars, comment: textField.text == "" ? nil : textField.text)
             UIView.animateWithDuration(0.3,
                                    delay: 0.0,
@@ -151,7 +173,15 @@ class RatingController: UIViewController, UITextFieldDelegate {
             self.strongSelf = nil //Releasing strong refrence of itself.
         }
     }
+    
+    func textViewShouldBeginEditing(textView: UITextView) -> Bool {
+        UIView.animateWithDuration(0.5, animations: {})
+        return true
+    }
 }
+
+
+
 
 
 class RatingControl: UIView {
