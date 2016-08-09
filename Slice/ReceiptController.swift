@@ -15,6 +15,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     var okayButton = UIButton()
     var noButton = UIButton()
     var emailField = UITextField()
+    var completion: (()->Void)?
     var delegate: Rateable!
     
     init(){
@@ -33,13 +34,12 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         addLabel()
         addEmailField()
         addButtons()
-        
     }
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func addContentView(){
-        contentView.frame = CGRect(x: view.frame.width/2-150, y: view.frame.height/2-150, width: 300, height: 200)
+        contentView.frame = CGRect(x: view.frame.width/2-150, y: view.frame.height/2-100, width: 300, height: 200)
         contentView.backgroundColor = Constants.tiltColor
         contentView.layer.cornerRadius = 5.0
         contentView.layer.masksToBounds = true
@@ -56,12 +56,12 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     
     func addButtons(){
         let line = CALayer()
-        line.frame = CGRect(x: 15, y: 150, width: 270, height: 1)
+        line.frame = CGRect(x: 0, y: 150, width: 300, height: 1)
         line.backgroundColor = Constants.darkBlue.CGColor
         line.opacity = 0.6
         contentView.layer.addSublayer(line)
         
-        okayButton.frame = CGRect(x: 165, y: 160, width: 120, height: 35)
+        okayButton.frame = CGRect(x: 151, y: 160, width: 148, height: 35)
         let at = Constants.getTitleAttributedString("YES", size: 18, kern: 6.0)
         at.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("YES" as NSString).rangeOfString("YES"))
         okayButton.setAttributedTitle(at, forState: .Normal)
@@ -75,23 +75,23 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         div.opacity = 0.6
         contentView.layer.addSublayer(div)
         
-        
-        noButton.frame = CGRect(x: 15, y: 160, width: 120, height: 35)
+        noButton.frame = CGRect(x: 0, y: 160, width: 150, height: 35)
         let at2 = Constants.getTitleAttributedString("NO", size: 18, kern: 6.0)
         at2.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("NO" as NSString).rangeOfString("NO"))
         noButton.setAttributedTitle(at2, forState: .Normal)
         noButton.addTarget(self, action: #selector(dismissWithoutAddress) , forControlEvents: .TouchUpInside)
         contentView.addSubview(noButton)
-        
     }
     
     func dismissWithAddress(){
         delegate.addEmail(emailField.text!)
         removeAlertFromView()
+        if completion != nil { completion!() }
     }
     
     func dismissWithoutAddress(){
         removeAlertFromView()
+        if completion != nil { completion!() }
     }
     
     func removeAlertFromView(){
@@ -112,7 +112,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
 
     func addEmailField(){
         let yRef: CGFloat = 65
-        emailField.frame = CGRect(x: 15, y: yRef+30, width: 270, height: 30)
+        emailField.frame = CGRect(x: 15, y: yRef+35, width: 270, height: 30)
         emailField.font = UIFont(name: "Myriad Pro", size: 18)
         emailField.textColor = Constants.darkBlue
         emailField.backgroundColor = UIColor.whiteColor()
@@ -125,7 +125,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         contentView.addSubview(emailField)
         
         let lineLeft = CALayer()
-        lineLeft.frame = CGRect(x: 15, y: yRef+15, width: 55, height: 1)
+        lineLeft.frame = CGRect(x: 0, y: yRef+15, width: 70, height: 1)
         lineLeft.opacity = 0.5
         lineLeft.backgroundColor = Constants.darkBlue.CGColor
         contentView.layer.addSublayer(lineLeft)
@@ -136,7 +136,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         contentView.addSubview(label)
         
         let lineRight = CALayer()
-        lineRight.frame = CGRect(x: label.frame.maxX, y: yRef+15, width: 55, height: 1)
+        lineRight.frame = CGRect(x: label.frame.maxX, y: yRef+15, width: 70, height: 1)
         lineRight.opacity = 0.5
         lineRight.backgroundColor = Constants.darkBlue.CGColor
         contentView.layer.addSublayer(lineRight)
@@ -149,7 +149,9 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     
     func keyboardWillHide(){UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})}
     
-    func showAlert(){
+    //Completion will be called after the alert is dismissed, not presented
+    func showAlert(completion: (()->Void)?){
+        self.completion = completion
         view.alpha = 0;
         UIView.animateWithDuration(0.1, animations: { () -> Void in
             self.view.alpha = 1.0;
@@ -170,6 +172,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
             }
         }
     }
+    
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         emailField.resignFirstResponder()
     }

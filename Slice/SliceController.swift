@@ -126,8 +126,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                                    }
             
         )
-        
-        
     }
     
     //Returns an array where the first point is the beginning point for the new button sliding in
@@ -240,11 +238,13 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         pepperoniButton.setBackgroundImage(UIImage(imageLiteral: "pepperoni"), forState: .Normal)
         pepperoniButton.contentMode = .ScaleAspectFit
         pepperoniButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
+        pepperoniButton.layer.minificationFilter = kCAFilterTrilinear
         pepperoniButton.adjustsImageWhenHighlighted = false
         pepperoniButton.alpha = 1.0
         pepperoniButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
         
         cheeseButton.setBackgroundImage(UIImage(imageLiteral: "cheese"), forState: .Normal)
+        cheeseButton.layer.minificationFilter = kCAFilterTrilinear
         cheeseButton.adjustsImageWhenHighlighted = false
         cheeseButton.contentMode = .ScaleAspectFit
         cheeseButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
@@ -280,7 +280,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             //TODO:
             /*let bView = navigationItem.rightBarButtonItem?.valueForKey("view") as? UIView
             orderProgressBar?.addToLoyalty(bView!.frame)*/
-            delegate?.payForOrder(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
+            delegate?.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }
 }

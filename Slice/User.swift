@@ -25,13 +25,14 @@ class User: NSObject, NSCoding{
     var jwt: String {didSet{saveToDefaults()}}
     var hasPromptedRating: Bool? {didSet{saveToDefaults()}}//If nil or true, don't ask for slice rating
     var loyaltySlices: Int
-    var hasSeenTutorial: Bool
+    var hasSeenTutorial: Bool{didSet{saveToDefaults()}}
+    var email: String?{didSet{saveToDefaults()}}
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil){
         
         self.userID = userID
         self.addresses = addresses
@@ -47,6 +48,7 @@ class User: NSObject, NSCoding{
         self.hasPromptedRating = hasPromptedRating
         self.loyaltySlices = loyaltySlices
         self.hasSeenTutorial = hasSeenTutorial
+        self.email = email
         super.init()
         self.saveToDefaults()
     }
@@ -61,7 +63,8 @@ class User: NSObject, NSCoding{
             let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder],
             let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool?,
             let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int,
-            let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool
+            let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool,
+            let email = decoder.decodeObjectForKey("email") as? String?
             else{
                 return nil
             }
@@ -81,9 +84,9 @@ class User: NSObject, NSCoding{
                   orderHistory: orderHistory,
                   hasPromptedRating: hasPromptedRating,
                   loyaltySlices: loyaltySlices,
-                  hasSeenTutorial: hasSeenTutorial
+                  hasSeenTutorial: hasSeenTutorial,
+                  email: email
         )
-        
     }
     
     func encodeWithCoder(aCoder: NSCoder) {
@@ -101,6 +104,7 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.hasPromptedRating, forKey: "hasPrompted")
         aCoder.encodeObject(self.loyaltySlices, forKey: "loyaltySlices")
         aCoder.encodeObject(self.hasSeenTutorial, forKey: "hasSeenTutorial")
+        aCoder.encodeObject(self.email, forKey: "email")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

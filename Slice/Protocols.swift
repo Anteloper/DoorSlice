@@ -18,7 +18,7 @@ protocol Slideable{
     func menuCurrentlyShowing()->Bool
     func bringMenuToFullscreen(toScreen screen: Int)
     func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?)
-    func payForOrder(cheese cheese: Double, pepperoni: Double)
+    func timerEnded(cheese cheese: Double, pepperoni: Double)
     func getPaymentAndAddress() -> (String, String)
     func retrieveAddresses()
     func cardRemoved(index: Int)

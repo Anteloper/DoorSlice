@@ -115,43 +115,48 @@ public class SweetAlert: UIViewController {
             y += textViewHeight + kHeightMargin
         }
         
-        var buttonRect:[CGRect] = []
-        for button in buttons {
-            let string = button.titleForState(UIControlState.Normal)! as NSString
-            buttonRect.append(string.boundingRectWithSize(CGSize(width: width, height:0.0), options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes:[NSFontAttributeName:button.titleLabel!.font], context:nil))
-        }
+        //Buttons
+        let color = Constants.darkBlue
+        let line = CALayer()
+        line.opacity = 0.6
+        line.frame = CGRect(x: 0, y: subTitleTextView.frame.maxY + 25, width: kContentWidth, height: 1)
+        line.backgroundColor = color.CGColor
+        contentView.layer.addSublayer(line)
         
-        var totalWidth: CGFloat = 0.0
-        if buttons.count == 2 {
-            totalWidth = buttonRect[0].size.width + buttonRect[1].size.width + kWidthMargin + 40.0
+        let button = buttons.first!
+        let string = button.titleForState(.Normal)!
+        let at = Constants.getTitleAttributedString(button.titleForState(.Normal)!, size: 18, kern: 5.0)
+        at.addAttribute(NSForegroundColorAttributeName, value: color.CGColor, range: (at.string as NSString).rangeOfString(string))
+        button.setAttributedTitle(at, forState: .Normal)
+        button.addTarget(self, action: #selector(pressed(_:)), forControlEvents: .TouchUpInside)
+       
+        
+        if buttons.count == 1{
+            button.frame = CGRect(x: 0, y: line.frame.maxY, width: kContentWidth, height: 50)
         }
+            
         else{
-            totalWidth = buttonRect[0].size.width + 20.0
-        }
-        y += kHeightMargin
-        var buttonX = (kContentWidth - totalWidth ) / 2.0
-        
-        for i in 0..<buttons.count{
-            buttons[i].frame = CGRect(x: buttonX, y: y, width: buttonRect[i].size.width + 20.0, height: buttonRect[i].size.height + 10.0)
-            buttonX = buttons[i].frame.origin.x + kWidthMargin + buttonRect[i].size.width + 20.0
-            buttons[i].layer.cornerRadius = 5.0
-            self.contentView.addSubview(buttons[i])
-            buttons[i].addTarget(self, action: #selector(pressed(_:)), forControlEvents: UIControlEvents.TouchUpInside)
-        }
-        
-        y += kHeightMargin + buttonRect[0].size.height + 10.0
-        if y > kMaxHeight {
-            let diff = y - kMaxHeight
-            let sFrame = subTitleTextView.frame
-            subTitleTextView.frame = CGRect(x: sFrame.origin.x, y: sFrame.origin.y, width: sFrame.width, height: sFrame.height - diff)
+            button.frame = CGRect(x: kContentWidth/2, y: line.frame.maxY, width: kContentWidth/2, height: 50)
+    
+            let otherButton = buttons[1]
+            otherButton.frame = CGRect(x: 0, y: line.frame.maxY, width: kContentWidth/2, height: 50)
+            let string2 = (otherButton.titleForState(.Normal))!
+            let at2 = Constants.getTitleAttributedString(string2, size: 18, kern: 5.0)
+            at2.addAttribute(NSForegroundColorAttributeName, value: color.CGColor, range: (at2.string as NSString).rangeOfString(string2))
+            otherButton.setAttributedTitle(at2, forState: .Normal)
+            otherButton.addTarget(self, action: #selector(pressed(_:)), forControlEvents: .TouchUpInside)
+            contentView.addSubview(otherButton)
             
-            for button in buttons {
-                let bFrame = button.frame
-                button.frame = CGRect(x: bFrame.origin.x, y: bFrame.origin.y - diff, width: bFrame.width, height: bFrame.height)
-            }
-            
-            y = kMaxHeight
+            let div = CALayer()
+            div.opacity = 0.6
+            div.frame = CGRect(x: kContentWidth/2, y: line.frame.maxY + 10, width: 1, height: 30)
+            div.backgroundColor = color.CGColor
+            contentView.layer.addSublayer(div)
         }
+        
+        contentView.addSubview(button)
+        contentView.sendSubviewToBack(button)
+        y = button.frame.maxY
         
         contentView.frame = CGRect(x: (mainScreenBounds.size.width - kContentWidth) / 2.0, y: (mainScreenBounds.size.height - y) / 2.0, width: kContentWidth, height: y)
         contentView.clipsToBounds = true
@@ -173,7 +178,6 @@ public class SweetAlert: UIViewController {
                 sz = CGSize(width:ssz.height, height:ssz.width)
             }
         }
-        self.resizeAndRelayout()
     }
     
     func closeAlert(buttonIndex:Int){
@@ -275,11 +279,7 @@ public class SweetAlert: UIViewController {
         buttons = []
         if buttonTitle.isEmpty == false {
             let button: UIButton = UIButton(type: UIButtonType.Custom)
-            button.setTitle(buttonTitle, forState: UIControlState.Normal)
-            button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-            button.layer.cornerRadius = 5
-            button.layer.borderWidth = 1.0
-            button.layer.borderColor = Constants.seaFoam.CGColor
+            button.setTitle(buttonTitle, forState: .Normal)
             button.backgroundColor = buttonColor
             button.userInteractionEnabled = true
             button.tag = 0
@@ -288,12 +288,7 @@ public class SweetAlert: UIViewController {
         
         if otherButtonTitle != nil && otherButtonTitle!.isEmpty == false {
             let button: UIButton = UIButton(type: UIButtonType.Custom)
-            button.setTitle(otherButtonTitle, forState: UIControlState.Normal)
-            button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-            button.layer.cornerRadius = 5
-            button.layer.borderWidth = 1.0
-            button.layer.borderColor = Constants.seaFoam.CGColor
-            button.backgroundColor = buttonColor
+            button.setTitle(otherButtonTitle, forState: .Normal)
             button.backgroundColor = otherButtonColor
             button.addTarget(self, action: #selector(pressed(_:)), forControlEvents: UIControlEvents.TouchUpInside)
             button.tag = 1

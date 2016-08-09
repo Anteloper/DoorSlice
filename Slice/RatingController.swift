@@ -56,7 +56,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         contentView.addSubview(titleLabel)
         
         let line = CALayer()
-        line.frame = CGRect(x: 15, y: 50, width: 270, height: 1)
+        line.frame = CGRect(x: 0, y: 50, width: 300, height: 1)
         line.backgroundColor = Constants.darkBlue.CGColor
         line.opacity = 0.5
         contentView.layer.addSublayer(line)
@@ -81,7 +81,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         contentView.addSubview(textField)
         
         let lineLeft = CALayer()
-        lineLeft.frame = CGRect(x: 15, y: 145, width: 80, height: 1)
+        lineLeft.frame = CGRect(x: 0, y: 145, width: 95, height: 1)
         lineLeft.opacity = 0.5
         lineLeft.backgroundColor = Constants.darkBlue.CGColor
         contentView.layer.addSublayer(lineLeft)
@@ -92,7 +92,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         contentView.addSubview(label)
         
         let lineRight = CALayer()
-        lineRight.frame = CGRect(x: 205, y: 145, width: 80, height: 1)
+        lineRight.frame = CGRect(x: 205, y: 145, width: 95, height: 1)
         lineRight.opacity = 0.5
         lineRight.backgroundColor = Constants.darkBlue.CGColor
         contentView.layer.addSublayer(lineRight)
@@ -107,15 +107,15 @@ class RatingController: UIViewController, UITextViewDelegate {
     
     func addOkayButton(){
         okayButton.frame = CGRect(x: -5, y: 255, width: 320, height: 40)
-        let attString = Constants.getTitleAttributedString("SUBMIT", size: 20, kern: 6.0)
-        attString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attString.string as NSString).rangeOfString("SUBMIT"))
+        let attString = Constants.getTitleAttributedString("SUBMIT", size: 18, kern: 6.0)
+        attString.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range: (attString.string as NSString).rangeOfString("SUBMIT"))
         okayButton.addTarget(self, action: #selector(okayPressed), forControlEvents: .TouchUpInside)
         okayButton.setAttributedTitle(attString, forState: .Normal)
         
         let line = CALayer()
-        line.borderColor = UIColor.whiteColor().CGColor
-        line.borderWidth = 1.0
-        line.frame = CGRect(x: 0, y: 255, width: 300, height: 1)
+        line.borderColor = Constants.darkBlue.CGColor
+        line.opacity = 0.6
+        line.frame = CGRect(x: 0, y: 245, width: 300, height: 1)
         contentView.layer.addSublayer(line)
         contentView.addSubview(okayButton)
     }
