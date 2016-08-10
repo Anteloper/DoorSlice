@@ -165,7 +165,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         else{
-            indexPath.row == 0 ? delegate!.bringMenuToFullscreen(toScreen: 3) : delegate!.logOutUser()
+            indexPath.row == 0 ? delegate!.bringMenuToFullscreen(toScreen: 3) : delegate!.logoutConfirmation()
         }
     }
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {

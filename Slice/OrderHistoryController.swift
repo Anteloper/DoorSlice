@@ -23,7 +23,9 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         navBarSetup()
         
         view.addGestureRecognizer(swipe)
+        
         if orderHistory.count != 0{
+   
             setupTableView()
             orderHistory = orderHistory.reverse()
             addTitleLabel()
@@ -97,29 +99,11 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func emptyDataSet(){
-        
-        let emptyDataSetView = UIImageView(frame:CGRect(x: view.frame.midX-100, y:150, width: 200, height: 200))
-        emptyDataSetView.image = UIImage(imageLiteral: "noOrders")
-        emptyDataSetView.layer.minificationFilter = kCAFilterTrilinear
-        view.addSubview(emptyDataSetView)
-        view.sendSubviewToBack(emptyDataSetView)
-        
-        let label = UILabel(frame: CGRect(x:0, y: emptyDataSetView.frame.maxY+20, width: view.frame.width, height: 20))
-        label.attributedText = Constants.getTitleAttributedString("THIS IS YOUR ORDER HISTORY", size: 17, kern: 4.0)
-        label.textAlignment = .Center
-        let separation = (view.frame.width - 320)/2
-        view.addSubview(label)
-        
-        
-        let secondLabel = UILabel(frame: CGRect(x: separation, y: label.frame.maxY+15, width: 320, height: 40))
-        secondLabel.numberOfLines = 0
-        let text = "WHEN YOU ORDER SOME PIZZA IT WILL SHOW UP HERE"
-        let cat = Constants.getTitleAttributedString(text, size: 17, kern: 4.0)
-        cat.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: (cat.string as NSString).rangeOfString(text))
-        secondLabel.attributedText = cat
-        secondLabel.lineBreakMode = .ByWordWrapping
-        secondLabel.textAlignment = .Center
-        view.addSubview(secondLabel)
+        let width = UIScreen.mainScreen().bounds.width
+        let imageView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY - width/2, width: width, height: width))
+        imageView.image = UIImage(imageLiteral: "noOrders")
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        view.addSubview(imageView)
     }
     
 }

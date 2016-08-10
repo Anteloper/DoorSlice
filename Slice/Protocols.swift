@@ -23,7 +23,7 @@ protocol Slideable{
     func retrieveAddresses()
     func cardRemoved(index: Int)
     func addressRemoved(index: Int)
-    func logOutUser()
+    func logoutConfirmation()
     func orderHistory()
 
 }
@@ -39,6 +39,7 @@ protocol Payable {
     func addressSaveFailed()
     func addLoyalty(slices: Int)
     func removeLoyalty(slices: Int)
+    func unauthenticated()
 }
 
 protocol Timeable{

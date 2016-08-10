@@ -46,15 +46,26 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
+        
+        if NetworkingController.checkHours(){
+            sliceController = SliceController()
+            sliceController.delegate = self
+            navController = UINavigationController(rootViewController: sliceController)
+           
+        }
+        else{
+            let cc = ClosedController()
+            cc.delegate = self
+            navController = UINavigationController(rootViewController: cc)
+    
+        }
         activeAddresses = ActiveAddresses()
-        sliceController = SliceController()
-        sliceController.delegate = self
         networkController.delegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
-        navController = UINavigationController(rootViewController: sliceController)
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
+        
     }
     
     func promptUserFeedBack() {
@@ -307,6 +318,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         }
     }
     
+    
     func logOutUser(){
         loggedInUser.isLoggedIn = false
         let lc = LoginController()
@@ -326,8 +338,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
 
     func timerEnded(cheese cheese: Double, pepperoni: Double){
-        //if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
-        if true{
+        if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
             let receiptController = ReceiptController()
             receiptController.delegate = self
             receiptController.showAlert() { [unowned self] in
@@ -512,9 +523,21 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         SweetAlert().showAlert("DELETE FAILED", subTitle: "\(string) could not be deleted. Check your internet and try again later", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
     }
     
+    func logoutConfirmation(){
+        SweetAlert().showAlert("LOGOUT?", subTitle: "Are you sure you want to logout?", style: AlertStyle.None, buttonTitle: "YES", buttonColor: Constants.tiltColor, otherButtonTitle: "NO", otherButtonColor: Constants.tiltColor){
+            if ($0){
+                self.logOutUser()
+            }
+        }
+    }
+    
     //Logs the user out and forces them to Re-login. Hopefully will fix any bug
     func catchall(){
         SweetAlert().showAlert("ERROR", subTitle: "Something went wrong on our end. Please log in again.", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, action: {_ in self.logOutUser()})
+    }
+    
+    func unauthenticated(){
+        SweetAlert().showAlert("SESSION EXPIRED", subTitle: "Your session has expired. Please log in again.", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, action: {_ in self.logOutUser()})
     }
     
     //Returns true if the user has a valid address and payment method, false otherwise. Means force unwrapping options is ok in payForOrder

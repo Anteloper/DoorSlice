@@ -139,7 +139,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     func keyboardWillShow(notification: NSNotification) {
         if keyboardShouldMoveScreen && roomField.isFirstResponder() && !viewIsRaised {
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
-                self.view.frame.origin.y -= keyboardSize.height
+                self.view.frame.origin.y -= keyboardSize.height/2
                 viewIsRaised = true
             }
         }
@@ -161,7 +161,6 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
             }
         }
     }
-    
     
     func shakeTextField(textField: UITextField, enterTrue: Bool){
         UIView.animateWithDuration(0.1, animations: {

@@ -37,6 +37,7 @@ class NetworkingController{
                 self.delegate!.addLoyalty(cheese+pepperoni)
             case .Failure:
                 self.delegate!.removeLoyalty(cheese+pepperoni)
+                if response.response?.statusCode == 401{ self.delegate.unauthenticated() }
             }
         }
     }
@@ -63,7 +64,13 @@ class NetworkingController{
                             }
                         }
                     case .Failure:
-                        self.delegate.cardStoreageFailed(trueFailure: true)
+                        if response.response?.statusCode == 401{
+                            self.delegate.unauthenticated()
+                        }
+                        else{
+                            self.delegate.cardStoreageFailed(trueFailure: true)
+                        }
+
                     }
                 }
             }
@@ -77,7 +84,12 @@ class NetworkingController{
             case .Success:
                 completion()
             case .Failure:
-                self.delegate.cardPaymentFailed()
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    self.delegate.cardPaymentFailed()
+                }
             }
         }
     }
@@ -93,7 +105,12 @@ class NetworkingController{
                 self.delegate.cardPaymentSuccesful()
             
             case .Failure:
-                self.delegate.cardPaymentFailed()
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    self.delegate.cardPaymentFailed()
+                }
             }
         }
     }
@@ -162,6 +179,9 @@ class NetworkingController{
             case .Success:
                 completion(.Success, nil)
             case .Failure:
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
                 completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communication with your payment backend."]))
             }
         }
@@ -173,8 +193,8 @@ class NetworkingController{
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
 
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+            print(response.response?.statusCode)
             switch response.result{
-                
             case .Success:
                 if let value = response.result.value{
                     let id = JSON(value)["Data"]["_id"].stringValue
@@ -189,7 +209,12 @@ class NetworkingController{
                     self.delegate.addressSaveFailed()
                 }
             case .Failure:
-                self.delegate.addressSaveFailed()
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    self.delegate.addressSaveFailed()
+                }
             }
         }
     }
@@ -200,7 +225,12 @@ class NetworkingController{
             case .Success:
                 completion(true)
             case .Failure:
-                completion(false)
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    completion(false)
+                }
             }
         }
     }
@@ -212,7 +242,12 @@ class NetworkingController{
             case .Success:
                 completion(true)
             case .Failure:
-                completion(false)
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    completion(false)
+                }
             }
         }
     }
@@ -227,6 +262,26 @@ class NetworkingController{
         Alamofire.request(.POST, Constants.addEmailURLString + userID, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
             debugPrint(response)
         }
+    }
+    
+    static func checkHours()->Bool{
+        var isOpen = false
+        Alamofire.request(.GET, Constants.isOpenURLString).responseJSON{ response in
+            switch response.result{
+            case .Success:
+                if let value = response.result.value{
+                    if JSON(value)["open"].boolValue{
+                        isOpen = true
+                    }
+                    else{
+                        isOpen = false
+                    }
+                }
+            case .Failure:
+                isOpen = false
+            }
+        }
+        return isOpen
     }
 }
 

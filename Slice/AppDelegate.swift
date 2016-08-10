@@ -19,7 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
         
-        noUserFound()
         guard let user = NSKeyedUnarchiver.unarchiveObjectWithFile(Constants.userFilePath()) as? User else{
             noUserFound()
             return true
@@ -58,10 +57,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 
     func applicationDidBecomeActive(application: UIApplication) {
+        
         if containerController != nil{
             containerController?.promptUserFeedBack()
         }
     }
+    
+    
 }
 
 

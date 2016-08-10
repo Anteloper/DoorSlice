@@ -29,7 +29,9 @@ internal struct Constants{
 
     static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
     static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
-  
+    
+    static let isOpenURLString = "https://doorslice.herokuapp.com/api/whatTime"
+    
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
     static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"
     
