@@ -61,7 +61,7 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
     }
     
     func exit(){
-        self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+        self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
     }
     
     func paymentCardTextFieldDidChange(textField: STPPaymentCardTextField) {
@@ -95,7 +95,7 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
                                                 checkView.alpha = 0.0
                                                 }, completion:{
                                                     if($0){
-                                                        self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil)
+                                                        self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil, fromSettings: false)
                                                     }
                                                 }
                                             )

@@ -310,7 +310,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
             delegate?.retrieveAddresses()
         }
        
-        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
 
     }
     
@@ -318,7 +318,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         if schoolField.text != "  SCHOOL" && schoolField.text != "" {
             if dormField.text != "  DORM" && dormField.text != ""{
                 if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
-                    delegate?.returnFromFullscreen(withCard: nil, orAddress: Address(school: schoolField.text!, dorm: dormField.text!, room: roomField.text!))
+                    delegate?.returnFromFullscreen(withCard: nil, orAddress: Address(school: schoolField.text!, dorm: dormField.text!, room: roomField.text!), fromSettings: false)
                 }
                 else{
                     shakeTextField(roomField, enterTrue: true)

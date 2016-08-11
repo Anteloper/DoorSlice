@@ -88,6 +88,13 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         let jwt = fromJson["JWT"].stringValue
         let json = fromJson["User Profile"]
         let userID = json["_id"].stringValue
+        let wantsReceipts = json["wantsReceipts"].boolValue
+        let hasSeenTutorial = json["hasSeenTutorial"].boolValue
+        let wantsOrderConfirmation = json["wantsConfirmation"].boolValue
+        var email: String? = json["email"].stringValue
+        if email == "noEmail"{
+            email = nil
+        }
         let hasCreatedFirstCard = json["hasStripeProfile"].boolValue
         let cardsJson = json["cards"].arrayValue
         let addressesJson = json["addresses"].arrayValue
@@ -136,10 +143,13 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         for order in json["orders"].arrayValue{
             let jsonAddress = order["address"].arrayValue.first!
             let trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
-            var lastFour = ""
-            for lFour in cards{
-                if cardIDs[lFour] == order["cardUsed"].stringValue{
-                    lastFour = lFour
+            
+            var lastFour = "applePay"
+            if !(order["cardUsed"].stringValue == Constants.applePayCardID){
+                for lFour in cards{
+                    if cardIDs[lFour] == order["cardUsed"].stringValue{
+                        lastFour = lFour
+                    }
                 }
             }
             let cheese = order["cheese"].intValue
@@ -148,7 +158,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
             let timeOrdered = stringToDate(order["orderDate"].stringValue)
             orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, price: price, timeOrdered: timeOrdered, paymentMethod: lastFour))
         }
-        
+
         let user = User(userID: userID, addresses: addresses,
                         addressIDs: addressIDs,
                         preferredAddress: preferredAddress,
@@ -158,7 +168,13 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                         hasCreatedFirstCard: hasCreatedFirstCard,
                         isLoggedIn: true,
                         jwt: jwt,
-                        orderHistory: orderHistory)
+                        orderHistory: orderHistory,
+                        hasPromptedRating: nil,
+                        loyaltySlices: 0,
+                        hasSeenTutorial: hasSeenTutorial,
+                        email: email,
+                        wantsReceipts: wantsReceipts,
+                        wantsOrderConfirmation: wantsOrderConfirmation)
         return user
             
     }

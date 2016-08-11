@@ -52,7 +52,7 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func backPressed(){
-        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
     }
     func setupTableView(){
         tableView.frame = CGRect(x: 0, y: 160, width: view.frame.width, height: view.frame.height-160)

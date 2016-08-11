@@ -88,9 +88,9 @@ class OrderCell: UITableViewCell {
         let payLabel = UILabel(frame: CGRect(x: maxX, y: bottomLabelY, width: frame.width - (maxX+5), height: labelHeight))
         payLabel.textAlignment = .Right
         
-        var payString = ""
+        var payString = order.paymentMethod
         if payString != ""{
-            payString = order.paymentMethod == "applePay" ? "Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
+            payString = order.paymentMethod == Constants.applePayCardID ? "Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
         }
         payLabel.attributedText = getAttributedText(payString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(payLabel)

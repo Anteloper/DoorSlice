@@ -112,12 +112,12 @@ class RatingController: UIViewController, UITextViewDelegate {
         okayButton.addTarget(self, action: #selector(okayPressed), forControlEvents: .TouchUpInside)
         okayButton.setAttributedTitle(attString, forState: .Normal)
         
-        let line = CALayer()
-        line.borderColor = Constants.darkBlue.CGColor
-        line.opacity = 0.6
+        let line = UIView()
+        line.backgroundColor = Constants.darkBlue
+        line.alpha = 0.6
         line.frame = CGRect(x: 0, y: 245, width: 300, height: 1)
-        contentView.layer.addSublayer(line)
         contentView.addSubview(okayButton)
+        contentView.addSubview(line)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -200,8 +200,8 @@ class RatingControl: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let filledStarImage = UIImage(named: "filledStar")
-        let emptyStarImage = UIImage(named: "emptyStar")
+        let filledStarImage = UIImage(named: "starFilled")
+        let emptyStarImage = UIImage(named: "starEmpty")
         
         for _ in 0..<5 {
             let button = UIButton()

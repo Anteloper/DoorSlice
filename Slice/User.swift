@@ -12,27 +12,29 @@ import UIKit
 //Properties of this class must conform to NSObject, NSCoding, AND NSCopying
 class User: NSObject, NSCoding{
     
-    var userID: String
+    var userID: String //User can't login without it
     var addresses: [Address]? {didSet{saveToDefaults()}}
     var addressIDs: [String: String] {didSet{saveToDefaults()}}
     var preferredAddress: Int? {didSet{saveToDefaults()}}
     var cards: [String]? {didSet{saveToDefaults()}}
-    var cardIDs: [String : String] {didSet{saveToDefaults()}}
+    var cardIDs: [String : String] {didSet{saveToDefaults()}} //key: last four digits, value: cardID provided by the database
     var paymentMethod: PaymentPreference? {didSet{saveToDefaults()}}
-    var hasCreatedFirstCard: Bool{didSet{saveToDefaults()}}
-    var isLoggedIn: Bool{didSet{saveToDefaults()}}
+    var hasCreatedFirstCard: Bool{didSet{saveToDefaults()}}//To avoid hitting the newStripeUser endpoint when not applicable
+    var isLoggedIn: Bool{didSet{saveToDefaults()}}//For checking at launchtime
     var orderHistory: [PastOrder]{didSet{saveToDefaults()}}
-    var jwt: String {didSet{saveToDefaults()}}
+    var jwt: String {didSet{saveToDefaults()}}//The raw string for header authentification in requests
     var hasPromptedRating: Bool? {didSet{saveToDefaults()}}//If nil or true, don't ask for slice rating
-    var loyaltySlices: Int
+    var loyaltySlices: Int //Not currently in use
     var hasSeenTutorial: Bool{didSet{saveToDefaults()}}
-    var email: String?{didSet{saveToDefaults()}}
+    var email: String?{didSet{saveToDefaults()}}//Email address for receipts if the user provided one
+    var wantsReceipts: Bool{didSet{saveToDefaults()}}
+    var wantsOrderConfirmation: Bool{didSet{saveToDefaults()}}//Whether an alert should confirm an order when not using apple pay
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil, wantsReceipts: Bool = false, wantsOrderConfirmation:Bool = true){
         
         self.userID = userID
         self.addresses = addresses
@@ -49,6 +51,8 @@ class User: NSObject, NSCoding{
         self.loyaltySlices = loyaltySlices
         self.hasSeenTutorial = hasSeenTutorial
         self.email = email
+        self.wantsReceipts = wantsReceipts
+        self.wantsOrderConfirmation = wantsOrderConfirmation
         super.init()
         self.saveToDefaults()
     }
@@ -64,7 +68,9 @@ class User: NSObject, NSCoding{
             let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool?,
             let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int,
             let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool,
-            let email = decoder.decodeObjectForKey("email") as? String?
+            let email = decoder.decodeObjectForKey("email") as? String?,
+            let wantsReceipt = decoder.decodeObjectForKey("wantsReceipts") as? Bool,
+            let wantsOrderConfirmation = decoder.decodeObjectForKey("confirmation") as? Bool
             else{
                 return nil
             }
@@ -85,7 +91,9 @@ class User: NSObject, NSCoding{
                   hasPromptedRating: hasPromptedRating,
                   loyaltySlices: loyaltySlices,
                   hasSeenTutorial: hasSeenTutorial,
-                  email: email
+                  email: email,
+                  wantsReceipts: wantsReceipt,
+                  wantsOrderConfirmation: wantsOrderConfirmation
         )
     }
     
@@ -105,6 +113,8 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.loyaltySlices, forKey: "loyaltySlices")
         aCoder.encodeObject(self.hasSeenTutorial, forKey: "hasSeenTutorial")
         aCoder.encodeObject(self.email, forKey: "email")
+        aCoder.encodeObject(self.wantsReceipts, forKey: "wantsReceipts")
+        aCoder.encodeObject(self.wantsOrderConfirmation, forKey: "confirmation")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

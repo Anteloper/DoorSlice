@@ -14,13 +14,16 @@ import Stripe
 //It is a delegate for the menuController, sliceController, newCardController, and paymentController objects it contains
 class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPaymentAuthorizationViewControllerDelegate {
     
-    var sliceController: SliceController!
     var navController: UINavigationController!
+    var sliceController: SliceController!
     var menuController: MenuController?
+    let networkController = NetworkingController()
+    
+    //Controllers that take the menu to fullscreen
     var newCardController: UINavigationController?
     var newAddressController: UINavigationController?
-    let networkController = NetworkingController()
     var orderHistoryController: UINavigationController?
+    var accountSettingsController: UINavigationController?
 
     var loggedInUser: User!
     var paymentPreferenceChanged = false
@@ -46,8 +49,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
-        
-        if NetworkingController.checkHours(){
+        if !NetworkingController.checkHours(){
             sliceController = SliceController()
             sliceController.delegate = self
             navController = UINavigationController(rootViewController: sliceController)
@@ -67,9 +69,11 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         navController.didMoveToParentViewController(self)
         
     }
+    override func viewDidLayoutSubviews() {
+        promptUserFeedBack()
+    }
     
     func promptUserFeedBack() {
-   
         if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
             if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
                 if NSDate().timeIntervalSinceDate(lastOrder) > 900{
@@ -183,8 +187,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         return menuIsVisible
     }
     
-    //1 for NewCard, 2 for NewAddress, 3 for OrderHistory
+    //1 for NewCard, 2 for NewAddress, 3 for OrderHistory, 4 for Account Settings
     func bringMenuToFullscreen(toScreen screen: Int) {
+        let completion: (Bool)->Void = { if ($0) { self.menuController?.removeFromParentViewController() }}
         if newCardController == nil && screen == 1{
             let nc = NewCardController()
             nc.delegate = self
@@ -203,23 +208,24 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             na.data = activeAddresses.getData()
             newAddressController = UINavigationController(rootViewController: na)
             prepareControllerForFullsreen(newAddressController!)
-            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
-                if($0){
-                    self.menuController?.removeFromParentViewController()
-                }
-            }
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
         }
+            
         else if orderHistoryController == nil && screen == 3{
             let oc = OrderHistoryController()
             oc.delegate = self
             oc.orderHistory = loggedInUser.orderHistory
             orderHistoryController = UINavigationController(rootViewController: oc)
             prepareControllerForFullsreen(orderHistoryController!)
-            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false){
-                if ($0){
-                    self.menuController?.removeFromParentViewController()
-                }
-            }
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
+        }
+        else if accountSettingsController == nil && screen == 4{
+            let asc = AccountSettingsController()
+            asc.user = loggedInUser
+            asc.delegate = self
+            accountSettingsController = UINavigationController(rootViewController: asc)
+            prepareControllerForFullsreen(accountSettingsController!)
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
         }
     }
     
@@ -230,7 +236,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
 
     
-    func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?) {
+    func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?, fromSettings: Bool = false) {
         
         if card != nil{
             let lastFour = card!.last4()!
@@ -265,6 +271,16 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 self.menuController?.tableView.reloadData()
                 self.orderHistoryController?.view.removeFromSuperview()
                 self.orderHistoryController = nil
+                self.accountSettingsController?.view.removeFromSuperview()
+                self.accountSettingsController = nil
+            }
+        }
+        
+        if fromSettings{
+            networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: loggedInUser.wantsReceipts)
+            networkController.booleanChange(Constants.wantsConfirmation, userID: loggedInUser.userID, boolean: loggedInUser.wantsOrderConfirmation)
+            if loggedInUser.email != nil{
+                networkController.addEmail(loggedInUser.userID, email: loggedInUser.email!)
             }
         }
     }
@@ -370,23 +386,27 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 }
             }
             else{
-                let lastFour = loggedInUser.cards![loggedInUser.paymentMethod!.value()]
-                let id = loggedInUser.cardIDs[lastFour]!
-                if let currentAddressID = loggedInUser.addressIDs[loggedInUser.addresses![loggedInUser.preferredAddress!].getName()]{
-                    sliceController.orderProcessing()
-                    if paymentPreferenceChanged{
-                        networkController.changeCard(id, userID: loggedInUser.userID){
-                            self.paymentPreferenceChanged = false
-                            self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
+                if loggedInUser.wantsOrderConfirmation{
+                    confirmOrder(cheese, pepperoni: pepperoni){ [unowned self] in
+                        let lastFour = self.loggedInUser.cards![self.loggedInUser.paymentMethod!.value()]
+                        let id = self.loggedInUser.cardIDs[lastFour]!
+                        if let currentAddressID = self.loggedInUser.addressIDs[self.loggedInUser.addresses![self.loggedInUser.preferredAddress!].getName()]{
+                            self.sliceController.orderProcessing()
+                            if self.paymentPreferenceChanged{
+                                self.networkController.changeCard(id, userID: self.loggedInUser.userID){
+                                    self.paymentPreferenceChanged = false
+                                    self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
+                                }
+                            }
+                            else{
+                                self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
+                            }
+                        }
+                            //If the cardID couldnt be found in the dictionary. Should never reach this point
+                        else{
+                            self.catchall()
                         }
                     }
-                    else{
-                        self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
-                    }
-                }
-                //If the cardID couldnt be found in the dictionary. Should never reach this point
-                else{
-                    catchall()
                 }
             }
         }
@@ -417,8 +437,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             sliceController.orderCancelled()
         }
         else{
-            let payString = loggedInUser.paymentMethod?.value() == -1 ? "applePay" : loggedInUser!.cards![(loggedInUser.paymentMethod?.value())!]
-            let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
+            
+            let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: Constants.applePayCardID)
             loggedInUser.orderHistory.append(order)
             sliceController.orderCompleted()
             successfulOrder()
@@ -445,9 +465,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func cardPaymentSuccesful(){
-        let payString = loggedInUser.paymentMethod?.value() == -1 ? "applePay" : loggedInUser!.cards![(loggedInUser.paymentMethod?.value())!]
-        let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
-        loggedInUser.orderHistory.append(order)
+        if let val = loggedInUser.paymentMethod?.value(){
+            if let payString = loggedInUser?.cards?[val]{
+                let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
+                loggedInUser.orderHistory.append(order)
+            }
+        }
         sliceController.orderCompleted()
         successfulOrder()
     }
@@ -477,6 +500,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func removeLoyalty(slices: Int){
+        
     }
     
     //MARK: Rateable Delegate Functions
@@ -488,6 +512,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     func addEmail(email: String) {
         loggedInUser.email = email
         networkController.addEmail(loggedInUser.userID, email: email)
+        networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: true)
     }
     
     //MARK: Alerts
@@ -500,6 +525,44 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                self.toggleMenu(){
                     self.bringMenuToFullscreen(toScreen: 3)
                 }
+            }
+        }
+    }
+    
+    func confirmOrder(cheese: Double, pepperoni: Double, confirmedHandler: ()->Void){
+        let formatter = NSNumberFormatter()
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        //let total = formatter.stringFromNumber(cheese*3.00 + pepperoni*3.49)//Precision to two decimals
+        let value = cheese*3.00 + pepperoni*3.49
+        let total = String(format: "%2f", arguments: [value])
+
+        let chs = Int(cheese)
+        let pepp = Int(pepperoni)
+        let first = "Confirm your order of"
+        var second = ""
+        if pepp != 0{
+            let plural = pepp == 1 ? "slice" : "slices"
+            second = "\(pepp) \(plural) of pepperoni "
+            if chs != 0{
+                let plural = chs == 1 ? "slice" : "slices"
+                second += "and \(chs) \(plural) of cheese "
+            }
+            second += "for a total of $\(total)"
+        }
+        else{
+            let plural = chs == 1 ? "slice" : "slices"
+            second = "\(chs) \(plural) of cheese for a total of $\(total)"
+        }
+        
+        
+        
+        SweetAlert().showAlert("CONFIRM ORDER", subTitle: "\(first) \(second)", style: .None, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, otherButtonTitle: "CANCEL", otherButtonColor: Constants.tiltColor){
+            if ($0){
+                confirmedHandler()
+            }
+            else{
+                self.sliceController.orderCancelled()
             }
         }
     }

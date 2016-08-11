@@ -8,7 +8,7 @@
 
 import UIKit
 
-//Displayed iff pizza serving is not in operation when the user is on the app
+//Displayed if pizza serving is not in operation when the user is on the app
 class ClosedController: UIViewController, UIGestureRecognizerDelegate{
     
     var delegate: Slideable!

@@ -272,7 +272,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         view.addSubview(swipeCircles![0])
         view.addSubview(swipeCircles![1])
     }
-    
+
     
     //MARK: Timeable Protocol Functions
     func timerEnded(didComplete: Bool) {

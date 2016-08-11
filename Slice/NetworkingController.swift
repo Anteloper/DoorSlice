@@ -264,6 +264,16 @@ class NetworkingController{
         }
     }
     
+    
+    func booleanChange(endpoint: String, userID: String, boolean: Bool){
+        let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
+        let parameters = [endpoint : String(boolean)]
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+            debugPrint(response)
+        }
+    }
+    
+    
     static func checkHours()->Bool{
         var isOpen = false
         Alamofire.request(.GET, Constants.isOpenURLString).responseJSON{ response in

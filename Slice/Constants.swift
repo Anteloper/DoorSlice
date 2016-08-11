@@ -54,6 +54,10 @@ internal struct Constants{
     static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/"
     static let deleteCardURLString = "https://doorslice.herokuapp.com/api/payments/removeCard/"
     
+    static let booleanChangeURLString = "https://doorslice.herokuapp.com/api/users/"
+    static let wantsReceipts = "wantsReceipts"
+    static let wantsConfirmation = "wantsConfirmation"
+    static let seenTutorial = "hasSeenTutorial"
     
     static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)
