@@ -14,10 +14,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Properties
     var delegate: Slideable?
     
-    //TODO: Do these matter?
-    var centerNavController: UINavigationController!
-    var centerSliceController: SliceController!
-    
     var orderProgressBar: OrderProgressView?
     let cancelButton = UIButton()
     
@@ -277,7 +273,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Timeable Protocol Functions
     func timerEnded(didComplete: Bool) {
         if didComplete{
-            //TODO:
             /*let bView = navigationItem.rightBarButtonItem?.valueForKey("view") as? UIView
             orderProgressBar?.addToLoyalty(bView!.frame)*/
             delegate?.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)

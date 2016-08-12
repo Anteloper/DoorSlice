@@ -77,6 +77,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
             if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
                 if NSDate().timeIntervalSinceDate(lastOrder) > 900{
+                    print("here")
                     let rc = RatingController()
                     rc.delegate = self
                     rc.showAlert()
@@ -386,28 +387,29 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 }
             }
             else{
-                if loggedInUser.wantsOrderConfirmation{
-                    confirmOrder(cheese, pepperoni: pepperoni){ [unowned self] in
-                        let lastFour = self.loggedInUser.cards![self.loggedInUser.paymentMethod!.value()]
-                        let id = self.loggedInUser.cardIDs[lastFour]!
-                        if let currentAddressID = self.loggedInUser.addressIDs[self.loggedInUser.addresses![self.loggedInUser.preferredAddress!].getName()]{
-                            self.sliceController.orderProcessing()
-                            if self.paymentPreferenceChanged{
-                                self.networkController.changeCard(id, userID: self.loggedInUser.userID){
-                                    self.paymentPreferenceChanged = false
-                                    self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
-                                }
-                            }
-                            else{
+                let cardPayment: ()->Void = {
+                    let lastFour = self.loggedInUser.cards![self.loggedInUser.paymentMethod!.value()]
+                    let id = self.loggedInUser.cardIDs[lastFour]!
+                    if let currentAddressID = self.loggedInUser.addressIDs[self.loggedInUser.addresses![self.loggedInUser.preferredAddress!].getName()]{
+                        self.sliceController.orderProcessing()
+                        if self.paymentPreferenceChanged{
+                            self.networkController.changeCard(id, userID: self.loggedInUser.userID){
+                                self.paymentPreferenceChanged = false
                                 self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                             }
                         }
-                            //If the cardID couldnt be found in the dictionary. Should never reach this point
                         else{
-                            self.catchall()
+                            self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                         }
                     }
+                        //If the cardID couldnt be found in the dictionary. Should never reach this point
+                    else{
+                        self.catchall()
+                    }
                 }
+                
+                //Actual Card Payment
+                loggedInUser.wantsOrderConfirmation ? confirmOrder(cheese, pepperoni: pepperoni, confirmedHandler: cardPayment) : cardPayment()
             }
         }
     }
@@ -530,12 +532,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func confirmOrder(cheese: Double, pepperoni: Double, confirmedHandler: ()->Void){
-        let formatter = NSNumberFormatter()
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 2
-        //let total = formatter.stringFromNumber(cheese*3.00 + pepperoni*3.49)//Precision to two decimals
+     
         let value = cheese*3.00 + pepperoni*3.49
-        let total = String(format: "%2f", arguments: [value])
+        var total = String(value)
+        if value%3.00 == 0{
+            total += "0"
+        }
 
         let chs = Int(cheese)
         let pepp = Int(pepperoni)
@@ -569,6 +571,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
     func failedPayment(){
         SweetAlert().showAlert("ORDER FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
+    }
+    
+    func emailSaveFailed(){
+        SweetAlert().showAlert("SAVE FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
     }
     
     func saveNotSuccesful(isCard isCard: Bool, internetError: Bool){

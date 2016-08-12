@@ -15,6 +15,7 @@
 		4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */; };
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
 		4C47CD021D1AEDB000AEEB97 /* NetworkingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */; };
+		4C49A02D1D5D520C006187E6 /* TutorialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C49A02C1D5D520C006187E6 /* TutorialController.swift */; };
 		4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */; };
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
@@ -80,6 +81,7 @@
 		4C4499621D13548F00CDB2A0 /* NewCardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCardController.swift; sourceTree = "<group>"; };
 		4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
+		4C49A02C1D5D520C006187E6 /* TutorialController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialController.swift; sourceTree = "<group>"; };
 		4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweetAlert.swift; sourceTree = "<group>"; };
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				4C0BD4DF1D5BF4B6000A28D4 /* AccountSettingsController.swift */,
 				4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */,
 				4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */,
+				4C49A02C1D5D520C006187E6 /* TutorialController.swift */,
 				4C0BD4DD1D5BB7C9000A28D4 /* ClosedController.swift */,
 				4CF7569F1D0A17DA00746AEE /* ContainerController.swift */,
 				4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */,
@@ -623,6 +626,7 @@
 				4CF756A41D0A182800746AEE /* MenuController.swift in Sources */,
 				4CF756B21D0C828700746AEE /* OrderProgressView.swift in Sources */,
 				4CF756A21D0A17FA00746AEE /* SliceController.swift in Sources */,
+				4C49A02D1D5D520C006187E6 /* TutorialController.swift in Sources */,
 				4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */,
 				4CF756721D0A177C00746AEE /* AppDelegate.swift in Sources */,
 				4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */,

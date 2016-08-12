@@ -28,6 +28,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     var explainLabel: UILabel!
     var cellData = [CellType]()
     var isFirstLoad = true
+    let acceptableCharacters = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
 
      //True when a user has tried to save their preference towards receving a receipt without providing an email. Important for logic in save  function
     var fakeOnSwitch: Bool?
@@ -71,18 +72,16 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     //This function saves and exits if appropriate
     func save(sender: AnyObject){
         var shouldExit = true
-            //sender.tag != nil && (sender.tag! == 2 || sender.tag! == 3)
-        
         user.wantsOrderConfirmation = shouldConfirmOrderSwitch.on
         
-        var textFieldNotEmpty = false
+        var valid = false
         if emailField != nil{
-            textFieldNotEmpty = (emailField.text != nil && emailField.text! != "") && emailField.text != " EMAIL ADDRESS"
+            valid = isValidEmail(emailField.text!)
             emailField.layer.borderColor = UIColor.whiteColor().CGColor
         }
         
         //All bases covered. I built a damn logic table
-        if (!wantsReceipts && user.email != nil) || (wantsReceiptSwitch.on && textFieldNotEmpty){
+        if (!wantsReceipts && user.email != nil) || (wantsReceiptSwitch.on && valid){
             if emailField == nil{
                 user.email = nil
             }
@@ -96,7 +95,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
             user.wantsReceipts = wantsReceiptSwitch.on
         }
         
-        else if (wantsReceiptSwitch.on && user.email == nil) && !textFieldNotEmpty{
+        else if (wantsReceiptSwitch.on && user.email == nil) && !valid{
             emailField.layer.borderColor = Constants.lightRed.CGColor
             shakeTextField(emailField, enterTrue: true)
             fakeOnSwitch = true
@@ -109,8 +108,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
         if shouldExit{
             self.delegate.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: true)
         }
-        
-        
+    
     }
 
     //MARK: TableView Delegate Functions
@@ -161,7 +159,15 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     //MARK: TextField Delegate Functions
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        return true
+        if isValidEmail(emailField.text!){
+            emailField.layer.borderColor = Constants.seaFoam.CGColor
+            return true
+        }
+        else{
+            emailField.layer.borderColor = Constants.lightRed.CGColor
+            shakeTextField(emailField, enterTrue: true)
+            return false
+        }
     }
     
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
@@ -352,6 +358,12 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
        
     }
 
+    
+    func isValidEmail(testStr:String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluateWithObject(testStr)
+    }
     
     //MARK: Animation
     func shakeTextField(textField: UITextField, enterTrue: Bool){

@@ -39,6 +39,7 @@ protocol Payable {
     func addressSaveFailed()
     func addLoyalty(slices: Int)
     func removeLoyalty(slices: Int)
+    func emailSaveFailed()
     func unauthenticated()
 }
 

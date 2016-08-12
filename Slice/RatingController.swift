@@ -18,6 +18,7 @@ class RatingController: UIViewController, UITextViewDelegate {
     var textField = UITextView()
     var okayButton = UIButton()
     var delegate: Rateable!
+    var keyboardIsRaised = false
     
     init(){ 
         super.init(nibName: nil, bundle: nil)
@@ -101,10 +102,20 @@ class RatingController: UIViewController, UITextViewDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide), name: UIKeyboardWillHideNotification, object: nil)
     }
     
-    func keyboardWillShow(){ UIView.animateWithDuration(0.5, animations: { self.contentView.frame.origin.y -= 100 }) }
+    func keyboardWillShow(){
+        if !keyboardIsRaised{
+            UIView.animateWithDuration(0.5, animations: { self.contentView.frame.origin.y -= 100 })
+            keyboardIsRaised = true
+        }
+    }
     
-    func keyboardWillHide(){UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})}
-    
+    func keyboardWillHide(){
+        if keyboardIsRaised{
+            UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})
+            keyboardIsRaised = false
+        }
+    }
+
     func addOkayButton(){
         okayButton.frame = CGRect(x: -5, y: 255, width: 320, height: 40)
         let attString = Constants.getTitleAttributedString("SUBMIT", size: 18, kern: 6.0)

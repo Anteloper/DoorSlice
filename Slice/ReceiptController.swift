@@ -17,6 +17,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     var emailField = UITextField()
     var completion: (()->Void)?
     var delegate: Rateable!
+    var keyBoardIsRaised = false
     
     init(){
         super.init(nibName: nil, bundle: nil)
@@ -84,9 +85,14 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     }
     
     func dismissWithAddress(){
-        delegate.addEmail(emailField.text!)
-        removeAlertFromView()
-        if completion != nil { completion!() }
+        if isValidEmail(emailField.text!){
+            delegate.addEmail(emailField.text!)
+            removeAlertFromView()
+            if completion != nil { completion!() }
+        }
+        else{
+            shakeTextField(emailField, enterTrue: true)
+        }
     }
     
     func dismissWithoutAddress(){
@@ -145,9 +151,19 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide), name: UIKeyboardWillHideNotification, object: nil)
     }
     
-    func keyboardWillShow(){ UIView.animateWithDuration(0.5, animations: { self.contentView.frame.origin.y -= 100 }) }
+    func keyboardWillShow(){
+        if !keyBoardIsRaised{
+            UIView.animateWithDuration(0.5, animations: { self.contentView.frame.origin.y -= 100 })
+            keyBoardIsRaised = true
+        }
+    }
     
-    func keyboardWillHide(){UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})}
+    func keyboardWillHide(){
+        if keyBoardIsRaised{
+            UIView.animateWithDuration(0.5, animations: {self.contentView.frame.origin.y += 100})
+            keyBoardIsRaised = false
+        }
+    }
     
     //Completion will be called after the alert is dismissed, not presented
     func showAlert(completion: (()->Void)?){
@@ -179,7 +195,46 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if isValidEmail(emailField.text!){
+            emailField.layer.borderColor = Constants.seaFoam.CGColor
+        }
+        else{
+            emailField.layer.borderColor = Constants.lightRed.CGColor
+            
+        }
         return true
     }
+    
+    
+    func isValidEmail(testStr:String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluateWithObject(testStr)
+    }
+    
+    func shakeTextField(textField: UITextField, enterTrue: Bool){
+        UIView.animateWithDuration(0.1, animations: {
+            textField.frame.origin.x += 3
+            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
+                textField.frame.origin.x -= 3
+                }, completion: { _ in
+                    UIView.animateWithDuration(0.1, animations: {
+                        textField.frame.origin.x += 3
+                        }, completion: { _ in
+                            UIView.animateWithDuration(0.1, animations: {
+                                textField.frame.origin.x -= 3
+                                }, completion: { _ in
+                                    if enterTrue{
+                                        self.shakeTextField(textField, enterTrue: false)
+                                    }
+                            })
+                        }
+                    )
+                    }
+                )
+            }
+        )
+    }
 }
+
 

@@ -188,7 +188,6 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        
         let cs = NSCharacterSet(charactersInString: acceptableCharacters).invertedSet
         let filteredString = string.componentsSeparatedByCharactersInSet(cs).joinWithSeparator("")
         if string != filteredString{

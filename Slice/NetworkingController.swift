@@ -254,13 +254,26 @@ class NetworkingController{
     
     func rateLastOrder(userID: String, stars: Int, comment: String?){
         let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
-        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers)
+        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+            if response.response?.statusCode == 401{
+                self.delegate.unauthenticated()
+            }
+        }
     }
     
-    //TODO: error handle
     func addEmail(userID: String, email: String){
         Alamofire.request(.POST, Constants.addEmailURLString + userID, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
-            debugPrint(response)
+            switch response.result{
+            case .Success:
+                break
+            case .Failure:
+                if response.response?.statusCode == 401{
+                    self.delegate.unauthenticated()
+                }
+                else{
+                    self.delegate.emailSaveFailed()
+                }
+            }
         }
     }
     
@@ -269,7 +282,9 @@ class NetworkingController{
         let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
         let parameters = [endpoint : String(boolean)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
-            debugPrint(response)
+            if response.response?.statusCode == 401{
+                self.delegate.unauthenticated()
+            }
         }
     }
     
