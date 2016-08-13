@@ -305,11 +305,15 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     //MARK: Return Functions
     func exitWithoutAddress(networkError: Bool){
-        if networkError{
+        if networkError && delegate != nil{
             delegate?.retrieveAddresses()
         }
-       
-        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
+        if delegate != nil{
+            delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
+        }
+        else{
+            presentViewController(TutorialController(), animated: false, completion: nil)
+        }
 
     }
     

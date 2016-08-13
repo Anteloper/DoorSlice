@@ -87,6 +87,10 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
         }
     }
     
+    func navBarSetup(){
+        
+    }
+    
     func createAccount(){
         let parameters = ["phone" : phoneNumber, "password" : password]
         //Request to /Users
@@ -105,10 +109,11 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                                 if let value = response.result.value{
                                     let jwt = JSON(value)["token"].stringValue
                                     let newUser = User(userID: userID, jwt: jwt)
-                                    let cc = ContainerController()
-                                    cc.loggedInUser = newUser
+                                    let tc = TutorialController()
+                                    tc.user = newUser
                                     self.view.endEditing(true)
-                                    self.presentViewController(cc, animated: false, completion: nil)
+                                    let navController = UINavigationController(rootViewController: tc)
+                                    self.presentViewController(navController, animated: false, completion: nil)
                                 }
                             case .Failure:
                                 self.failure()

@@ -26,9 +26,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         if user.isLoggedIn{
-            containerController = ContainerController()
-            containerController!.loggedInUser = user
-            window?.rootViewController = containerController!
+            /*containerController = ContainerController()
+            containerController!.loggedInUser = user*/
+            //window?.rootViewController = containerController!
+         
+                //UINavigationController(rootViewController: tc)
+            
+            
             
         }
         else{
@@ -42,8 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     func noUserFound(){
+        
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.rootViewController = WelcomeController()
+        let tc = TutorialController()
+        //tc.user = user
+        window?.rootViewController = tc
+       // window?.rootViewController = WelcomeController()
         window!.makeKeyAndVisible()
     }
     
