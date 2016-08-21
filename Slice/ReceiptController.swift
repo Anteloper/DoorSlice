@@ -41,10 +41,12 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     
     func addContentView(){
         contentView.frame = CGRect(x: view.frame.width/2-150, y: view.frame.height/2-100, width: 300, height: 200)
-        contentView.backgroundColor = Constants.tiltColor
+        contentView.backgroundColor = Constants.darkBlue
         contentView.layer.cornerRadius = 5.0
         contentView.layer.masksToBounds = true
         contentView.addSubview(titleLabel)
+        contentView.layer.borderColor = UIColor.whiteColor().CGColor
+        contentView.layer.borderWidth = 1.0
         view.addSubview(contentView)
     }
     
@@ -58,13 +60,13 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     func addButtons(){
         let line = CALayer()
         line.frame = CGRect(x: 0, y: 150, width: 300, height: 1)
-        line.backgroundColor = Constants.darkBlue.CGColor
+        line.backgroundColor = UIColor.whiteColor().CGColor
         line.opacity = 0.6
         contentView.layer.addSublayer(line)
         
         okayButton.frame = CGRect(x: 151, y: 160, width: 148, height: 35)
         let at = Constants.getTitleAttributedString("YES", size: 18, kern: 6.0)
-        at.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("YES" as NSString).rangeOfString("YES"))
+        //at.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("YES" as NSString).rangeOfString("YES"))
         okayButton.setAttributedTitle(at, forState: .Normal)
         okayButton.addTarget(self, action: #selector(dismissWithAddress) , forControlEvents: .TouchUpInside)
         okayButton.clipsToBounds = true
@@ -72,13 +74,13 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         
         let div = CALayer()
         div.frame = CGRect(x: 150, y: 160, width: 1, height: 30)
-        div.backgroundColor = Constants.darkBlue.CGColor
-        div.opacity = 0.6
+        div.backgroundColor = UIColor.whiteColor().CGColor
+        //div.opacity = 0.6
         contentView.layer.addSublayer(div)
         
         noButton.frame = CGRect(x: 0, y: 160, width: 150, height: 35)
         let at2 = Constants.getTitleAttributedString("NO", size: 18, kern: 6.0)
-        at2.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("NO" as NSString).rangeOfString("NO"))
+       // at2.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("NO" as NSString).rangeOfString("NO"))
         noButton.setAttributedTitle(at2, forState: .Normal)
         noButton.addTarget(self, action: #selector(dismissWithoutAddress) , forControlEvents: .TouchUpInside)
         contentView.addSubview(noButton)
@@ -133,7 +135,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         let lineLeft = CALayer()
         lineLeft.frame = CGRect(x: 0, y: yRef+15, width: 70, height: 1)
         lineLeft.opacity = 0.5
-        lineLeft.backgroundColor = Constants.darkBlue.CGColor
+        lineLeft.backgroundColor = UIColor.whiteColor().CGColor
         contentView.layer.addSublayer(lineLeft)
         
         let label = UILabel(frame: CGRect(x: 75, y: yRef, width: 150, height: 30))
@@ -144,7 +146,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         let lineRight = CALayer()
         lineRight.frame = CGRect(x: label.frame.maxX, y: yRef+15, width: 70, height: 1)
         lineRight.opacity = 0.5
-        lineRight.backgroundColor = Constants.darkBlue.CGColor
+        lineRight.backgroundColor = UIColor.whiteColor().CGColor
         contentView.layer.addSublayer(lineRight)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow), name: UIKeyboardWillShowNotification, object: nil)

@@ -17,7 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
+        if UIScreen.mainScreen().bounds.height <= 480.0{
+            //TODO: iPhone 4 not supported error message
+        }
+        /*Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
+         
         
         guard let user = NSKeyedUnarchiver.unarchiveObjectWithFile(Constants.userFilePath()) as? User else{
             noUserFound()
@@ -41,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = WelcomeController()
         }
         window!.makeKeyAndVisible()
+        return true*/
+        noUserFound()
         return true
     }
     
@@ -49,7 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         let tc = TutorialController()
-        //tc.user = user
+        let addresses = [Address(school: "GEORGETOWN UNIVERSITY", dorm: "NEW SOUTH", room: "405")]
+        tc.user = User(userID: "", addresses: addresses, jwt: "")
         window?.rootViewController = tc
        // window?.rootViewController = WelcomeController()
         window!.makeKeyAndVisible()

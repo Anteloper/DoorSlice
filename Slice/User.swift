@@ -34,7 +34,10 @@ class User: NSObject, NSCoding{
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
          preferredAddress: Int? = 0, cards: [String] = ["Pay"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
-         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,  orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil, loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil, wantsReceipts: Bool = false, wantsOrderConfirmation:Bool = true){
+         hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,
+         orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil,
+         loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil,
+         wantsReceipts: Bool = false, wantsOrderConfirmation:Bool = true){
         
         self.userID = userID
         self.addresses = addresses

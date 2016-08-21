@@ -16,6 +16,7 @@
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
 		4C47CD021D1AEDB000AEEB97 /* NetworkingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */; };
 		4C49A02D1D5D520C006187E6 /* TutorialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C49A02C1D5D520C006187E6 /* TutorialController.swift */; };
+		4C5A2C651D68C50A001D43FE /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5A2C641D68C50A001D43FE /* Alerts.swift */; };
 		4C5EDA001D4D615C00ADB2E0 /* SweetAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */; };
 		4C68F3E61D2817420093C3AE /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */; };
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
@@ -82,6 +83,7 @@
 		4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
 		4C49A02C1D5D520C006187E6 /* TutorialController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialController.swift; sourceTree = "<group>"; };
+		4C5A2C641D68C50A001D43FE /* Alerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweetAlert.swift; sourceTree = "<group>"; };
 		4C68F3E51D2817420093C3AE /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 		4C0BD4DA1D591D6B000A28D4 /* Alerts */ = {
 			isa = PBXGroup;
 			children = (
+				4C5A2C641D68C50A001D43FE /* Alerts.swift */,
 				4C0BD4DB1D591DA4000A28D4 /* ReceiptController.swift */,
 				4C716A651D4EDAFF006EF253 /* RatingController.swift */,
 				4C5ED9FF1D4D615C00ADB2E0 /* SweetAlert.swift */,
@@ -646,6 +649,7 @@
 				4CB29D191D2EE036009C2CA5 /* ActiveAddresses.swift in Sources */,
 				4CB29D1B1D301C22009C2CA5 /* Address.swift in Sources */,
 				4C716A661D4EDAFF006EF253 /* RatingController.swift in Sources */,
+				4C5A2C651D68C50A001D43FE /* Alerts.swift in Sources */,
 				4CB6DFE91D2216FF0050FABF /* LoginController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -43,10 +43,12 @@ class RatingController: UIViewController, UITextViewDelegate {
     
     func setupContentView(){
         contentView.frame = CGRect(x: view.frame.width/2-150, y: view.frame.height/2-150, width: 300, height: 300)
-        contentView.backgroundColor = Constants.tiltColor
+        contentView.backgroundColor = Constants.darkBlue
         contentView.layer.cornerRadius = 5.0
         contentView.layer.masksToBounds = true
         contentView.addSubview(titleLabel)
+        contentView.layer.borderColor = UIColor.whiteColor().CGColor
+        contentView.layer.borderWidth = 1.0
         view.addSubview(contentView)
     }
     
@@ -58,7 +60,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         
         let line = CALayer()
         line.frame = CGRect(x: 0, y: 50, width: 300, height: 1)
-        line.backgroundColor = Constants.darkBlue.CGColor
+        line.backgroundColor = UIColor.whiteColor().CGColor
         line.opacity = 0.5
         contentView.layer.addSublayer(line)
     }
@@ -84,7 +86,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         let lineLeft = CALayer()
         lineLeft.frame = CGRect(x: 0, y: 145, width: 95, height: 1)
         lineLeft.opacity = 0.5
-        lineLeft.backgroundColor = Constants.darkBlue.CGColor
+        lineLeft.backgroundColor = UIColor.whiteColor().CGColor
         contentView.layer.addSublayer(lineLeft)
         
         let label = UILabel(frame: CGRect(x: 100, y: 130, width: 100, height: 30))
@@ -95,7 +97,7 @@ class RatingController: UIViewController, UITextViewDelegate {
         let lineRight = CALayer()
         lineRight.frame = CGRect(x: 205, y: 145, width: 95, height: 1)
         lineRight.opacity = 0.5
-        lineRight.backgroundColor = Constants.darkBlue.CGColor
+        lineRight.backgroundColor = UIColor.whiteColor().CGColor
         contentView.layer.addSublayer(lineRight)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow), name: UIKeyboardWillShowNotification, object: nil)
@@ -119,12 +121,12 @@ class RatingController: UIViewController, UITextViewDelegate {
     func addOkayButton(){
         okayButton.frame = CGRect(x: -5, y: 255, width: 320, height: 40)
         let attString = Constants.getTitleAttributedString("SUBMIT", size: 18, kern: 6.0)
-        attString.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range: (attString.string as NSString).rangeOfString("SUBMIT"))
+        //attString.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range: (attString.string as NSString).rangeOfString("SUBMIT"))
         okayButton.addTarget(self, action: #selector(okayPressed), forControlEvents: .TouchUpInside)
         okayButton.setAttributedTitle(attString, forState: .Normal)
         
         let line = UIView()
-        line.backgroundColor = Constants.darkBlue
+        line.backgroundColor = UIColor.whiteColor()
         line.alpha = 0.6
         line.frame = CGRect(x: 0, y: 245, width: 300, height: 1)
         contentView.addSubview(okayButton)

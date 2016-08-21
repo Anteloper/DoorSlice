@@ -202,10 +202,15 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     }
     
     func loginUser(user: User){
-        let cc = ContainerController()
+        let tc = TutorialController()
+        tc.user = user
+        view.endEditing(true)
+        self.presentViewController(tc, animated: false, completion: nil)
+        
+        /*let cc = ContainerController()
         cc.loggedInUser = user
         view.endEditing(true)
-        self.presentViewController(cc, animated: false, completion: nil)
+        self.presentViewController(cc, animated: false, completion: nil)*/
     }
     
     //Runs twice per call when enterTrue is true

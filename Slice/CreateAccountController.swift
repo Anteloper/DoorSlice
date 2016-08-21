@@ -163,19 +163,6 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
     }
     
-    
-    //MARK: Navigation Bar Setup
-    func navBarSetup(){
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.backgroundColor = UIColor.clearColor()
-        titleLabel.font = UIFont(name: "GillSans-Light", size: 25)
-        titleLabel.textColor = Constants.tiltColor
-        titleLabel.alpha = 0.8
-        titleLabel.textAlignment = .Center
-        titleLabel.text = "Slice"
-        navigationItem.titleView = titleLabel
-    }
-    
 
     //MARK: TextField Setup
     func setupTextField(frame: CGRect)->UITextField{

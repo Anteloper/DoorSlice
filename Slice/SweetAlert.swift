@@ -57,7 +57,11 @@ public class SweetAlert: UIViewController {
         contentView.layer.masksToBounds = true
         contentView.addSubview(titleLabel)
         contentView.addSubview(subTitleTextView)
-        contentView.backgroundColor = Constants.tiltColor
+        contentView.backgroundColor = Constants.darkBlue
+        //TODO: Trial
+        contentView.layer.borderColor = UIColor.whiteColor().CGColor
+        contentView.layer.borderWidth = 1.0
+        
         view.addSubview(contentView)
     }
     
@@ -66,8 +70,8 @@ public class SweetAlert: UIViewController {
         titleLabel.numberOfLines = 1
         titleLabel.textAlignment = .Center
         titleLabel.font = UIFont(name: kFont, size:25)
-        titleLabel.backgroundColor = UIColor.clearColor()
-        titleLabel.textColor = Constants.darkBlue
+        titleLabel.backgroundColor = Constants.darkBlue
+        titleLabel.textColor = UIColor.whiteColor()
     }
     
     private func setupSubtitleTextView() {
@@ -116,7 +120,7 @@ public class SweetAlert: UIViewController {
         }
         
         //Buttons
-        let color = Constants.darkBlue
+        let color = UIColor.whiteColor()
         let line = CALayer()
         line.opacity = 0.6
         line.frame = CGRect(x: 0, y: subTitleTextView.frame.maxY + 25, width: kContentWidth, height: 1)

@@ -17,13 +17,13 @@ enum STPBackendChargeResult {
 typealias STPTokenSubmissionHandler = (STPBackendChargeResult?, NSError?) -> Void
 
 
-//A bag of functions to do the all of the networking and charge the user. Delegate is used soley to pass back the amount
-//Being charged when paying with apple pay because it is calculated in the createPaymentRequest function
+//A bag of functions to do the all of the networking and charge the user. containerDelegate is used soley to pass back the amount
 
 
 class NetworkingController{
     
-    var delegate: Payable!
+    var containerDelegate: Payable?
+    var tutorialDelegate: Configurable?
     var headers: [String : String]!
     
     //MARK: Save Order
@@ -34,10 +34,10 @@ class NetworkingController{
             completion()
             switch response.result{
             case .Success:
-                self.delegate!.addLoyalty(cheese+pepperoni)
+                self.containerDelegate!.addLoyalty(cheese+pepperoni)
             case .Failure:
-                self.delegate!.removeLoyalty(cheese+pepperoni)
-                if response.response?.statusCode == 401{ self.delegate.unauthenticated() }
+                self.containerDelegate!.removeLoyalty(cheese+pepperoni)
+                if response.response?.statusCode == 401{ self.containerDelegate?.unauthenticated() }
             }
         }
     }
@@ -47,7 +47,7 @@ class NetworkingController{
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
             if error != nil{
-                self.delegate.cardStoreageFailed(trueFailure: true)
+                self.containerDelegate?.cardStoreageFailed(trueFailure: true)
             }
             else if let token = tokenOpt{
                 let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
@@ -57,18 +57,18 @@ class NetworkingController{
                         if let value = response.result.value{
                             let cardID = JSON(value)["card"]["cardID"].stringValue
                             if cardID != ""{
-                                self.delegate.storeCardID(cardID, lastFour: lastFour)
+                                self.containerDelegate?.storeCardID(cardID, lastFour: lastFour)
                             }
                             else{
-                                self.delegate.cardStoreageFailed(trueFailure: false)
+                                self.containerDelegate?.cardStoreageFailed(trueFailure: false)
                             }
                         }
                     case .Failure:
                         if response.response?.statusCode == 401{
-                            self.delegate.unauthenticated()
+                            self.containerDelegate?.unauthenticated()
                         }
                         else{
-                            self.delegate.cardStoreageFailed(trueFailure: true)
+                            self.containerDelegate?.cardStoreageFailed(trueFailure: true)
                         }
 
                     }
@@ -85,10 +85,10 @@ class NetworkingController{
                 completion()
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.delegate.cardPaymentFailed()
+                    self.containerDelegate?.cardPaymentFailed()
                 }
             }
         }
@@ -102,14 +102,14 @@ class NetworkingController{
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
-                self.delegate.cardPaymentSuccesful()
+                self.containerDelegate?.cardPaymentSuccesful()
             
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.delegate.cardPaymentFailed()
+                    self.containerDelegate?.cardPaymentFailed()
                 }
             }
         }
@@ -153,18 +153,18 @@ class NetworkingController{
                     self.createBackendChargeWithToken(token, userID: userID, amount: amount, description: description, completion: { (result, error) -> Void in
                         if result == STPBackendChargeResult.Success {
                             completion(PKPaymentAuthorizationStatus.Success)
-                            self.delegate.applePayFailed = false
+                            self.containerDelegate?.applePayFailed = false
                         }
                         else {
                             completion(PKPaymentAuthorizationStatus.Failure)
-                            self.delegate.applePayFailed = true
+                            self.containerDelegate?.applePayFailed = true
                         }
                     })
                 }
             }
             else {
                 completion(PKPaymentAuthorizationStatus.Failure)
-                self.delegate.applePayFailed = true
+                self.containerDelegate?.applePayFailed = true
             }
         })
     }
@@ -180,7 +180,7 @@ class NetworkingController{
                 completion(.Success, nil)
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communication with your payment backend."]))
             }
@@ -191,29 +191,29 @@ class NetworkingController{
     func saveAddress(add: Address, userID: String){
         let url = Constants.newAddressURLString+userID
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
-
+        
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
-            print(response.response?.statusCode)
+            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
                     let id = JSON(value)["Data"]["_id"].stringValue
                     if id != ""{
-                        self.delegate.addressSaveSucceeded(add, orderID: id)
+                        self.containerDelegate?.addressSaveSucceeded(add, orderID: id)
                     }
                     else{
-                       self.delegate.addressSaveFailed()
+                       self.containerDelegate?.addressSaveFailed()
                     }
                 }
                 else{
-                    self.delegate.addressSaveFailed()
+                    self.containerDelegate?.addressSaveFailed()
                 }
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.delegate.addressSaveFailed()
+                    self.containerDelegate?.addressSaveFailed()
                 }
             }
         }
@@ -226,7 +226,7 @@ class NetworkingController{
                 completion(true)
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
                     completion(false)
@@ -243,7 +243,7 @@ class NetworkingController{
                 completion(true)
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
                     completion(false)
@@ -256,7 +256,7 @@ class NetworkingController{
         let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
         Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             if response.response?.statusCode == 401{
-                self.delegate.unauthenticated()
+                self.containerDelegate?.unauthenticated()
             }
         }
     }
@@ -268,10 +268,10 @@ class NetworkingController{
                 break
             case .Failure:
                 if response.response?.statusCode == 401{
-                    self.delegate.unauthenticated()
+                    self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.delegate.emailSaveFailed()
+                    self.containerDelegate?.emailSaveFailed()
                 }
             }
         }
@@ -283,7 +283,7 @@ class NetworkingController{
         let parameters = [endpoint : String(boolean)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             if response.response?.statusCode == 401{
-                self.delegate.unauthenticated()
+                self.containerDelegate?.unauthenticated()
             }
         }
     }

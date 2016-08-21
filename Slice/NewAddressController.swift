@@ -28,6 +28,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     let textFieldKern = 4.0
     let acceptableCharacters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    var user: User?
     
     
     //MARK: Setup
@@ -56,7 +57,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     func checkData(){
         if data == nil{
-            SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "Okay", buttonColor: Constants.tiltColor){ _ in
+            SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
                 self.exitWithoutAddress(true)
             }
         }
@@ -65,7 +66,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     func navBarSetup(){
         navigationController?.navigationBar.barTintColor = Constants.darkBlue
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
+        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         
@@ -312,7 +313,9 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
             delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
         }
         else{
-            presentViewController(TutorialController(), animated: false, completion: nil)
+            let tc = TutorialController()
+            tc.user = user!
+            presentViewController(tc, animated: false, completion: nil)
         }
 
     }
@@ -321,7 +324,16 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         if schoolField.text != "  SCHOOL" && schoolField.text != "" {
             if dormField.text != "  DORM" && dormField.text != ""{
                 if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
-                    delegate?.returnFromFullscreen(withCard: nil, orAddress: Address(school: schoolField.text!, dorm: dormField.text!, room: roomField.text!), fromSettings: false)
+                    let address = Address(school: schoolField.text!, dorm: dormField.text!, room: roomField.text!)
+                    if delegate != nil{
+                        delegate!.returnFromFullscreen(withCard: nil, orAddress: address, fromSettings: false)
+                    }
+                    else{
+                        let tc = TutorialController()
+                        tc.user = user!
+                        tc.pendingAddress = address
+                        presentViewController(tc, animated: false, completion: nil)
+                    }
                 }
                 else{
                     shakeTextField(roomField, enterTrue: true)

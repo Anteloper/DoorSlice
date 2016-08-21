@@ -24,7 +24,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         navigationController?.navigationBar.barTintColor = Constants.darkBlue
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("SLICE", size: 16, kern: 6.0)
+        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         
@@ -48,7 +48,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
     }
 
     func didSwipe(recognizer: UIPanGestureRecognizer){
-        
+    
         if recognizer.state == .Ended{
             let point = recognizer.translationInView(view)
             if(abs(point.x) >= abs(point.y)){

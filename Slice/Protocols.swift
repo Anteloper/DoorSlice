@@ -28,7 +28,7 @@ protocol Slideable{
 
 }
 
-//Objects that conform to this protocol can call networkController functions
+//Objects that conform to this protocol can name themselves as a networkController delegate functions
 protocol Payable {
     var applePayFailed: Bool{ get set }
     func storeCardID(cardID: String, lastFour: String)
@@ -40,6 +40,15 @@ protocol Payable {
     func addLoyalty(slices: Int)
     func removeLoyalty(slices: Int)
     func emailSaveFailed()
+    func unauthenticated()
+}
+
+//Only responsible for responding to functions related to cards and addresses. Used by the tutorial screen when configuring a user
+protocol Configurable{
+    func storeCardID(cardID: String, lastFour: String)
+    func cardStoreageFailed(trueFailure trueFailure: Bool)
+    func addressSaveSucceeded(add: Address, orderID: String)
+    func addressSaveFailed()
     func unauthenticated()
 }
 

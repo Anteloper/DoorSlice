@@ -45,10 +45,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     var applePayCancelled = true
     var applePayFailed = false
     
+    let buttonColor = Constants.darkBlue
+    
     //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
+        UIApplication.sharedApplication().statusBarStyle = .LightContent
         if !NetworkingController.checkHours(){
             sliceController = SliceController()
             sliceController.delegate = self
@@ -62,7 +65,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
         }
         activeAddresses = ActiveAddresses()
-        networkController.delegate = self
+        networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
         view.addSubview(navController.view)
         addChildViewController(navController)
@@ -77,7 +80,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
             if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
                 if NSDate().timeIntervalSinceDate(lastOrder) > 900{
-                    print("here")
                     let rc = RatingController()
                     rc.delegate = self
                     rc.showAlert()
@@ -102,7 +104,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
              return(digits, add)
         }
         else{
-            catchall()
+            Alerts.catchall() { _ in self.logOutUser() }
         }
        return(digits, String())
     }
@@ -179,6 +181,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         }
     }
     
+    func logoutConfirmation() {
+        Alerts.logoutConfirmation(self)
+    }
+    
     func userTap(){
         if menuIsVisible{
             toggleMenu(nil)
@@ -248,7 +254,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 
             }
             else{
-                duplicate(isCard: true)
+                Alerts.duplicate(isCard: true)
             }
         }
         if address != nil {
@@ -258,7 +264,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                     networkController.saveAddress(address!, userID: loggedInUser.userID)
                 }
                 else{
-                    duplicate(isCard: false)
+                    Alerts.duplicate(isCard: false)
                 }
             }
         }
@@ -308,7 +314,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 self.menuController?.preferredCard = self.loggedInUser.paymentMethod!
             }
             else{
-                self.failedDeleteAlert(true)
+                Alerts.failedDeleteAlert(true)
             }
         }
         
@@ -330,7 +336,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 self.menuController?.preferredAddress = self.loggedInUser.preferredAddress
             }
             else{
-                self.failedDeleteAlert(false)
+                Alerts.failedDeleteAlert(false)
             }
         }
     }
@@ -371,7 +377,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //The beginning point for any payment process when the sliceController timer runs out. This function decides which
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese: Double, pepperoni: Double) {
-        if checkValidity(){
+        if Alerts.checkValidity(loggedInUser, cc: self){
             amount = (cheese*3 + pepperoni*3.49)
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
@@ -404,12 +410,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                     }
                         //If the cardID couldnt be found in the dictionary. Should never reach this point
                     else{
-                        self.catchall()
+                        Alerts.catchall({_ in self.logOutUser()})
                     }
                 }
                 
                 //Actual Card Payment
-                loggedInUser.wantsOrderConfirmation ? confirmOrder(cheese, pepperoni: pepperoni, confirmedHandler: cardPayment) : cardPayment()
+                loggedInUser.wantsOrderConfirmation ? Alerts.confirmOrder(cheese, pepperoni: pepperoni, cc: self, confirmedHandler: cardPayment) : cardPayment()
             }
         }
     }
@@ -443,7 +449,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: Constants.applePayCardID)
             loggedInUser.orderHistory.append(order)
             sliceController.orderCompleted()
-            successfulOrder()
+            Alerts.successfulOrder(loggedInUser, cc: self)
         }
     }
     
@@ -463,7 +469,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
     func cardStoreageFailed(trueFailure internetError: Bool){
         menuController?.cardBeingProcessed = nil
-        saveNotSuccesful(isCard: true, internetError: internetError)
+        Alerts.saveNotSuccesful(isCard: true, internetError: internetError)
     }
     
     func cardPaymentSuccesful(){
@@ -474,17 +480,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             }
         }
         sliceController.orderCompleted()
-        successfulOrder()
+        Alerts.successfulOrder(loggedInUser, cc: self)
     }
     
     func cardPaymentFailed(){
         sliceController.orderCancelled()
-        failedPayment()
-    }
-    
-    func addressSaveFailed() {
-        menuController?.addressBeingProcessed = nil
-        saveNotSuccesful(isCard: false, internetError: true)
+        Alerts.failedPayment()
     }
     
     func addressSaveSucceeded(add: Address, orderID: String) {
@@ -495,6 +496,21 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         menuController?.addressBeingProcessed = nil
         loggedInUser.addressIDs[add.getName()] = orderID
     }
+    
+    func addressSaveFailed() {
+        menuController?.addressBeingProcessed = nil
+        Alerts.saveNotSuccesful(isCard: false, internetError: true)
+    }
+    
+
+    func emailSaveFailed() {
+        Alerts.emailSaveFailed()
+    }
+    
+    func unauthenticated() {
+        Alerts.unauthenticated(){ _ in self.logOutUser() }
+    }
+
     
     //Called if the order saves succesfully and the user is charged. Adds the users loyalty slices to their profile
     func addLoyalty(slices: Int){
@@ -517,122 +533,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: true)
     }
     
-    //MARK: Alerts
-    func successfulOrder(){
-        loggedInUser.hasPromptedRating = false
-        
-        SweetAlert().showAlert("ORDER PLACED", subTitle: "You can check the details of your order in your order history", style: AlertStyle.Success, buttonTitle:"OKAY", buttonColor: Constants.tiltColor, otherButtonTitle: "SHOW ME",
-            otherButtonColor: Constants.tiltColor) {
-            if !($0) {
-               self.toggleMenu(){
-                    self.bringMenuToFullscreen(toScreen: 3)
-                }
-            }
-        }
-    }
-    
-    func confirmOrder(cheese: Double, pepperoni: Double, confirmedHandler: ()->Void){
-     
-        let value = cheese*3.00 + pepperoni*3.49
-        var total = String(value)
-        if value%3.00 == 0{
-            total += "0"
-        }
+  
 
-        let chs = Int(cheese)
-        let pepp = Int(pepperoni)
-        let first = "Confirm your order of"
-        var second = ""
-        if pepp != 0{
-            let plural = pepp == 1 ? "slice" : "slices"
-            second = "\(pepp) \(plural) of pepperoni "
-            if chs != 0{
-                let plural = chs == 1 ? "slice" : "slices"
-                second += "and \(chs) \(plural) of cheese "
-            }
-            second += "for a total of $\(total)"
-        }
-        else{
-            let plural = chs == 1 ? "slice" : "slices"
-            second = "\(chs) \(plural) of cheese for a total of $\(total)"
-        }
-        
-        
-        
-        SweetAlert().showAlert("CONFIRM ORDER", subTitle: "\(first) \(second)", style: .None, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, otherButtonTitle: "CANCEL", otherButtonColor: Constants.tiltColor){
-            if ($0){
-                confirmedHandler()
-            }
-            else{
-                self.sliceController.orderCancelled()
-            }
-        }
-    }
-    
-    func failedPayment(){
-        SweetAlert().showAlert("ORDER FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
-    }
-    
-    func emailSaveFailed(){
-        SweetAlert().showAlert("SAVE FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
-    }
-    
-    func saveNotSuccesful(isCard isCard: Bool, internetError: Bool){
-        let string = isCard ? "Card" : "Address"
-        SweetAlert().showAlert("SAVE FAILED", subTitle: "\(string) could not be saved. Check your internet connection and try again.", style: AlertStyle.Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
-    }
-    
-    func duplicate(isCard isCard: Bool){
-        let string = isCard ? "card" : "address"
-        SweetAlert().showAlert("DUPLICATE", subTitle: "You already have this \(string) on file", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
-    }
-    
-    func failedDeleteAlert(isCard: Bool){
-        let string = isCard ? "Card" : "Address"
-        SweetAlert().showAlert("DELETE FAILED", subTitle: "\(string) could not be deleted. Check your internet and try again later", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor)
-    }
-    
-    func logoutConfirmation(){
-        SweetAlert().showAlert("LOGOUT?", subTitle: "Are you sure you want to logout?", style: AlertStyle.None, buttonTitle: "YES", buttonColor: Constants.tiltColor, otherButtonTitle: "NO", otherButtonColor: Constants.tiltColor){
-            if ($0){
-                self.logOutUser()
-            }
-        }
-    }
-    
-    //Logs the user out and forces them to Re-login. Hopefully will fix any bug
-    func catchall(){
-        SweetAlert().showAlert("ERROR", subTitle: "Something went wrong on our end. Please log in again.", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, action: {_ in self.logOutUser()})
-    }
-    
-    func unauthenticated(){
-        SweetAlert().showAlert("SESSION EXPIRED", subTitle: "Your session has expired. Please log in again.", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, action: {_ in self.logOutUser()})
-    }
-    
-    //Returns true if the user has a valid address and payment method, false otherwise. Means force unwrapping options is ok in payForOrder
-    func checkValidity()->Bool{
-        if case .ApplePay = loggedInUser.paymentMethod!{
-            if !NetworkingController.canApplePay(){
-                let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
-                let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {self.bringMenuToFullscreen(toScreen: 1)} : nil
-                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, otherButtonTitle: "SHOW ME", otherButtonColor: Constants.tiltColor){
-                    if !($0){
-                        self.toggleMenu(toggleCompleted)
-                    }
-                }
-                self.sliceController?.orderCancelled()
-                return false
-            }
-        }
-        if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
-            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.tiltColor, otherButtonTitle: "SHOW ME", otherButtonColor: Constants.tiltColor){
-                if !($0){
-                    self.toggleMenu({self.bringMenuToFullscreen(toScreen: 2)})
-                }
-            }
-            self.sliceController?.orderCancelled()
-            return false
-        }
-        return true
-    }
 }

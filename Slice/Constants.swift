@@ -27,8 +27,7 @@ internal struct Constants{
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
-    static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
-    static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
+    static let stripePublishableKey = "pk_live_2EKrThfW8J0iNtmM2yXgcJ1n"
     
     static let isOpenURLString = "https://doorslice.herokuapp.com/api/whatTime"
     
