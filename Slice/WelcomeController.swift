@@ -17,15 +17,21 @@ class WelcomeController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = Constants.darkBlue
         UIApplication.sharedApplication().statusBarHidden = true
-        let logoWidth = view.frame.width/2
-        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 85, width: logoWidth, height: logoWidth))
+        let logoWidth = view.frame.width/3
+        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 140, width: logoWidth, height: logoWidth))
         logoView.contentMode = .ScaleAspectFit
-        logoView.image = UIImage(imageLiteral: "logo")
+        logoView.layer.minificationFilter = kCAFilterTrilinear
+        logoView.image = UIImage(imageLiteral: "pepperoni")
         view.addSubview(logoView)
         
-        socialMediaButtons()
+        let doorsliceLabel = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 30))
+        doorsliceLabel.attributedText = Constants.getTitleAttributedString(" DOORSLICE", size: 25, kern: 18.0)
+        doorsliceLabel.textAlignment = .Center
+        view.addSubview(doorsliceLabel)
         
-        loginButton =  setupButton(CGRect(x: view.frame.width/4, y: logoView.frame.maxY+85, width: view.frame.width/2, height: 40), text: "LOGIN")
+        //socialMediaButtons()
+        
+        loginButton =  setupButton(CGRect(x: view.frame.width/4, y: view.frame.height/2+20, width: view.frame.width/2, height: 40), text: "LOGIN")
         loginButton.addTarget(self, action: #selector(login), forControlEvents: .TouchUpInside)
         loginButton.alpha = 0.0
         view.addSubview(loginButton)

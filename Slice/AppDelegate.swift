@@ -20,8 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if UIScreen.mainScreen().bounds.height <= 480.0{
             //TODO: iPhone 4 not supported error message
         }
-        /*Stripe.setDefaultPublishableKey("pk_test_Lp3E4ypwmrizs2jfEenXdwpr")
-         
+    
+        Stripe.setDefaultPublishableKey(Constants.stripePublishableKey)
         
         guard let user = NSKeyedUnarchiver.unarchiveObjectWithFile(Constants.userFilePath()) as? User else{
             noUserFound()
@@ -30,14 +30,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         if user.isLoggedIn{
-            /*containerController = ContainerController()
-            containerController!.loggedInUser = user*/
-            //window?.rootViewController = containerController!
-         
-                //UINavigationController(rootViewController: tc)
-            
-            
-            
+            if user.hasSeenTutorial{
+                
+                containerController = ContainerController()
+                containerController!.loggedInUser = user
+                window?.rootViewController = containerController!
+            }
+            else{
+                let tc = TutorialController()
+                tc.user = user
+                window?.rootViewController = tc
+            }
         }
         else{
             let lc = LoginController()
@@ -45,20 +48,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = WelcomeController()
         }
         window!.makeKeyAndVisible()
-        return true*/
-        noUserFound()
         return true
     }
     
     
     func noUserFound(){
-        
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        let tc = TutorialController()
-        let addresses = [Address(school: "GEORGETOWN UNIVERSITY", dorm: "NEW SOUTH", room: "405")]
-        tc.user = User(userID: "", addresses: addresses, jwt: "")
-        window?.rootViewController = tc
-       // window?.rootViewController = WelcomeController()
+        window?.rootViewController = LoginController()
         window!.makeKeyAndVisible()
     }
     
@@ -72,7 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 
     func applicationDidBecomeActive(application: UIApplication) {
-        
         if containerController != nil{
             containerController?.promptUserFeedBack()
         }

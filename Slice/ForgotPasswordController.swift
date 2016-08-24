@@ -156,12 +156,12 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
                             self.presentViewController(ec, animated: false, completion: nil)
                         }
                         else{
-                            SweetAlert().showAlert("NO ACCOUNT", subTitle: "No account with this phone number was found", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
+                            Alerts.noAccount()
                         }
                     }
                 case .Failure:
                     self.isSending = false
-                    SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "Okay", buttonColor: Constants.tiltColor)
+                    Alerts.serverError()
                 }
             }
         }

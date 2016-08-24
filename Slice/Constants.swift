@@ -27,8 +27,7 @@ internal struct Constants{
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
-    static let stripePublishableKey = "pk_live_2EKrThfW8J0iNtmM2yXgcJ1n"
-    
+    static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
     static let isOpenURLString = "https://doorslice.herokuapp.com/api/whatTime"
     
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
@@ -43,7 +42,7 @@ internal struct Constants{
     static let loginURLString = "https://doorslice.herokuapp.com/api/users/login"
     static let addEmailURLString = "https://doorslice.herokuapp.com/api/users/addEmail/"
     
-    static let getAddressesURLString = "https://doorslice.herokuapp.com/api/addresses"
+    static let getAddressesURLString = "https://doorslice.herokuapp.com/api/addresses/"
     static let newAddressURLString = "https://doorslice.herokuapp.com/api/address/"
     static let deleteAddressURLString = "https://doorslice.herokuapp.com/api/address/"
     
@@ -56,7 +55,7 @@ internal struct Constants{
     static let booleanChangeURLString = "https://doorslice.herokuapp.com/api/users/"
     static let wantsReceipts = "wantsReceipts"
     static let wantsConfirmation = "wantsConfirmation"
-    static let seenTutorial = "hasSeenTutorial"
+    static let hasSeenTutorial = "hasSeenTutorial"
     
     static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)

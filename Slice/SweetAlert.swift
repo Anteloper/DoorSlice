@@ -113,7 +113,7 @@ public class SweetAlert: UIViewController {
         if self.subTitleTextView.text.isEmpty == false {
             let subtitleString = subTitleTextView.text! as NSString
             let rect = subtitleString.boundingRectWithSize(CGSize(width: width, height: 0.0), options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName:subTitleTextView.font!], context: nil)
-            textViewHeight = ceil(rect.size.height) + 10.0
+            textViewHeight = ceil(rect.size.height) + 12.0
             subTitleTextView.frame = CGRect(x: x, y: y, width: width, height: textViewHeight)
             contentView.addSubview(subTitleTextView)
             y += textViewHeight + kHeightMargin
@@ -312,7 +312,6 @@ public class SweetAlert: UIViewController {
     }
     
     func animateAlert() {
-        
         view.alpha = 0;
         UIView.animateWithDuration(0.1, animations: { () -> Void in
             self.view.alpha = 1.0;
@@ -320,7 +319,7 @@ public class SweetAlert: UIViewController {
         
         let previousTransform = self.contentView.transform
         self.contentView.layer.transform = CATransform3DMakeScale(0.9, 0.9, 0.0);
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
+        UIView.animateWithDuration(0.1, animations: { () -> Void in
             self.contentView.layer.transform = CATransform3DMakeScale(1.1, 1.1, 0.0);
         }) { (Bool) -> Void in
             UIView.animateWithDuration(0.1, animations: { () -> Void in

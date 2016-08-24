@@ -64,7 +64,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             navController = UINavigationController(rootViewController: cc)
     
         }
-        activeAddresses = ActiveAddresses()
+        activeAddresses = ActiveAddresses(user: loggedInUser)
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
         view.addSubview(navController.view)
@@ -212,7 +212,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         else if newAddressController == nil && screen == 2{
             let na = NewAddressController()
             na.delegate = self
-            na.data = activeAddresses.getData()
+            na.dorms = activeAddresses.getDorms()
+            na.schoolFullName = "\(loggedInUser.school) UNIVERSITY"
             newAddressController = UINavigationController(rootViewController: na)
             prepareControllerForFullsreen(newAddressController!)
             animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
@@ -294,7 +295,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
     //Called after a user tries to select an address with no internet
     func retrieveAddresses(){
-        activeAddresses = ActiveAddresses()
+        activeAddresses = ActiveAddresses(user: loggedInUser)
     }
     
     func cardRemoved(index: Int) {
@@ -381,7 +382,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             amount = (cheese*3 + pepperoni*3.49)
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
-            orderDescription = String(Int(cheese)) + "cheese, " + String(Int(pepperoni)) + "pepperoni"
+            orderDescription = getOrderDescription(Int(cheese), pepperoni: Int(pepperoni))
             
             if case .ApplePay = loggedInUser.paymentMethod!{
                 if NetworkingController.canApplePay(){
@@ -424,7 +425,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //Called only when a card is the payment method
     func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
         networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
-            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: self.getAmountString(), description: self.orderDescription)
+            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription)
         }
     }
     
@@ -453,6 +454,23 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         }
     }
     
+    func getOrderDescription(cheese: Int, pepperoni: Int)->String{
+        var string = ""
+        if pepperoni != 0{
+            let plural = pepperoni == 1 ? "Slice" : "Slices"
+            string = "\(pepperoni) Pepperoni \(plural)"
+            if cheese != 0{
+                let plural = cheese == 1 ? "Slice" : "Slices"
+                string += ", \(cheese) Cheese \(plural)"
+            }
+        }
+        else{
+            let plural = cheese == 1 ? "Slice" : "Slices"
+            string = "\(cheese) Cheese \(plural)"
+        }
+
+        return string
+    }
     
     //MARK: Payable Delegate Methods
     func storeCardID(cardID: String, lastFour: String){

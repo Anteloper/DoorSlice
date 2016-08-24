@@ -129,6 +129,8 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         emailField.clipsToBounds = true
         emailField.layer.borderColor = UIColor(white: 0.8, alpha: 0.0).CGColor
         emailField.layer.borderWidth = 1.0
+        emailField.autocorrectionType = .No
+        emailField.autocapitalizationType = .None
         emailField.delegate = self
         contentView.addSubview(emailField)
         

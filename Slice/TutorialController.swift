@@ -14,16 +14,16 @@ class TutorialController: UIViewController, Configurable {
     var user: User!
     var addressButton = UIButton()
     var paymentButton = UIButton()
-    var addresses = ActiveAddresses()
+    var addresses: ActiveAddresses?
     
-    var addressSpinner: CustomActivityIndicatorView?
+    var addressSpinner: CustomActivityIndicatorView?{ didSet { addressSpinner == nil ? print("nil") : print("not nil") } }
     var cardSpinner: CustomActivityIndicatorView?
     
     var pendingCard: STPCardParams?
     var pendingAddress: Address?
     
-    let startHeight:CGFloat = UIScreen.mainScreen().bounds.height <= 568.0 ? 104 : 120
-    let rowHeight:CGFloat = UIScreen.mainScreen().bounds.height <= 568.0 ? 99 : 115
+    let startHeight:CGFloat = TutorialController.getStartHeight()
+    let rowHeight:CGFloat = TutorialController.getRowHeight()
     let checkSize:CGFloat = 20
     var backgroundColor: UIColor = UIColor()
     
@@ -32,16 +32,22 @@ class TutorialController: UIViewController, Configurable {
     
     let networkController = NetworkingController()
     
+    static func getStartHeight()->CGFloat{ return UIScreen.mainScreen().bounds.height == 736.0 ? 130 : (UIScreen.mainScreen().bounds.height <= 568.0 ? 104: 120)}
+    static func getRowHeight()->CGFloat{return UIScreen.mainScreen().bounds.height == 736.0 ? 130 : (UIScreen.mainScreen().bounds.height <= 568.0 ? 99 : 115)}
+    
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        addresses = ActiveAddresses(user: user)
+        networkController.tutorialDelegate = self
+        networkController.headers = ["authorization" : user.jwt]
         view.backgroundColor = Constants.darkBlue
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .Default
     }
     
     override func viewDidAppear(animated: Bool){
-    
+        super.viewDidAppear(animated)
         let fullView = UIImageView(frame: view.frame)
         let tutImage = UIImage(imageLiteral: "tutorial")
         fullView.image = tutImage
@@ -49,27 +55,30 @@ class TutorialController: UIViewController, Configurable {
         
         fullView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(fullView)
-    
+
         
         if pendingAddress != nil {
-            if user.addresses != nil{
-                if !user.addressIDs.keys.contains(pendingAddress!.getName()){
-                    networkController.saveAddress(pendingAddress!, userID: user.userID)
-                    cardSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize, y: startHeight + rowHeight*3/2))
-                }
-                else{
-                    Alerts.duplicate(isCard: false)
-                }
+            if user.addresses == nil{
+                user.addresses = [Address]() //Make sure its safe to force unwrap
+            }
+            //Duplicate Check
+            if !user.addressIDs.keys.contains(pendingAddress!.getName()){
+                networkController.saveAddress(pendingAddress!, userID: user.userID)
+                addressSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize*3/2, y: startHeight + rowHeight/2))
+            }
+            else{
+                Alerts.duplicate(isCard: false)
             }
         }
         
         
         if pendingCard != nil{
+            //Duplicate Check
             let lastFour = pendingCard!.last4()!
             if !user.cards!.contains(lastFour){
                 let url = (user.cardIDs.count == 0 && !user.hasCreatedFirstCard) ? Constants.firstCardURLString : Constants.newCardURLString
                 networkController.saveNewCard(pendingCard!, url: url+user.userID, lastFour: lastFour)
-                cardSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize, y: startHeight + rowHeight/2))
+                cardSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize*3/2, y: startHeight + rowHeight*3/2))
             }
                 
             else{
@@ -77,7 +86,6 @@ class TutorialController: UIViewController, Configurable {
             }
         }
         
-    
         addAddressButton()
         addPaymentButton()
         addSliceLabel()
@@ -108,8 +116,10 @@ class TutorialController: UIViewController, Configurable {
         view.addSubview(label)
         
         if user.addresses?.count == 0 || user.addresses == nil{
-            addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
-            hasAddress = false
+            if pendingAddress == nil{
+                addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
+                hasAddress = false
+            }
         }
         else{
             hasAddress = true
@@ -125,7 +135,8 @@ class TutorialController: UIViewController, Configurable {
     func addressPressed(){
         //TODO: Transition horizontally
         let na = NewAddressController()
-        na.data = addresses.getData()
+        na.dorms = addresses?.getDorms()
+        na.schoolFullName = "\(user.school) UNIVERSITY"
         na.user = user
         presentViewController(UINavigationController(rootViewController: na), animated: false, completion: nil)
     }
@@ -145,8 +156,10 @@ class TutorialController: UIViewController, Configurable {
         
 
         if !NetworkingController.canApplePay() && (user.cards?.count == 0 || user.cards == nil){
-            addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
-            hasPayment = false
+            if pendingCard != nil{
+                addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
+                hasPayment = false
+            }
         }
         else{
             hasPayment = true
@@ -159,7 +172,12 @@ class TutorialController: UIViewController, Configurable {
     func paymentPressed(){
         let nc = NewCardController()
         nc.user = user
-        presentViewController(UINavigationController(rootViewController: nc), animated: false, completion: {_ in nc.paymentTextField.becomeFirstResponder()})
+        var completion: (() -> Void)? = {_ in nc.paymentTextField.becomeFirstResponder()}
+        if NetworkingController.canApplePay(){
+            nc.shouldDismissWithApplePayAlert = true
+            completion = nil
+        }
+        presentViewController(UINavigationController(rootViewController: nc), animated: false, completion: completion)
     }
     
     
@@ -183,7 +201,7 @@ class TutorialController: UIViewController, Configurable {
     //MARK: Bottom Views
     func addGoLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: view.frame.height*4/5-35, width: view.frame.width, height: 40))
-        label.attributedText = Constants.getTitleAttributedString("WE'LL BE THERE IN FIVE", size: 20, kern: 6.0)
+        label.attributedText = Constants.getTitleAttributedString("WE'LL BE THERE IN FIVE", size: 20, kern: 5.5)
         label.textAlignment = .Center
         label.alpha = 0.0
         view.addSubview(label)
@@ -198,6 +216,7 @@ class TutorialController: UIViewController, Configurable {
     
     func goPressed(){
         if pendingCard == nil  && pendingAddress == nil{
+            networkController.booleanChange(Constants.hasSeenTutorial, userID: user.userID, boolean: true)
             let cc = ContainerController()
             cc.loggedInUser = user
             presentViewController(cc, animated: false, completion: nil)
@@ -210,7 +229,7 @@ class TutorialController: UIViewController, Configurable {
             else if pendingCard != nil{
                 string = "card"
             }
-            SweetAlert().showAlert("HOLD UP", subTitle: "We're still processing your \(string), give us one second", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
+            Alerts.holdUp(string)
         }
         
     }
@@ -223,7 +242,7 @@ class TutorialController: UIViewController, Configurable {
     }
     
     func checkAndAddAddressCheck(){
-        if hasAddress{
+        if hasAddress && pendingAddress == nil{
             let checkFrame = CGRect(x: view.frame.width - checkSize*2, y: startHeight + rowHeight/2 - checkSize/2, width: checkSize, height: checkSize)
             let addCheck = getCheckView(checkFrame)
             let coverView = UIView(frame: checkFrame)
@@ -237,7 +256,7 @@ class TutorialController: UIViewController, Configurable {
     
     func checkAndAddPaymentCheck(){
         
-        if hasPayment{
+        if hasPayment && pendingCard == nil{
             let checkFrame = CGRect(x: view.frame.width - checkSize*2, y: startHeight + rowHeight*3/2 - checkSize/2, width: checkSize, height: checkSize)
             let addCheck = getCheckView(checkFrame)
             let coverView = UIView(frame: checkFrame)
@@ -251,25 +270,37 @@ class TutorialController: UIViewController, Configurable {
     func getSpinnerWithCenter(center: CGPoint) -> CustomActivityIndicatorView{
         let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
         spinner.center = center
+        view.addSubview(spinner)
         spinner.startAnimating()
         return spinner
     }
     
     //MARK: Configureable Delegate Functions
     func addressSaveFailed() {
+        addressSpinner?.stopAnimating()
+        pendingAddress = nil
+        if user.addresses?.count == 0 || user.addresses == nil{
+            addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
+        }
     }
     
     func addressSaveSucceeded(add: Address, orderID: String) {
-        checkAndAddAddressCheck()
+        addressSpinner?.stopAnimating()
         user.addresses!.append(add)
         user.preferredAddress = user.addresses!.count-1
         user.addressIDs[add.getName()] = orderID
         pendingAddress = nil
+        hasAddress = true
         checkAndAddAddressCheck()
     }
     
     func cardStoreageFailed(trueFailure trueFailure: Bool) {
-    
+        cardSpinner?.stopAnimating()
+        pendingCard = nil
+        if !NetworkingController.canApplePay() && (user.cards?.count == 0 || user.cards == nil){
+            addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
+        }
+        
     }
     
     func storeCardID(cardID: String, lastFour: String) {
@@ -278,12 +309,15 @@ class TutorialController: UIViewController, Configurable {
         user.paymentMethod = .CardIndex(user.cards!.count-1)
         user.cardIDs[lastFour] = cardID
         pendingCard = nil
+        hasPayment = true
+        cardSpinner?.stopAnimating()
         checkAndAddPaymentCheck()
-        
     }
     
     func unauthenticated() {
-    
+        cardSpinner?.stopAnimating()
+        addressSpinner?.stopAnimating()
+        Alerts.unauthenticated(){_ in }
     }
     
 }

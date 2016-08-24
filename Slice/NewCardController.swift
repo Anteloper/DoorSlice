@@ -17,6 +17,7 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
     var validated = false
     var user: User!
 
+    var shouldDismissWithApplePayAlert: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,14 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
         
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if shouldDismissWithApplePayAlert != nil{
+            if shouldDismissWithApplePayAlert!{
+                Alerts.applePayFound(self)
+            }
+        }
     }
     
     func navBarSetup(){

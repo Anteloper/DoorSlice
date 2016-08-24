@@ -10,18 +10,16 @@ import UIKit
 
 class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate{
     var delegate: Slideable?
-    var data: [String : [String]]!
+    var dorms: [String]!
+    var schoolFullName: String!
     
-    var schoolField = PickerField()
     var dormField = PickerField()
     var roomField = PickerField()
-    
-    var schoolPicker = UIPickerView()
+
     var dormPicker = UIPickerView()
     var saveButton = UIButton()
     
     var selectedDorm = 0{didSet{dormSelected()}}
-    var selectedSchool = 0{didSet{schoolSelected()}}
     
     var keyboardShouldMoveScreen = false
     var viewIsRaised = false
@@ -37,12 +35,9 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         view.backgroundColor = Constants.darkBlue
         navBarSetup()
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0
-        schoolPicker.dataSource = self
-        schoolPicker.delegate = self
         dormPicker.delegate = self
         dormPicker.dataSource = self
         textFieldSetup()
-        schoolPicker.frame = CGRect(x: 0, y: schoolField.frame.maxY, width: view.frame.width, height: 130)
         dormPicker.frame = CGRect(x: 0, y: dormField.frame.maxY, width: view.frame.width, height : 130)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
@@ -56,10 +51,8 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     func checkData(){
-        if data == nil{
-            SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
-                self.exitWithoutAddress(true)
-            }
+        if dorms == nil{
+            Alerts.noAddresses(self)
         }
     }
     
@@ -86,7 +79,6 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         }
     }
 
-    
     func addCancel(){
         let cancelButton = Constants.getBackButton()
         cancelButton.addTarget(self, action: #selector(self.exitWithoutAddress), forControlEvents: .  TouchUpInside)
@@ -94,7 +86,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
 
     }
     func addSave(){
-        saveButton = UIButton(frame: CGRect(x: 0, y: roomField.frame.maxY+100, width: view.frame.width, height: 50))
+        saveButton = UIButton(frame: CGRect(x: 0, y: roomField.frame.maxY+200, width: view.frame.width, height: 50))
         saveButton.setAttributedTitle(getAttributedTitle("SAVE ADDRESS", size: 16, kern: 6.0, isGreen: false), forState: .Normal)
         saveButton.addTarget(self, action: #selector(self.exitWithAddress), forControlEvents: .TouchUpInside)
         view.addSubview(saveButton)
@@ -110,12 +102,10 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     func textFieldSetup(){
-        schoolField = makeTextFieldWithText("  SCHOOL", yPos: 100, isGreen: false)
-        dormField = makeTextFieldWithText("  DORM", yPos: 200, isGreen: false)
-        roomField = makeTextFieldWithText("  ROOM NUMBER", yPos: 300, isGreen: false)
+        dormField = makeTextFieldWithText("  DORM", yPos: 100, isGreen: false)
+        roomField = makeTextFieldWithText("  ROOM NUMBER", yPos: 200, isGreen: false)
         roomField.allowsEditingTextAttributes = true
-        
-        view.addSubview(schoolField)
+
         view.addSubview(dormField)
         view.addSubview(roomField)
     }
@@ -150,7 +140,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         if roomField.text != "" && roomField.text != "  ROOM"{
             UIView.animateWithDuration(1.0, animations: {
                 self.roomField.bottomBorder?.borderColor = Constants.seaFoam.CGColor
-                if self.schoolField.text != "  SCHOOL" && self.schoolField.text != "" && self.dormField.text != "  DORM" && self.dormField.text != ""{
+                if self.dormField.text != "  DORM" && self.dormField.text != ""{
                     self.saveButton.titleLabel?.textColor = Constants.seaFoam
                 }
             })
@@ -202,11 +192,8 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     //MARK: TextField Delegate Functions
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        if textField == schoolField{
-            schoolFieldSelected()
-            return false
-        }
-        else if textField == dormField{
+
+        if textField == dormField{
             dormFieldSelected()
             return false
         }
@@ -220,11 +207,9 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         
-        if schoolField.text != "  SCHOOL" && schoolField.text != "" {
-            if dormField.text != "  DORM" && dormField.text != ""{
-                if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
-                    exitWithAddress()
-                }
+        if dormField.text != "  DORM" && dormField.text != ""{
+            if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
+                exitWithAddress()
             }
         }
         return true
@@ -244,30 +229,19 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
 
     
     //MARK: TextField Selection Response Functions
-    func schoolFieldSelected(){
-        schoolField.attributedText = getAttributedTitle(Array(data.keys)[schoolPicker.selectedRowInComponent(0)], size: 15, kern: textFieldKern, isGreen: false)
-        roomField.resignFirstResponder()
-        dormPicker.removeFromSuperview()
-        UIView.animateWithDuration(1.0, animations: {self.schoolField.bottomBorder?.borderColor = Constants.seaFoam.CGColor})
-        UIView.animateWithDuration(0.3, animations: {self.dormField.frame.origin.y = CGFloat(270)}, completion: {if $0 {self.view.addSubview(self.schoolPicker) }})
-        schoolPicker.becomeFirstResponder()
-    }
-    
     func dormFieldSelected(){
-        dormField.attributedText = getAttributedTitle(data[Array(data.keys)[selectedSchool]]![dormPicker.selectedRowInComponent(0)], size: 15, kern: textFieldKern, isGreen: false)
+        dormField.attributedText = getAttributedTitle(dorms[selectedDorm], size: 15, kern: textFieldKern, isGreen: false)
         roomField.resignFirstResponder()
-        schoolPicker.removeFromSuperview()
         UIView.animateWithDuration(1.0, animations: {self.dormField.bottomBorder?.borderColor = Constants.seaFoam.CGColor})
-        dormField.frame.origin.y = 150
-        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 370}, completion: {if $0 {self.view.addSubview(self.dormPicker)}})
+        dormField.frame.origin.y = 100
+        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 270}, completion: {if $0 {self.view.addSubview(self.dormPicker)}})
         dormPicker.becomeFirstResponder()
     }
     
     func roomFieldSelected(){
         dormPicker.removeFromSuperview()
-        schoolPicker.removeFromSuperview()
-        dormField.frame.origin.y = 200
-        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 300})
+        dormField.frame.origin.y = 100
+        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 200})
     }
     
     
@@ -277,32 +251,22 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        
-        return pickerView == schoolPicker ? data.count : data[Array(data.keys)[selectedSchool]]!.count
+        return dorms.count
     }
     
     func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        let plainString = pickerView == schoolPicker ? Array(data.keys)[row] : data[Array(data.keys)[selectedSchool]]![row]
+        let plainString = dorms[row]
         return getAttributedTitle(plainString, size: 14, kern: 3.0, isGreen: false)
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == schoolPicker{
-            selectedSchool = row
-        }
-        else{
-            selectedDorm = row
-        }
+        selectedDorm = row
     }
 
     func dormSelected(){
-        dormField.attributedText = getAttributedTitle(data[Array(data.keys)[selectedSchool]]![selectedDorm], size: 15, kern: textFieldKern, isGreen: false)
+        dormField.attributedText = getAttributedTitle(dorms[selectedDorm], size: 15, kern: textFieldKern, isGreen: false)
     }
-    
-    func schoolSelected(){
-        dormPicker.reloadComponent(0)
-        schoolField.attributedText = getAttributedTitle(Array(data.keys)[selectedSchool], size: 15, kern: textFieldKern, isGreen: false)
-    }
+
     
     //MARK: Return Functions
     func exitWithoutAddress(networkError: Bool){
@@ -321,32 +285,29 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     func exitWithAddress(){
-        if schoolField.text != "  SCHOOL" && schoolField.text != "" {
-            if dormField.text != "  DORM" && dormField.text != ""{
-                if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
-                    let address = Address(school: schoolField.text!, dorm: dormField.text!, room: roomField.text!)
-                    if delegate != nil{
-                        delegate!.returnFromFullscreen(withCard: nil, orAddress: address, fromSettings: false)
-                    }
-                    else{
-                        let tc = TutorialController()
-                        tc.user = user!
-                        tc.pendingAddress = address
-                        presentViewController(tc, animated: false, completion: nil)
-                    }
+        
+        if dormField.text != "  DORM" && dormField.text != ""{
+            if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
+                let address = Address(school: schoolFullName!, dorm: dormField.text!, room: roomField.text!)
+                if delegate != nil{
+                    delegate!.returnFromFullscreen(withCard: nil, orAddress: address, fromSettings: false)
                 }
                 else{
-                    shakeTextField(roomField, enterTrue: true)
+                    let tc = TutorialController()
+                    tc.user = user!
+                    tc.pendingAddress = address
+                    presentViewController(tc, animated: false, completion: nil)
                 }
             }
             else{
-                shakeTextField(dormField, enterTrue: true)
+                shakeTextField(roomField, enterTrue: true)
             }
         }
         else{
-            shakeTextField(schoolField, enterTrue: true)
+            shakeTextField(dormField, enterTrue: true)
         }
     }
+    
 }
 
 class PickerField: UITextField{

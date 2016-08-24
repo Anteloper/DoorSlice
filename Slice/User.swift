@@ -29,6 +29,7 @@ class User: NSObject, NSCoding{
     var email: String?{didSet{saveToDefaults()}}//Email address for receipts if the user provided one
     var wantsReceipts: Bool{didSet{saveToDefaults()}}
     var wantsOrderConfirmation: Bool{didSet{saveToDefaults()}}//Whether an alert should confirm an order when not using apple pay
+    var school: String //All caps, the name of the school, no "university" or "college" ex: "GEORGETOWN"
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
@@ -37,7 +38,7 @@ class User: NSObject, NSCoding{
          hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,
          orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil,
          loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil,
-         wantsReceipts: Bool = false, wantsOrderConfirmation:Bool = true){
+         wantsReceipts: Bool = false, wantsOrderConfirmation:Bool = true, school: String){
         
         self.userID = userID
         self.addresses = addresses
@@ -56,6 +57,7 @@ class User: NSObject, NSCoding{
         self.email = email
         self.wantsReceipts = wantsReceipts
         self.wantsOrderConfirmation = wantsOrderConfirmation
+        self.school = school
         super.init()
         self.saveToDefaults()
     }
@@ -73,7 +75,8 @@ class User: NSObject, NSCoding{
             let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool,
             let email = decoder.decodeObjectForKey("email") as? String?,
             let wantsReceipt = decoder.decodeObjectForKey("wantsReceipts") as? Bool,
-            let wantsOrderConfirmation = decoder.decodeObjectForKey("confirmation") as? Bool
+            let wantsOrderConfirmation = decoder.decodeObjectForKey("confirmation") as? Bool,
+            let school = decoder.decodeObjectForKey("school") as? String
             else{
                 return nil
             }
@@ -96,7 +99,8 @@ class User: NSObject, NSCoding{
                   hasSeenTutorial: hasSeenTutorial,
                   email: email,
                   wantsReceipts: wantsReceipt,
-                  wantsOrderConfirmation: wantsOrderConfirmation
+                  wantsOrderConfirmation: wantsOrderConfirmation,
+                  school: school
         )
     }
     
@@ -118,6 +122,7 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.email, forKey: "email")
         aCoder.encodeObject(self.wantsReceipts, forKey: "wantsReceipts")
         aCoder.encodeObject(self.wantsOrderConfirmation, forKey: "confirmation")
+        aCoder.encodeObject(self.school, forKey: "school")
     }
     
     private func preferenceToInt(pref: PaymentPreference?)-> Int{

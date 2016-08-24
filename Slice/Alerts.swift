@@ -124,4 +124,41 @@ class Alerts{
         }
         return true
     }
+    
+    static func accountExists(completion: (Bool)->Void){
+        SweetAlert().showAlert("ACCOUNT EXISTS", subTitle: "This phone number is already registered with an account. Did you mean to login?", style: .None, buttonTitle: "LOGIN", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue, action: completion)
+    }
+    
+    static func serverError(){
+        SweetAlert().showAlert("SERVER ERROR", subTitle: "Please try again later", style: .Error,  buttonTitle: "OKAY", buttonColor: Constants.darkBlue)
+    }
+    
+    static func noAccount(){
+        SweetAlert().showAlert("NO ACCOUNT", subTitle: "No account with this phone number was found", style: .Error,  buttonTitle: "OKAY", buttonColor: Constants.darkBlue)
+    }
+    static func holdUp(string: String){
+        SweetAlert().showAlert("HOLD UP", subTitle: "We're still processing your \(string), give us one second", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
+    }
+    
+    static func overload(sc: SliceController){
+        SweetAlert().showAlert("OVERLOAD", subTitle: "We have an 8 slice maximum for now, sorry!", style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor){
+            _ in sc.orderProgressBar?.timer.resume()
+        }
+    }
+    
+    static func noAddresses(na: NewAddressController){
+        SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
+            na.exitWithoutAddress(true)
+        }
+    }
+    
+    static func applePayFound(nc: NewCardController){
+        SweetAlert().showAlert("YOU'RE ALL SET", subTitle: "We've set up Apple Pay for you. Your payment is good to go!", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
+            let tc = TutorialController()
+            tc.user = nc.user
+            nc.presentViewController(tc, animated: false, completion: nil)
+            
+        }
+        
+    }
 }

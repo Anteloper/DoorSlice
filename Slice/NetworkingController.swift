@@ -17,9 +17,8 @@ enum STPBackendChargeResult {
 typealias STPTokenSubmissionHandler = (STPBackendChargeResult?, NSError?) -> Void
 
 
-//A bag of functions to do the all of the networking and charge the user. containerDelegate is used soley to pass back the amount
-
-
+//A bag of functions to do the all of the networking and charge the user. 
+//Exactly one of the delegates and the headers property MUST BE SET to use this class
 class NetworkingController{
     
     var containerDelegate: Payable?
@@ -48,27 +47,34 @@ class NetworkingController{
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
             if error != nil{
                 self.containerDelegate?.cardStoreageFailed(trueFailure: true)
+                self.tutorialDelegate?.cardStoreageFailed(trueFailure: true)
             }
             else if let token = tokenOpt{
                 let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
+            
                 Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
+                    debugPrint(response)
                     switch response.result{
                     case .Success:
                         if let value = response.result.value{
                             let cardID = JSON(value)["card"]["cardID"].stringValue
                             if cardID != ""{
                                 self.containerDelegate?.storeCardID(cardID, lastFour: lastFour)
+                                self.tutorialDelegate?.storeCardID(cardID, lastFour: lastFour)
                             }
                             else{
                                 self.containerDelegate?.cardStoreageFailed(trueFailure: false)
+                                self.tutorialDelegate?.cardStoreageFailed(trueFailure: false)
                             }
                         }
                     case .Failure:
                         if response.response?.statusCode == 401{
                             self.containerDelegate?.unauthenticated()
+                            self.tutorialDelegate?.unauthenticated()
                         }
                         else{
                             self.containerDelegate?.cardStoreageFailed(trueFailure: true)
+                            self.tutorialDelegate?.cardStoreageFailed(trueFailure: true)
                         }
 
                     }
@@ -98,8 +104,10 @@ class NetworkingController{
     //Default card should already be changed in the backend
     //Amount is in cents (649 = $6.49)
     func chargeUser(url: String, amount: String, description: String){
+        print(description)
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+            debugPrint(response)
             switch response.result{
             case .Success:
                 self.containerDelegate?.cardPaymentSuccesful()
@@ -146,6 +154,7 @@ class NetworkingController{
     
     
     func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
+        
         let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
         apiClient.createTokenWithPayment(payment, completion: { (token, error) -> Void in
             if error == nil {
@@ -174,7 +183,9 @@ class NetworkingController{
     func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
         
         let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON {
+            response in
+            debugPrint(response)
             switch response.result{
             case .Success:
                 completion(.Success, nil)
@@ -200,20 +211,25 @@ class NetworkingController{
                     let id = JSON(value)["Data"]["_id"].stringValue
                     if id != ""{
                         self.containerDelegate?.addressSaveSucceeded(add, orderID: id)
+                        self.tutorialDelegate?.addressSaveSucceeded(add, orderID: id)
                     }
                     else{
-                       self.containerDelegate?.addressSaveFailed()
+                        self.containerDelegate?.addressSaveFailed()
+                        self.tutorialDelegate?.addressSaveFailed()
                     }
                 }
                 else{
                     self.containerDelegate?.addressSaveFailed()
+                    self.tutorialDelegate?.addressSaveFailed()
                 }
             case .Failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
+                    self.tutorialDelegate?.unauthenticated()
                 }
                 else{
                     self.containerDelegate?.addressSaveFailed()
+                    self.tutorialDelegate?.addressSaveFailed()
                 }
             }
         }
@@ -282,6 +298,7 @@ class NetworkingController{
         let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
         let parameters = [endpoint : String(boolean)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+            debugPrint(response)
             if response.response?.statusCode == 401{
                 self.containerDelegate?.unauthenticated()
             }
