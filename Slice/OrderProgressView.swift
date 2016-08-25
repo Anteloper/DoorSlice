@@ -11,7 +11,7 @@ import UIKit
 //The top bar that appears while a user is in the process of placing an order
 class OrderProgressView: UIView{
     
-    var slices = [UIButton]()
+    var slices = [UIImageView]()
     var sliceOutlines = [UIImageView]()
     var timer = TimerView()
     var delegate: Timeable?{
@@ -48,10 +48,10 @@ class OrderProgressView: UIView{
     func addSlice(ofType: Slice){
         let size:CGFloat = frame.width >= 375 ? 40 : 33
         let yVal:CGFloat = frame.width >= 375 ? 70 : 75
-        let topSlice = UIButton(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: size, height: size))
+        let topSlice = UIImageView(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: size, height: size))
         topSlice.layer.minificationFilter = kCAFilterTrilinear
         let image = ofType == .Cheese ? UIImage(imageLiteral: "smallCheese") : UIImage(imageLiteral: "smallPepperoni")
-        topSlice.setBackgroundImage(image, forState: .Normal)
+        topSlice.image = image
         topSlice.alpha = 1
         addSubview(topSlice)
         sendSubviewToBack(topSlice)
@@ -60,10 +60,10 @@ class OrderProgressView: UIView{
         UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*size), y: yVal) } )
         bringSubviewToFront(topSlice)
         
-        let overlapView = UIImageView(frame: topSlice.frame)
+        /*let overlapView = UIImageView(frame: topSlice.frame)
         overlapView.image = UIImage(imageLiteral: "outline")
         overlapView.layer.minificationFilter = kCAFilterTrilinear
-        sliceOutlines.append(overlapView)
+        sliceOutlines.append(overlapView)*/
     }
     
     func addToLoyalty(frame: CGRect){

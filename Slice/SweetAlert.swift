@@ -58,7 +58,6 @@ public class SweetAlert: UIViewController {
         contentView.addSubview(titleLabel)
         contentView.addSubview(subTitleTextView)
         contentView.backgroundColor = Constants.darkBlue
-        //TODO: Trial
         contentView.layer.borderColor = UIColor.whiteColor().CGColor
         contentView.layer.borderWidth = 1.0
         
@@ -275,7 +274,6 @@ public class SweetAlert: UIViewController {
             self.animatedView = nil
         }
         
-        //self.titleLabel.text = title
         self.titleLabel.attributedText = Constants.getTitleAttributedString(title, size: 25, kern: 6.0)
         if subTitle != nil {
             self.subTitleTextView.text = subTitle
@@ -344,9 +342,6 @@ public class SweetAlert: UIViewController {
     }
 }
 
-
-
-// MARK: -
 
 // MARK: Animatable Views
 

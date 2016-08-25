@@ -105,6 +105,8 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         dormField = makeTextFieldWithText("  DORM", yPos: 100, isGreen: false)
         roomField = makeTextFieldWithText("  ROOM NUMBER", yPos: 200, isGreen: false)
         roomField.allowsEditingTextAttributes = true
+        roomField.autocapitalizationType = .None
+        roomField.autocorrectionType = .No
 
         view.addSubview(dormField)
         view.addSubview(roomField)

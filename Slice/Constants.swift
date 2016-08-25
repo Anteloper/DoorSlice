@@ -28,7 +28,7 @@ internal struct Constants{
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
     static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
-    static let isOpenURLString = "https://doorslice.herokuapp.com/api/whatTime"
+    static let isOpenURLString = "https://doorslice.herokuapp.com/api/isOpen/"
     
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
     static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"

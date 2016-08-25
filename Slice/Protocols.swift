@@ -32,9 +32,9 @@ protocol Slideable{
 protocol Payable {
     var applePayFailed: Bool{ get set }
     func storeCardID(cardID: String, lastFour: String)
-    func cardStoreageFailed(trueFailure trueFailure: Bool)
+    func cardStoreageFailed(cardDeclined declined: Bool)
     func cardPaymentSuccesful()
-    func cardPaymentFailed()
+    func cardPaymentFailed(cardDeclined declined: Bool)
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
     func addLoyalty(slices: Int)
@@ -46,7 +46,7 @@ protocol Payable {
 //Only responsible for responding to functions related to cards and addresses. Used by the tutorial screen when configuring a user
 protocol Configurable{
     func storeCardID(cardID: String, lastFour: String)
-    func cardStoreageFailed(trueFailure trueFailure: Bool)
+    func cardStoreageFailed(cardDeclined declined: Bool)
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
     func unauthenticated()

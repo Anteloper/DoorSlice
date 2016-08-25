@@ -37,6 +37,7 @@ class TutorialController: UIViewController, Configurable {
     
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
+        UIButton.appearance().setAttributedTitle(Constants.getTitleAttributedString("", size: 14, kern: 3.0), forState: .Normal)
         super.viewDidLoad()
         addresses = ActiveAddresses(user: user)
         networkController.tutorialDelegate = self
@@ -126,6 +127,7 @@ class TutorialController: UIViewController, Configurable {
         }
         
         addressButton.frame = CGRect(x: 0, y: startHeight, width: view.frame.width, height: rowHeight)
+        addressButton.setTitle("", forState: .Normal)
         addressButton.addTarget(self, action: #selector(addressPressed), forControlEvents: .TouchUpInside)
         view.addSubview(addressButton)
         
@@ -133,7 +135,6 @@ class TutorialController: UIViewController, Configurable {
     }
     
     func addressPressed(){
-        //TODO: Transition horizontally
         let na = NewAddressController()
         na.dorms = addresses?.getDorms()
         na.schoolFullName = "\(user.school) UNIVERSITY"
@@ -151,6 +152,7 @@ class TutorialController: UIViewController, Configurable {
         view.addSubview(label)
 
         paymentButton.frame = CGRect(x: 0, y: startHeight+rowHeight, width: view.frame.width, height: rowHeight)
+        paymentButton.setTitle("", forState: .Normal)
         paymentButton.addTarget(self, action: #selector(paymentPressed), forControlEvents: .TouchUpInside)
         view.addSubview(paymentButton)
         
@@ -210,6 +212,7 @@ class TutorialController: UIViewController, Configurable {
     
     func addGoButton(){
         let goButton = UIButton(frame: CGRect(x: view.frame.midX-40, y: view.frame.height*7/8-20, width: 80, height: 80))
+        goButton.setTitle("", forState: .Normal)
         goButton.addTarget(self, action: #selector(goPressed), forControlEvents: .TouchUpInside)
         view.addSubview(goButton)
     }
@@ -217,6 +220,7 @@ class TutorialController: UIViewController, Configurable {
     func goPressed(){
         if pendingCard == nil  && pendingAddress == nil{
             networkController.booleanChange(Constants.hasSeenTutorial, userID: user.userID, boolean: true)
+            user.hasSeenTutorial = true
             let cc = ContainerController()
             cc.loggedInUser = user
             presentViewController(cc, animated: false, completion: nil)
@@ -282,6 +286,7 @@ class TutorialController: UIViewController, Configurable {
         if user.addresses?.count == 0 || user.addresses == nil{
             addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
         }
+        Alerts.serverError()
     }
     
     func addressSaveSucceeded(add: Address, orderID: String) {
@@ -294,12 +299,13 @@ class TutorialController: UIViewController, Configurable {
         checkAndAddAddressCheck()
     }
     
-    func cardStoreageFailed(trueFailure trueFailure: Bool) {
+    func cardStoreageFailed(cardDeclined declined: Bool) {
         cardSpinner?.stopAnimating()
         pendingCard = nil
         if !NetworkingController.canApplePay() && (user.cards?.count == 0 || user.cards == nil){
             addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
         }
+        declined ? Alerts.cardDeclined() : Alerts.serverError()
         
     }
     

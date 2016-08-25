@@ -162,7 +162,6 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         }
         
         
-        //TODO: school: String()
         let user = User(userID: userID, addresses: addresses,
                         addressIDs: addressIDs,
                         preferredAddress: preferredAddress,

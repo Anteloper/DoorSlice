@@ -65,9 +65,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         contentView.layer.addSublayer(line)
         
         okayButton.frame = CGRect(x: 151, y: 160, width: 148, height: 35)
-        let at = Constants.getTitleAttributedString("YES", size: 18, kern: 6.0)
-        //at.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("YES" as NSString).rangeOfString("YES"))
-        okayButton.setAttributedTitle(at, forState: .Normal)
+        okayButton.setAttributedTitle(Constants.getTitleAttributedString("YES", size: 18, kern: 6.0), forState: .Normal)
         okayButton.addTarget(self, action: #selector(dismissWithAddress) , forControlEvents: .TouchUpInside)
         okayButton.clipsToBounds = true
         contentView.addSubview(okayButton)
@@ -75,13 +73,11 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         let div = CALayer()
         div.frame = CGRect(x: 150, y: 160, width: 1, height: 30)
         div.backgroundColor = UIColor.whiteColor().CGColor
-        //div.opacity = 0.6
+
         contentView.layer.addSublayer(div)
         
         noButton.frame = CGRect(x: 0, y: 160, width: 150, height: 35)
-        let at2 = Constants.getTitleAttributedString("NO", size: 18, kern: 6.0)
-       // at2.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range:  ("NO" as NSString).rangeOfString("NO"))
-        noButton.setAttributedTitle(at2, forState: .Normal)
+        noButton.setAttributedTitle(Constants.getTitleAttributedString("NO", size: 18, kern: 6.0), forState: .Normal)
         noButton.addTarget(self, action: #selector(dismissWithoutAddress) , forControlEvents: .TouchUpInside)
         contentView.addSubview(noButton)
     }

@@ -220,13 +220,13 @@ class RatingControl: UIView {
             let button = UIButton()
             
             button.setImage(emptyStarImage, forState: .Normal)
-            button.layer.minificationFilter = kCAFilterTrilinear
             button.setImage(filledStarImage, forState: .Selected)
             button.setImage(filledStarImage, forState: [.Highlighted, .Selected])
-            button.adjustsImageWhenHighlighted = false
+            button.adjustsImageWhenHighlighted = true
             
             button.addTarget(self, action: #selector(RatingControl.ratingButtonTapped(_:)), forControlEvents: .TouchDown)
             ratingButtons += [button]
+            button.layer.minificationFilter = kCAFilterTrilinear
             addSubview(button)
         }
     }
@@ -234,7 +234,7 @@ class RatingControl: UIView {
     override func layoutSubviews() {
         // Set the button's width and height to a square the size of the frame's height.
         let buttonSize = Int(300/6)
-        var buttonFrame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        var buttonFrame = CGRect(x: 0, y: 4, width: buttonSize, height: buttonSize)
         
         // Offset each button's origin by the length of the button plus spacing.
         for (index, button) in ratingButtons.enumerate() {

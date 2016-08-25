@@ -52,17 +52,15 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .LightContent
-        if !NetworkingController.checkHours(){
+        if !NetworkingController.checkHours(loggedInUser.userID){
             sliceController = SliceController()
             sliceController.delegate = self
             navController = UINavigationController(rootViewController: sliceController)
-           
         }
         else{
             let cc = ClosedController()
             cc.delegate = self
             navController = UINavigationController(rootViewController: cc)
-    
         }
         activeAddresses = ActiveAddresses(user: loggedInUser)
         networkController.containerDelegate = self
@@ -79,7 +77,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     func promptUserFeedBack() {
         if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
             if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
-                if NSDate().timeIntervalSinceDate(lastOrder) > 900{
+                if NSDate().timeIntervalSinceDate(lastOrder) > 600{
+                    loggedInUser.hasPromptedRating = true
                     let rc = RatingController()
                     rc.delegate = self
                     rc.showAlert()
@@ -382,7 +381,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             amount = (cheese*3 + pepperoni*3.49)
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
-            orderDescription = getOrderDescription(Int(cheese), pepperoni: Int(pepperoni))
+            orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)
+            applePayCancelled = true //It will be set to false when payment is properly authorized but must be reset every order in this way
             
             if case .ApplePay = loggedInUser.paymentMethod!{
                 if NetworkingController.canApplePay(){
@@ -446,11 +446,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             sliceController.orderCancelled()
         }
         else{
-            
             let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: Constants.applePayCardID)
             loggedInUser.orderHistory.append(order)
             sliceController.orderCompleted()
-            Alerts.successfulOrder(loggedInUser, cc: self)
+            Alerts.successfulOrder(loggedInUser, cc: self, total: pepperoniSlices + cheeseSlices)
         }
     }
     
@@ -485,9 +484,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     
-    func cardStoreageFailed(trueFailure internetError: Bool){
+    func cardStoreageFailed(cardDeclined declined: Bool){
         menuController?.cardBeingProcessed = nil
-        Alerts.saveNotSuccesful(isCard: true, internetError: internetError)
+        declined ? Alerts.cardDeclined() : Alerts.saveNotSuccesful(isCard: true, internetError: false)
     }
     
     func cardPaymentSuccesful(){
@@ -498,12 +497,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             }
         }
         sliceController.orderCompleted()
-        Alerts.successfulOrder(loggedInUser, cc: self)
+        Alerts.successfulOrder(loggedInUser, cc: self, total: pepperoniSlices + cheeseSlices)
     }
     
-    func cardPaymentFailed(){
+    func cardPaymentFailed(cardDeclined declined: Bool){
         sliceController.orderCancelled()
-        Alerts.failedPayment()
+        declined ? Alerts.cardDeclined() : Alerts.failedPayment()
     }
     
     func addressSaveSucceeded(add: Address, orderID: String) {

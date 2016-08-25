@@ -190,23 +190,26 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         return false
     }
     
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath){}
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete{
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        UIButton.appearance().setAttributedTitle(Constants.getTitleAttributedString("DELETE", size: 14, kern: 3.0), forState: .Normal)
+        
+        let deleteAction = UITableViewRowAction(style: .Normal, title: "DELETE"){ (action, indexPath) in
             if indexPath.section == 0{
-                delegate?.addressRemoved(indexPath.row)
-                addresses.removeAtIndex(indexPath.row)
-                
+                self.delegate?.addressRemoved(indexPath.row)
+                self.addresses.removeAtIndex(indexPath.row)
             }
             else{
-                delegate?.cardRemoved(indexPath.row)
-                cards.removeAtIndex(indexPath.row)
+                self.delegate?.cardRemoved(indexPath.row)
+                self.cards.removeAtIndex(indexPath.row)
             }
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-            
         }
+        deleteAction.backgroundColor = Constants.lightRed
+        return [deleteAction]
     }
-    
     
     //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{

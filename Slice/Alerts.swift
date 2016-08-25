@@ -10,10 +10,14 @@ import Foundation
 
 class Alerts{
     
-    static func successfulOrder(loggedInUser: User, cc: ContainerController){
+    static func iPhone4(){
+        SweetAlert().showAlert("NOT SUPPORTED", subTitle: "Sorry, our app isn't compatible with your device", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
+    }
+    
+    static func successfulOrder(loggedInUser: User, cc: ContainerController, total: Int){
         loggedInUser.hasPromptedRating = false
-        
-        SweetAlert().showAlert("ORDER PLACED", subTitle: "You can check the details of your order in your order history", style: AlertStyle.Success, buttonTitle:"OKAY", buttonColor: Constants.darkBlue, otherButtonTitle: "SHOW ME",
+        let plural = total == 1 ? "slice" : "slices"
+        SweetAlert().showAlert("ORDER PLACED", subTitle: "\(total) \(plural) on the way! You can check the details of your order in your order history", style: AlertStyle.Success, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, otherButtonTitle: "SHOW ME",
                                otherButtonColor: Constants.darkBlue) {
                                 if !($0) {
                                     cc.toggleMenu(){
@@ -62,6 +66,10 @@ class Alerts{
         SweetAlert().showAlert("ORDER FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue)
     }
     
+    static func cardDeclined(){
+         SweetAlert().showAlert("DECLINED", subTitle: "Something went wrong processing your payment", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue)
+    }
+    
     static func emailSaveFailed(){
         SweetAlert().showAlert("SAVE FAILED", subTitle: "Check your internet connection and try again", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue)
     }
@@ -104,8 +112,8 @@ class Alerts{
             if !NetworkingController.canApplePay(){
                 let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
                 let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {cc.bringMenuToFullscreen(toScreen: 1)} : nil
-                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, otherButtonTitle: "SHOW ME", otherButtonColor: Constants.darkBlue){
-                    if !($0){
+                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
+                    if ($0){
                         cc.toggleMenu(toggleCompleted)
                     }
                 }
@@ -114,8 +122,8 @@ class Alerts{
             }
         }
         if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
-            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, otherButtonTitle: "SHOW ME", otherButtonColor: Constants.darkBlue){
-                if !($0){
+            SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
+                if ($0){
                     cc.toggleMenu({cc.bringMenuToFullscreen(toScreen: 2)})
                 }
             }
@@ -141,7 +149,7 @@ class Alerts{
     }
     
     static func overload(sc: SliceController){
-        SweetAlert().showAlert("OVERLOAD", subTitle: "We have an 8 slice maximum for now, sorry!", style: .Warning, buttonTitle: "Okay", buttonColor: Constants.tiltColor){
+        SweetAlert().showAlert("OVERLOAD", subTitle: "We have an 8 slice maximum for now, sorry!", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){
             _ in sc.orderProgressBar?.timer.resume()
         }
     }
@@ -157,8 +165,6 @@ class Alerts{
             let tc = TutorialController()
             tc.user = nc.user
             nc.presentViewController(tc, animated: false, completion: nil)
-            
         }
-        
     }
 }

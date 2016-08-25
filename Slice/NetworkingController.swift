@@ -43,15 +43,16 @@ class NetworkingController{
     
     
     //MARK: Card Specific Functions
+    
+    //Saves a new card regardless of whether it is the user's first card or not. The url passed to it has already taken this into consideration
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
             if error != nil{
-                self.containerDelegate?.cardStoreageFailed(trueFailure: true)
-                self.tutorialDelegate?.cardStoreageFailed(trueFailure: true)
+                self.containerDelegate?.cardStoreageFailed(cardDeclined: true)
+                self.tutorialDelegate?.cardStoreageFailed(cardDeclined: true)
             }
             else if let token = tokenOpt{
                 let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
-            
                 Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
                     debugPrint(response)
                     switch response.result{
@@ -63,8 +64,8 @@ class NetworkingController{
                                 self.tutorialDelegate?.storeCardID(cardID, lastFour: lastFour)
                             }
                             else{
-                                self.containerDelegate?.cardStoreageFailed(trueFailure: false)
-                                self.tutorialDelegate?.cardStoreageFailed(trueFailure: false)
+                                self.containerDelegate?.cardStoreageFailed(cardDeclined: false)
+                                self.tutorialDelegate?.cardStoreageFailed(cardDeclined: false)
                             }
                         }
                     case .Failure:
@@ -73,8 +74,8 @@ class NetworkingController{
                             self.tutorialDelegate?.unauthenticated()
                         }
                         else{
-                            self.containerDelegate?.cardStoreageFailed(trueFailure: true)
-                            self.tutorialDelegate?.cardStoreageFailed(trueFailure: true)
+                            self.containerDelegate?.cardStoreageFailed(cardDeclined: false)
+                            self.tutorialDelegate?.cardStoreageFailed(cardDeclined: false)
                         }
 
                     }
@@ -94,7 +95,7 @@ class NetworkingController{
                     self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.containerDelegate?.cardPaymentFailed()
+                    self.containerDelegate?.cardPaymentFailed(cardDeclined: false)
                 }
             }
         }
@@ -104,20 +105,27 @@ class NetworkingController{
     //Default card should already be changed in the backend
     //Amount is in cents (649 = $6.49)
     func chargeUser(url: String, amount: String, description: String){
-        print(description)
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             debugPrint(response)
             switch response.result{
             case .Success:
-                self.containerDelegate?.cardPaymentSuccesful()
+                if let value = response.result.value{
+                    if JSON(value)["succesful charge"] != JSON("blank"){
+                        self.containerDelegate?.cardPaymentSuccesful()
+                    }
+                    else{
+                        self.containerDelegate?.cardPaymentFailed(cardDeclined: true)
+                    }
+                    
+                }
             
             case .Failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
                 }
                 else{
-                    self.containerDelegate?.cardPaymentFailed()
+                    self.containerDelegate?.cardPaymentFailed(cardDeclined: false)
                 }
             }
         }
@@ -306,9 +314,10 @@ class NetworkingController{
     }
     
     
-    static func checkHours()->Bool{
+    static func checkHours(userID: String)->Bool{
         var isOpen = false
-        Alamofire.request(.GET, Constants.isOpenURLString).responseJSON{ response in
+        Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
+            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{

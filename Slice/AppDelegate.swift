@@ -17,9 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        if UIScreen.mainScreen().bounds.height <= 480.0{
-            //TODO: iPhone 4 not supported error message
-        }
     
         Stripe.setDefaultPublishableKey(Constants.stripePublishableKey)
         
@@ -35,8 +32,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 containerController = ContainerController()
                 containerController!.loggedInUser = user
                 window?.rootViewController = containerController!
+                
             }
             else{
+
                 let tc = TutorialController()
                 tc.user = user
                 window?.rootViewController = tc
@@ -48,6 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = WelcomeController()
         }
         window!.makeKeyAndVisible()
+        if UIScreen.mainScreen().bounds.height <= 480.0{
+            Alerts.iPhone4()
+        }
+        
         return true
     }
     
@@ -69,7 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         if containerController != nil{
-            containerController?.promptUserFeedBack()
+            containerController!.promptUserFeedBack()
         }
     }
     

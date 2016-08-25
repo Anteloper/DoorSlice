@@ -12,6 +12,7 @@ import UIKit
 class ClosedController: UIViewController, UIGestureRecognizerDelegate{
     
     var delegate: Slideable!
+    var userID: String!
     
     override func viewDidLoad() {
         view.backgroundColor = Constants.darkBlue
@@ -27,6 +28,10 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
+        
+        let closedView = UIImageView(frame: view.frame)
+        closedView.image = UIImage(imageLiteral: "closed")
+        view.addSubview(closedView)
         
         
         let menuButton = UIButton(type: .Custom)
