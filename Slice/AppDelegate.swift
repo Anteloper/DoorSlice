@@ -42,14 +42,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         else{
-            let lc = LoginController()
-            lc.shouldShowBackButton = false
-            window?.rootViewController = WelcomeController()
+            window?.rootViewController = LoginController()
         }
+        
         window!.makeKeyAndVisible()
-        if UIScreen.mainScreen().bounds.height <= 480.0{
-            Alerts.iPhone4()
-        }
+        
+        if UIScreen.mainScreen().bounds.height <= 480.0{ Alerts.iPhone4() }
         
         return true
     }

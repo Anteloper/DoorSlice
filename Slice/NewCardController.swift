@@ -10,7 +10,7 @@ import UIKit
 import Stripe
 
 //View Controller for adding a credit card. When the user does so the information is passed to the delegate for processing
-class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGestureRecognizerDelegate{
+class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     
     let paymentTextField = STPPaymentCardTextField()
     var delegate: Slideable?
@@ -21,45 +21,17 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navBarSetup()
-        view.backgroundColor = Constants.darkBlue
+        actionForBackButton({self.exit()})
         paymentTextField.textColor = UIColor.whiteColor()
         paymentTextField.frame = CGRect(x: 15, y: 100, width: view.frame.width-30, height: 44)
         paymentTextField.delegate = self
         view.addSubview(paymentTextField)
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
-        
     }
     
     override func viewDidAppear(animated: Bool) {
         if shouldDismissWithApplePayAlert != nil{
             if shouldDismissWithApplePayAlert!{
                 Alerts.applePayFound(self)
-            }
-        }
-    }
-    
-    func navBarSetup(){
-        navigationController?.navigationBar.barTintColor = Constants.darkBlue
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
-        navigationItem.titleView = titleLabel
-        
-        let backButton = UIButton(type: .Custom)
-        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
-        backButton.addTarget(self, action: #selector(exit), forControlEvents: .TouchUpInside)
-        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-    }
-    
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 40{
-                exit()
             }
         }
     }

@@ -18,7 +18,7 @@ enum CellType{
 //Controller for editing account settings. Built as a tableView to allow expanding and collapsing of the email text field
 //based on whether the wants receipts switch is toggled on or off
 
-class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
+class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
     
     var delegate: Slideable!
     var user: User!
@@ -43,11 +43,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         dispatch_async(dispatch_get_main_queue()){
-            self.view.backgroundColor = Constants.darkBlue
-            self.navBarSetup()
-            let swipe = UIPanGestureRecognizer()
-            swipe.addTarget(self, action: #selector(self.didSwipe(_:)))
-            self.view.addGestureRecognizer(swipe)
+            self.actionForBackButton({self.save()})
             self.wantsReceipts = self.user.wantsReceipts
             self.cellData = self.getCellData()
             self.addSaveButton()
@@ -73,7 +69,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     
     //MARK: Save and Exit
     //This function saves and exits if appropriate
-    func save(sender: AnyObject){
+    func save(){
         var shouldExit = true
         user.wantsOrderConfirmation = shouldConfirmOrderSwitch.on
         
@@ -103,7 +99,6 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
             Alerts.shakeView(emailField, enterTrue: true)
             fakeOnSwitch = true
             shouldExit = false
-            
         }
 
         saveButton.transform = CGAffineTransformMakeScale(0, 0)
@@ -181,20 +176,6 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     }
 
     
-    //MARK: Touch Handling
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)){
-                if point.x > 20{
-                    let sender = UIView()
-                    sender.tag = 2
-                    save(sender)
-                }
-            }
-        }
-    }
-    
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if emailField != nil{
@@ -217,22 +198,6 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
         view.addSubview(tableView)
         
     }
-    
-    func navBarSetup(){
-        navigationController?.navigationBar.barTintColor = Constants.darkBlue
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
-        navigationItem.titleView = titleLabel
-        
-        let backButton = UIButton(type: .Custom)
-        backButton.tag = 2
-        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
-        backButton.addTarget(self, action: #selector(save(_:)), forControlEvents: .TouchUpInside)
-        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-    }
-    
     
     func addSaveButton(){
         saveButton = UIButton(frame: CGRect(x: view.frame.midX-60, y: view.frame.height*3/4, width: 120, height: 40))
@@ -349,12 +314,9 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     }
     
     func animateExplainLabel(){
-        
         UIView.animateWithDuration(0.3, animations: {
             self.explainLabel.frame.origin.y = self.tableView.frame.origin.y + self.rowHeight * CGFloat(self.cellData.count) + 3
-            //blocker.alpha = 1.0
         })
-       
     }
 
     

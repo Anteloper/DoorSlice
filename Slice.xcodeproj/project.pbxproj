@@ -14,6 +14,7 @@
 		4C10F62A1D3ABF3B00BA7869 /* ForgotPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */; };
 		4C10F62C1D3ABF7D00BA7869 /* EnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */; };
 		4C4499631D13548F00CDB2A0 /* NewCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4499621D13548F00CDB2A0 /* NewCardController.swift */; };
+		4C466D5F1D70D48D00CDD604 /* ParentControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C466D5E1D70D48D00CDD604 /* ParentControllers.swift */; };
 		4C47CD021D1AEDB000AEEB97 /* NetworkingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */; };
 		4C49A02D1D5D520C006187E6 /* TutorialController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C49A02C1D5D520C006187E6 /* TutorialController.swift */; };
 		4C5A2C651D68C50A001D43FE /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5A2C641D68C50A001D43FE /* Alerts.swift */; };
@@ -81,6 +82,7 @@
 		4C10F6291D3ABF3B00BA7869 /* ForgotPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordController.swift; sourceTree = "<group>"; };
 		4C10F62B1D3ABF7D00BA7869 /* EnterCodeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterCodeController.swift; sourceTree = "<group>"; };
 		4C4499621D13548F00CDB2A0 /* NewCardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCardController.swift; sourceTree = "<group>"; };
+		4C466D5E1D70D48D00CDD604 /* ParentControllers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParentControllers.swift; sourceTree = "<group>"; };
 		4C47CD011D1AEDB000AEEB97 /* NetworkingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingController.swift; sourceTree = "<group>"; };
 		4C47CD031D1B396200AEEB97 /* Slice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Slice.entitlements; sourceTree = "<group>"; };
 		4C49A02C1D5D520C006187E6 /* TutorialController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialController.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 		4CF756B71D10AAE500746AEE /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				4C466D5E1D70D48D00CDD604 /* ParentControllers.swift */,
 				4C69F0C41D36F55D00810525 /* WelcomeController.swift */,
 				4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */,
 				4CB6DFE81D2216FF0050FABF /* LoginController.swift */,
@@ -639,6 +642,7 @@
 				4CF756AE1D0B5E3200746AEE /* PaymentPreference.swift in Sources */,
 				4C0BD4DC1D591DA4000A28D4 /* ReceiptController.swift in Sources */,
 				4C0BD4E01D5BF4B6000A28D4 /* AccountSettingsController.swift in Sources */,
+				4C466D5F1D70D48D00CDD604 /* ParentControllers.swift in Sources */,
 				4CB29D101D2EC337009C2CA5 /* Constants.swift in Sources */,
 				4C47CD021D1AEDB000AEEB97 /* NetworkingController.swift in Sources */,
 				4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */,

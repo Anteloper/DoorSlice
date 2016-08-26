@@ -16,7 +16,7 @@ import SwiftyJSON
 
 //When creating a user it sends a request to /Users waits for a response, then /Authenticate. It then creates the user locally
 //And passes the user to an instance of TutorialController
-class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecognizerDelegate {
+class EnterCodeController: NavBarless, UITextFieldDelegate{
     
     var code: String!
     var shouldPromptPasswordChange: Bool!
@@ -44,8 +44,14 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Constants.darkBlue
         UIApplication.sharedApplication().statusBarHidden = true
+        let previousVc = shouldPromptPasswordChange! ? ForgotPasswordController() : CreateAccountController()
+        actionForBackButton(){
+            if !self.requestIsProcessing{
+                self.presentViewController(previousVc, animated: false, completion: nil)
+            }
+        }
+        
         setup()
     }
     
@@ -256,15 +262,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
             }
         }
     }
-    
-    
-    //MARK: Button Presses
-    func backPressed(){
-        let previousVc = shouldPromptPasswordChange! ? ForgotPasswordController() : CreateAccountController()
-        if !requestIsProcessing{
-            self.presentViewController(previousVc, animated: false, completion: nil)
-        }
-    }
+
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         self.view.endEditing(true)
@@ -384,23 +382,6 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
             codeFields.append(setupCodeField(withTag: i, xPos: view.frame.width/6 + CGFloat(i-1)*view.frame.width/12))
         }
         codeFields[0].becomeFirstResponder()
-        
-        let backButton = Constants.getBackButton()
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .  TouchUpInside)
-        view.addSubview(backButton)
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
-        
-    }
-    
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 75{
-                presentViewController(ForgotPasswordController(), animated: false, completion: nil)
-            }
-        }
     }
 }
 

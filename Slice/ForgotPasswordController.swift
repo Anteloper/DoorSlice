@@ -12,7 +12,7 @@ import SwiftyJSON
 
 //Simply a controller with a phone number text field. When the user fills it out and hits send it sends a request to /sendCode
 //It then prepares an EnterCodeController to respond appropriately
-class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
+class ForgotPasswordController: NavBarless, UITextFieldDelegate{
     
     var rawNumber : String?
     let phoneViewLeft = UIImageView()
@@ -29,7 +29,7 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = true
-        view.backgroundColor = Constants.darkBlue
+        actionForBackButton({self.presentViewController(LoginController(), animated: false, completion: nil)})
         setup()
     }
     
@@ -143,9 +143,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
         }
     }
     
-    func backPressed(){
-        presentViewController(LoginController(), animated: false, completion: nil)
-    }
     
     func textFieldDidEndEditing(textField: UITextField) {
         textField.text = ""
@@ -157,10 +154,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
         
         view.addSubview(activityIndicator)
         activityIndicator.center = view.center
-        
-        let backButton = Constants.getBackButton()
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(backButton)
         
         phoneViewLeft.image = UIImage(imageLiteral: "phone")
         phoneViewLeft.frame = CGRect(x:phoneField.frame.minX-35, y: phoneField.frame.minY+5,  width: 30, height: 30)
@@ -176,18 +169,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
         sendButton.setAttributedTitle(attributedString, forState: .Normal)
         sendButton.backgroundColor = UIColor.clearColor()
         view.addSubview(sendButton)
-        
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
     }
     
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 75{
-                presentViewController(LoginController(), animated: false, completion: nil)
-            }
-        }
-    }
 }

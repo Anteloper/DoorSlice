@@ -9,7 +9,7 @@
 import UIKit
 
 //View Controller for displaying a non-selectable, non-editable Table View of the users orders. Each cell represents a PastOrder object
-class OrderHistoryController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate{
+class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSource{
     
     var orderHistory: [PastOrder]!
     var tableView = UITableView()
@@ -17,12 +17,7 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Constants.darkBlue
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        navBarSetup()
-        
-        view.addGestureRecognizer(swipe)
+        actionForBackButton({self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)})
         
         if orderHistory.count != 0{
    
@@ -35,25 +30,13 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 40{
-                backPressed()
-            }
-        }
-    }
-
     func addTitleLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 100))
         label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY", size: 16, kern: 6.0)
         label.textAlignment = .Center
         view.addSubview(label)
     }
-    
-    func backPressed(){
-        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
-    }
+
     func setupTableView(){
         tableView.frame = CGRect(x: 0, y: 160, width: view.frame.width, height: view.frame.height-160)
         self.automaticallyAdjustsScrollViewInsets = false
@@ -82,20 +65,6 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         let cell = tableView.dequeueReusableCellWithIdentifier("OrderCell")! as! OrderCell
         cell.order = orderHistory[indexPath.row]
         return cell
-    }
-    
-    func navBarSetup(){
-        navigationController?.navigationBar.barTintColor = Constants.darkBlue
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
-        navigationItem.titleView = titleLabel
-        
-        let backButton = UIButton(type: .Custom)
-        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
-        backButton.frame = CGRect(x: 0, y: -4, width: 20, height: 20)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
     
     func emptyDataSet(){

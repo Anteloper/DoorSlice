@@ -9,7 +9,7 @@
 import UIKit
 
 //View Controller for inputting a new address. If the user is sucessful in creating an address, it is passed to the delegate for processing
-class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate{
+class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate{
     var delegate: Slideable?
     var dorms: [String]!
     var schoolFullName: String!
@@ -33,8 +33,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     //MARK: Setup
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Constants.darkBlue
-        navBarSetup()
+        actionForBackButton({self.exitWithoutAddress(false)})
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0
         dormPicker.delegate = self
         dormPicker.dataSource = self
@@ -43,12 +42,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
         checkData()
-        addCancel()
         addSave()
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
-       
     }
     
     func checkData(){
@@ -56,36 +50,7 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
             Alerts.noAddresses(self)
         }
     }
-    
-    func navBarSetup(){
-        navigationController?.navigationBar.barTintColor = Constants.darkBlue
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
-        navigationItem.titleView = titleLabel
-        
-        let backButton = UIButton(type: .Custom)
-        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
-        backButton.addTarget(self, action: #selector(exitWithoutAddress), forControlEvents: .TouchUpInside)
-        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-    }
-    
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 40{
-                exitWithoutAddress(false)
-            }
-        }
-    }
 
-    func addCancel(){
-        let cancelButton = Constants.getBackButton()
-        cancelButton.addTarget(self, action: #selector(self.exitWithoutAddress), forControlEvents: .  TouchUpInside)
-        view.addSubview(cancelButton)
-
-    }
     func addSave(){
         saveButton = UIButton(frame: CGRect(x: 0, y: roomField.frame.maxY+200, width: view.frame.width, height: 50))
         saveButton.setAttributedTitle(getAttributedTitle("SAVE ADDRESS", size: 16, kern: 6.0, isGreen: false), forState: .Normal)
@@ -264,7 +229,6 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     func exitWithAddress(){
-        
         if dormField.text != "  DORM" && dormField.text != ""{
             if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
                 let address = Address(school: schoolFullName!, dorm: dormField.text!, room: roomField.text!)

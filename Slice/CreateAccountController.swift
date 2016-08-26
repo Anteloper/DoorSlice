@@ -12,7 +12,7 @@ import SwiftyJSON
 
 //When all fields are entered correctly, this Viewcontroller submits a request to /sendCode, waits for a response, 
 //then passes the necessary information to EnterCodeController with shoudlPromptPasswordChange set to false
-class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate{
+class CreateAccountController: NavBarless, UITextFieldDelegate{
     var webtoken: String?
     var userID: String?
 
@@ -48,11 +48,15 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         super.viewDidLayoutSubviews()
         UIApplication.sharedApplication().statusBarHidden = true
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0 //Check Screen size
-        view.backgroundColor = Constants.darkBlue
         addObservers()
         if !hasSetUp{
             setup()
         }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        actionForBackButton({self.presentViewController(WelcomeController(), animated: false, completion: nil)})
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -150,7 +154,6 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     func login(){
         self.activityIndicator.stopAnimating()
         let lc = LoginController()
-        lc.shouldShowBackButton = true
         lc.rawNumber = rawNumber
         presentViewController(lc, animated: false, completion: nil)
     }
@@ -405,14 +408,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         goButton.backgroundColor = UIColor.clearColor()
         view.addSubview(goButton)
      
-        
-        let backButton = Constants.getBackButton()
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(backButton)
         hasSetUp = true
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
 
     }
     
@@ -438,18 +434,5 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         georgetownButton.setAttributedTitle(Constants.getTitleAttributedString("GEORGETOWN", size: 10, kern: 4.0), forState: .Normal)
         georgetownButton.layer.borderColor = UIColor.whiteColor().CGColor
     }
-    
-    
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 0{
-                presentViewController(WelcomeController(), animated: false, completion: nil)
-            }
-        }
-    }
-    
-    func backPressed(){
-        presentViewController(WelcomeController(), animated: false, completion: nil)
-    }
+
 }

@@ -34,14 +34,12 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         closedView.image = UIImage(imageLiteral: "closed")
         view.addSubview(closedView)
         
-        
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(toggleMenu), forControlEvents: .TouchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
-    
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if delegate.menuCurrentlyShowing(){

@@ -12,7 +12,7 @@ import SwiftyJSON
 
 //When fields are non-empty, submits a request to /Login and parses out the response JSON into a User object.
 //Then checks if the user has seen the tutorial or not and responds appropriately
-class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
+class LoginController: NavBarless, UITextFieldDelegate{
     
     var phoneField = UITextField()
     var passwordField = UITextField()
@@ -25,14 +25,12 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     lazy private var activityIndicator : CustomActivityIndicatorView = {
         return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
-
-    var shouldShowBackButton: Bool?
     
     //MARK: LifeCycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = true
-        view.backgroundColor = Constants.darkBlue
+        actionForBackButton({self.presentViewController(WelcomeController(), animated: false, completion: nil)})
         
     }
     override func viewDidLayoutSubviews() {
@@ -348,12 +346,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         goButton.backgroundColor = UIColor.clearColor()
         view.addSubview(goButton)
         
-        if shouldShowBackButton == nil || shouldShowBackButton! == true{
-            let backButton = Constants.getBackButton()
-            backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .  TouchUpInside)
-            view.addSubview(backButton)
-        }
-        
+
         let forgotPassword = UIButton(frame: CGRect(x: view.frame.width/4, y: goButton.frame.maxY+60, width: view.frame.width/2, height: 40))
         forgotPassword.addTarget(self, action: #selector(forgotPasswordPressed), forControlEvents: .TouchUpInside)
         
@@ -364,20 +357,9 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         forgotPassword.setAttributedTitle(attributedString2, forState: .Normal)
         forgotPassword.backgroundColor = UIColor.clearColor()
         view.addSubview(forgotPassword)
-        
-        let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
-        swipe.delegate = self
-        view.addGestureRecognizer(swipe)
+
     }
     
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
-            if(abs(point.x) >= abs(point.y)) && point.x > 40{
-                presentViewController(WelcomeController(), animated: false, completion: nil)
-            }
-        }
-    }
     
     func forgotPasswordPressed(){
         let fc = ForgotPasswordController()
@@ -388,8 +370,4 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         presentViewController(fc, animated: false, completion: nil)
     }
     
-    func backPressed(){
-        presentViewController(WelcomeController(), animated: false, completion: nil)
-    }
-
 }

@@ -346,7 +346,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     func logOutUser(){
         loggedInUser.isLoggedIn = false
         let lc = LoginController()
-        lc.shouldShowBackButton = true
         presentViewController(lc, animated: false, completion: nil)
     }
     

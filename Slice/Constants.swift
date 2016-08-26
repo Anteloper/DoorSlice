@@ -66,11 +66,6 @@ internal struct Constants{
         return attributedString
     }
 
-    static func getBackButton()->UIButton{
-        let backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 20, height: 20))
-        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
-        return backButton
-    }
     
     static let appleMerchantId = "merchant.com.dormslice"
     static let userKey = "stagingKey"
