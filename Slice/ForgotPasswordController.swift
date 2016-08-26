@@ -51,36 +51,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
         return textField
     }
     
-    
-    //Runs twice per call when enterTrue is true
-    func shakeTextField(textField: UITextField, leftView: UIImageView, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 10
-            leftView.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 10
-                leftView.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 10
-                        leftView.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 10
-                                leftView.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, leftView: leftView, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
-    
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
         let components = newString.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet)
@@ -168,7 +138,8 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
             }
         }
         else{
-            shakeTextField(phoneField, leftView: phoneViewLeft, enterTrue: true)
+            Alerts.shakeView(phoneField, enterTrue: true)
+            Alerts.shakeView(phoneViewLeft, enterTrue: true)
         }
     }
     

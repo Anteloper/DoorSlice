@@ -156,37 +156,13 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
         }
     }
     
-    func shakeTextField(textField: UITextField, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
-    
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let cs = NSCharacterSet(charactersInString: acceptableCharacters).invertedSet
         let filteredString = string.componentsSeparatedByCharactersInSet(cs).joinWithSeparator("")
         if string != filteredString{
             roomField.bottomBorder?.borderColor = Constants.lightRed.CGColor
-            shakeTextField(roomField, enterTrue: false)
+            Alerts.shakeView(roomField, enterTrue: false)
         }
         return string == filteredString
     }
@@ -303,11 +279,11 @@ class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerView
                 }
             }
             else{
-                shakeTextField(roomField, enterTrue: true)
+                Alerts.shakeView(roomField, enterTrue: true)
             }
         }
         else{
-            shakeTextField(dormField, enterTrue: true)
+            Alerts.shakeView(dormField, enterTrue: true)
         }
     }
     

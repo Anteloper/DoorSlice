@@ -100,7 +100,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
         
         else if (wantsReceiptSwitch.on && user.email == nil) && !valid{
             emailField.layer.borderColor = Constants.lightRed.CGColor
-            shakeTextField(emailField, enterTrue: true)
+            Alerts.shakeView(emailField, enterTrue: true)
             fakeOnSwitch = true
             shouldExit = false
             
@@ -168,7 +168,7 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
         }
         else{
             emailField.layer.borderColor = Constants.lightRed.CGColor
-            shakeTextField(emailField, enterTrue: true)
+            Alerts.shakeView(emailField, enterTrue: true)
             return false
         }
     }
@@ -364,28 +364,4 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
         return emailTest.evaluateWithObject(testStr)
     }
     
-    //MARK: Animation
-    func shakeTextField(textField: UITextField, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 3
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 3
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 3
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 3
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
 }

@@ -90,7 +90,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
             if completion != nil { completion!() }
         }
         else{
-            shakeTextField(emailField, enterTrue: true)
+            Alerts.shakeView(emailField, enterTrue: true)
         }
     }
     
@@ -213,29 +213,6 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
         return emailTest.evaluateWithObject(testStr)
     }
     
-    func shakeTextField(textField: UITextField, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 3
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 3
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 3
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 3
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, enterTrue: false)
-                                    }
-                            })
-                        }
-                    )
-                    }
-                )
-            }
-        )
-    }
 }
 
 

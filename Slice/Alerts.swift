@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 //Class to hold all alerts
 class Alerts{
@@ -167,5 +168,30 @@ class Alerts{
             tc.user = nc.user
             nc.presentViewController(tc, animated: false, completion: nil)
         }
+    }
+    
+    //Runs twice per call when enterTrue is true
+    static func shakeView(view: UIView, enterTrue: Bool){
+        UIView.animateWithDuration(0.1, animations: {
+            view.frame.origin.x += 10
+            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
+                view.frame.origin.x -= 10
+                }, completion: { _ in
+                    UIView.animateWithDuration(0.1, animations: {
+                        view.frame.origin.x += 10
+                        }, completion: { _ in
+                            UIView.animateWithDuration(0.1, animations: {
+                                view.frame.origin.x -= 10
+                                }, completion: { _ in
+                                    if enterTrue{
+                                        self.shakeView(view, enterTrue: false)
+                                    }
+                                })
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
 }

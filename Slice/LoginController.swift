@@ -56,11 +56,13 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                     loginRequest()
             }
             else{
-                shakeTextField(passwordField, leftView: passViewLeft, enterTrue: true)
+                Alerts.shakeView(passwordField, enterTrue: true)
+                Alerts.shakeView(passViewLeft, enterTrue: true)
             }
         }
         else{
-            shakeTextField(phoneField, leftView: phoneViewLeft, enterTrue: true)
+            Alerts.shakeView(phoneField, enterTrue: true)
+            Alerts.shakeView(phoneViewLeft, enterTrue: true)
         }
     }
     
@@ -75,8 +77,10 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                         self.loginUser(self.parseUser(fromJSON: JSON(value)))
                     }
                     else{
-                        self.shakeTextField(self.phoneField, leftView: self.phoneViewLeft, enterTrue: true)
-                        self.shakeTextField(self.passwordField, leftView: self.passViewLeft, enterTrue: true)
+                        Alerts.shakeView(self.phoneField, enterTrue: true)
+                        Alerts.shakeView(self.phoneViewLeft, enterTrue: true)
+                        Alerts.shakeView(self.passwordField, enterTrue: true)
+                        Alerts.shakeView(self.passViewLeft, enterTrue: true)
                     }
                 }
             case .Failure:
@@ -217,35 +221,6 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
             tc.user = user
             self.presentViewController(tc, animated: false, completion: nil)
         }
-    }
-    
-    //Runs twice per call when enterTrue is true
-    func shakeTextField(textField: UITextField, leftView: UIImageView, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 10
-            leftView.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 10
-                leftView.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 10
-                        leftView.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 10
-                                leftView.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, leftView: leftView, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
     }
     
     

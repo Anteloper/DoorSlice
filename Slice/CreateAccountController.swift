@@ -85,49 +85,24 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
                         createAccount()
                     }
                     else{
-                        shakeButtons(enterTrue: true)
+                        Alerts.shakeView(georgetownButton, enterTrue: true)
+                        Alerts.shakeView(columbiaButton, enterTrue: true)
                     }
                 }
                 else{
-                    shakeTextField(confirmPasswordField,leftView: confirmViewLeft, enterTrue: true)
+                    Alerts.shakeView(confirmPasswordField, enterTrue: true)
+                    Alerts.shakeView(confirmViewLeft, enterTrue: true)
                 }
             }
             else{
-                shakeTextField(passwordField,leftView: passViewLeft, enterTrue: true)
+                Alerts.shakeView(passwordField, enterTrue: true)
+                Alerts.shakeView(passViewLeft, enterTrue: true)
             }
         }
         else{
-            shakeTextField(phoneField, leftView: phoneViewLeft, enterTrue: true)
+            Alerts.shakeView(phoneField, enterTrue: true)
+            Alerts.shakeView(phoneViewLeft, enterTrue: true)
         }
-    }
-    
-    //Runs twice per call when enterTrue is true
-    func shakeTextField(textField: UITextField, leftView: UIImageView, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 10
-            leftView.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 10
-                leftView.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 10
-                        leftView.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 10
-                                leftView.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, leftView: leftView, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
     }
     
     func createAccount(){
@@ -464,34 +439,6 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         georgetownButton.layer.borderColor = UIColor.whiteColor().CGColor
     }
     
-    func shakeButtons(enterTrue enterTrue: Bool){
-        
-        UIView.animateWithDuration(0.1, animations: {
-            self.georgetownButton.frame.origin.x += 10
-            self.columbiaButton.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                self.georgetownButton.frame.origin.x -= 10
-                self.columbiaButton.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        self.georgetownButton.frame.origin.x += 10
-                        self.columbiaButton.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                self.georgetownButton.frame.origin.x -= 10
-                                self.columbiaButton.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeButtons(enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){
         if recognizer.state == .Ended{

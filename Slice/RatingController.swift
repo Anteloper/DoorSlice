@@ -266,32 +266,7 @@ class RatingControl: UIView {
     
     func invalidRating(){
         for button in ratingButtons{
-            shakeButton(button, enterTrue: true)
+            Alerts.shakeView(button, enterTrue: true)
         }
     }
-    
-    //Runs twice per call when enterTrue is true
-    func shakeButton(button: UIButton, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            button.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                button.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        button.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                button.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeButton(button, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
     }
-}

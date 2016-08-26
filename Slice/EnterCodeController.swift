@@ -225,36 +225,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
         }
         return true
     }
-    
-    
-    //Runs twice per call when enterTrue is true
-    func shakeTextField(textField: UITextField, leftView: UIImageView? = nil, enterTrue: Bool){
-        UIView.animateWithDuration(0.1, animations: {
-            textField.frame.origin.x += 10
-            leftView?.frame.origin.x += 10
-            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
-                textField.frame.origin.x -= 10
-                leftView?.frame.origin.x -= 10
-                }, completion: { _ in
-                    UIView.animateWithDuration(0.1, animations: {
-                        textField.frame.origin.x += 10
-                        leftView?.frame.origin.x += 10
-                        }, completion: { _ in
-                            UIView.animateWithDuration(0.1, animations: {
-                                textField.frame.origin.x -= 10
-                                leftView?.frame.origin.x -= 10
-                                }, completion: { _ in
-                                    if enterTrue{
-                                        self.shakeTextField(textField, leftView: leftView, enterTrue: false)
-                                    }
-                                })
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
+
     
     //Called when all 6 digits are typed into the codeFields
     func fullField(){
@@ -281,7 +252,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
         }
         else{
             for field in codeFields{
-                shakeTextField(field, leftView: nil, enterTrue: true)
+                Alerts.shakeView(field, enterTrue: true)
             }
         }
     }
@@ -305,11 +276,13 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                 changePassword(confirmPassField.text!)
             }
             else{
-                shakeTextField(confirmPassField, leftView: confirmViewLeft, enterTrue: true)
+                Alerts.shakeView(confirmPassField, enterTrue: true)
+                Alerts.shakeView(confirmViewLeft, enterTrue: true)
             }
         }
         else{
-            shakeTextField(newPassField, leftView: newPassViewLeft, enterTrue: true)
+            Alerts.shakeView(newPassField, enterTrue: true)
+            Alerts.shakeView(newPassViewLeft, enterTrue: true)
         }
     }
     
@@ -422,7 +395,6 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){
-        
         if recognizer.state == .Ended{
             let point = recognizer.translationInView(view)
             if(abs(point.x) >= abs(point.y)) && point.x > 75{
