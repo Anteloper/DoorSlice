@@ -8,6 +8,7 @@
 
 import UIKit
 
+//View Controller for inputting a new address. If the user is sucessful in creating an address, it is passed to the delegate for processing
 class NewAddressController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate{
     var delegate: Slideable?
     var dorms: [String]!

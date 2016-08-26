@@ -8,7 +8,13 @@
 
 import UIKit
 
+enum Slice{
+    case Cheese
+    case Pepperoni
+}
 
+//The main view controller displayed when a user is logged in and Doorslice is open.
+//The main role of this class is to allow a user to place an order and notify the delegate when they do
 class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     //MARK: Properties
@@ -206,15 +212,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
         
-
-       /* let loyaltyView = UIButton(type: .Custom)
-        loyaltyView.frame = CGRect(x: 0, y: 0, width: 26, height: 26)
-        loyaltyView.backgroundColor = UIColor.clearColor()
-        loyaltyView.layer.borderColor = Constants.seaFoam.CGColor
-        loyaltyView.layer.borderWidth = 1.0
-        loyaltyView.layer.cornerRadius = loyaltyView.frame.width/2
-        loyaltyView.clipsToBounds = true
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loyaltyView)*/
     }
     
     //Called by menu press
@@ -271,8 +268,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Timeable Protocol Functions
     func timerEnded(didComplete: Bool) {
         if didComplete{
-            /*let bView = navigationItem.rightBarButtonItem?.valueForKey("view") as? UIView
-            orderProgressBar?.addToLoyalty(bView!.frame)*/
             delegate?.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }

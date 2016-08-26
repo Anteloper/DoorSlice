@@ -8,7 +8,7 @@
 
 import UIKit
 
-
+//View Controller for displaying a non-selectable, non-editable Table View of the users orders. Each cell represents a PastOrder object
 class OrderHistoryController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate{
     
     var orderHistory: [PastOrder]!

@@ -8,7 +8,8 @@
 
 import UIKit
 
-//Displayed if pizza serving is not in operation when the user is on the app
+//Displayed if pizza serving is not in operation when the user is on the app. The user may still access the menu and all options in the menu
+//In the same way the user may access the menu and all options in the menu when viewing an instance of SliceControler
 class ClosedController: UIViewController, UIGestureRecognizerDelegate{
     
     var delegate: Slideable!

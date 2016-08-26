@@ -8,6 +8,7 @@
 
 import UIKit
 
+//Alert specifically for prompting the user for their rating and comment if applicable
 class RatingController: UIViewController, UITextViewDelegate {
     
     var contentView = UIView()

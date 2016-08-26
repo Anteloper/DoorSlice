@@ -7,11 +7,7 @@
 
 import Foundation
 
-enum Slice{
-    case Cheese
-    case Pepperoni
-}
-
+//Either Apple Pay or the index of a Card
 enum PaymentPreference: Equatable{
     func value()->Int{
         switch self{

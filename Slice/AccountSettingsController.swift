@@ -14,8 +14,11 @@ enum CellType{
     case EmailCell
     case ConfirmCell
 }
-//Controller for editing account settings
-class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+
+//Controller for editing account settings. Built as a tableView to allow expanding and collapsing of the email text field
+//based on whether the wants receipts switch is toggled on or off
+
+class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
     
     var delegate: Slideable!
     var user: User!
@@ -346,10 +349,6 @@ class AccountSettingsController: UIViewController, UIGestureRecognizerDelegate, 
     }
     
     func animateExplainLabel(){
-        /*let blocker = UIView(frame: CGRect(x: 0, y: tableView.frame.origin.y + rowHeight * CGFloat(cellData.count), width: view.frame.width, height: 60))
-        blocker.backgroundColor = Constants.darkBlue
-        blocker.alpha = 0.0
-        view.addSubview(blocker)*/
         
         UIView.animateWithDuration(0.3, animations: {
             self.explainLabel.frame.origin.y = self.tableView.frame.origin.y + self.rowHeight * CGFloat(self.cellData.count) + 3

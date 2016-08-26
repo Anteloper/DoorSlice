@@ -8,6 +8,8 @@
 
 import UIKit
 
+//The slide out menu that appears when the user taps the menu button in the navigation bar
+//The main purpose of this class is to display a menu of options to the user and alert the delegate to the users selection
 class MenuController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
     
     var delegate: Slideable?

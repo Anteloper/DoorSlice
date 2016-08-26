@@ -10,6 +10,8 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+//When fields are non-empty, submits a request to /Login and parses out the response JSON into a User object.
+//Then checks if the user has seen the tutorial or not and responds appropriately
 class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
     
     var phoneField = UITextField()
@@ -65,7 +67,6 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     func loginRequest(){
         let parameters = ["phone" : rawNumber, "password" : passwordField.text!]
         Alamofire.request(.POST, Constants.loginURLString, parameters: parameters).responseJSON{ response in
-            debugPrint(response)
             self.activityIndicator.stopAnimating()
             switch response.result{
             case .Success:
@@ -85,7 +86,6 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     }
     
     func parseUser(fromJSON fromJson: JSON)->User{
-        print(fromJson)
         let jwt = fromJson["JWT"].stringValue
         let json = fromJson["User Profile"]
         let userID = json["_id"].stringValue

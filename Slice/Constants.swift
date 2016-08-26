@@ -28,8 +28,9 @@ internal struct Constants{
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
     static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
-    static let isOpenURLString = "https://doorslice.herokuapp.com/api/isOpen/"
     
+    static let isOpenURLString = "https://doorslice.herokuapp.com/api/isOpen/"
+    static let getPricesURLString = "https://doorslice.herokuapp.com/api/prices"
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
     static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"
     
@@ -49,7 +50,7 @@ internal struct Constants{
     static let firstCardURLString = "https://doorslice.herokuapp.com/api/payments/newStripeUser/"
     static let newCardURLString = "https://doorslice.herokuapp.com/api/payments/newStripeCard/"
     static let updateCardURLString = "https://doorslice.herokuapp.com/api/payments/updateDefaultCard/"
-    static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/"
+    static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/" //Used by both Apple Pay and Credit Card payments
     static let deleteCardURLString = "https://doorslice.herokuapp.com/api/payments/removeCard/"
     
     static let booleanChangeURLString = "https://doorslice.herokuapp.com/api/users/"

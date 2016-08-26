@@ -8,6 +8,7 @@
 
 import UIKit
 
+//Alert specifically for prompting the user for their receipt preference and email if applicable
 class ReceiptController: UIViewController, UITextFieldDelegate{
     var contentView = UIView()
     var strongSelf: ReceiptController?

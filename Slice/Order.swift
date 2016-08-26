@@ -8,9 +8,8 @@
 
 import Foundation
 
-
+//A struct to hold the slice information of an order while it's being placed
 struct Order{
-    
     var cheeseSlices: Double = 0
     var pepperoniSlices: Double = 0
     

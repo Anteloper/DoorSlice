@@ -10,6 +10,8 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+//When all fields are entered correctly, this Viewcontroller submits a request to /sendCode, waits for a response, 
+//then passes the necessary information to EnterCodeController with shoudlPromptPasswordChange set to false
 class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate{
     var webtoken: String?
     var userID: String?

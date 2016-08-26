@@ -37,8 +37,6 @@ protocol Payable {
     func cardPaymentFailed(cardDeclined declined: Bool)
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
-    func addLoyalty(slices: Int)
-    func removeLoyalty(slices: Int)
     func emailSaveFailed()
     func unauthenticated()
 }
@@ -52,10 +50,12 @@ protocol Configurable{
     func unauthenticated()
 }
 
+//Objects that conform to this protocol can implement a timer bar and be notified when it reaches completion
 protocol Timeable{
    func timerEnded(didComplete: Bool)
 }
 
+//Objects that conform to this protocol can present a RatingController or ReceiptController object
 protocol Rateable{
     func dismissed(withRating rating: Int, comment: String?)
     func addEmail(email: String)

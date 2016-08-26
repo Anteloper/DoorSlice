@@ -9,15 +9,15 @@
 import UIKit
 import Stripe
 
-
+//View Controller for adding a credit card. When the user does so the information is passed to the delegate for processing
 class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGestureRecognizerDelegate{
     
     let paymentTextField = STPPaymentCardTextField()
     var delegate: Slideable?
     var validated = false
-    var user: User!
-
-    var shouldDismissWithApplePayAlert: Bool?
+    
+    var user: User!//Only needed when presented by an instance of TutorialController
+    var shouldDismissWithApplePayAlert: Bool?//Will be true when presented by an instance of TutorialController and the user has Apple Pay
     
     override func viewDidLoad() {
         super.viewDidLoad()

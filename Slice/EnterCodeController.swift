@@ -13,14 +13,17 @@ import SwiftyJSON
 
 //View Controller for authenticating phone numbers or changing password.
 //Any controller instantiating this one MUST SET the shouldPromptPasswordChange, code, and phoneNumber variables
+
+//When creating a user it sends a request to /Users waits for a response, then /Authenticate. It then creates the user locally
+//And passes the user to an instance of TutorialController
 class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecognizerDelegate {
     
     var code: String!
     var shouldPromptPasswordChange: Bool!
     var phoneNumber: String!
-    var school: String!
     
-    var password: String? //Must be set if authenticating
+    var school: String! //Must be set if creating user
+    var password: String? //Must be set if creating user
     
     var placeHolder: String?
     
@@ -97,7 +100,6 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
         let parameters2 = ["phone" : phoneNumber, "password" : password]
         //Request to /Users
         Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters1).responseJSON { response in
-            debugPrint(response)
             switch response.result{
                 
             case .Success:
@@ -108,7 +110,6 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                         //Request to /Authenticate
                         Alamofire.request(.POST, Constants.authenticateURLString, parameters: parameters2).responseJSON{ response in
                             self.activityIndicator.stopAnimating()
-                            debugPrint(response)
                             switch response.result{
                             case .Success:
                                 if let value = response.result.value{

@@ -9,6 +9,9 @@
 import UIKit
 import Stripe
 
+//Displayed when a new user is created or a user is loaded from memory that has not yet seen this screen
+//The background is an image with invisible buttons over it, it has hotlinks to NewAddressController and NewCardController respectively
+//Will not allow the user to exit while an address or card is processing
 class TutorialController: UIViewController, Configurable {
     
     var user: User!
@@ -16,7 +19,7 @@ class TutorialController: UIViewController, Configurable {
     var paymentButton = UIButton()
     var addresses: ActiveAddresses?
     
-    var addressSpinner: CustomActivityIndicatorView?{ didSet { addressSpinner == nil ? print("nil") : print("not nil") } }
+    var addressSpinner: CustomActivityIndicatorView?
     var cardSpinner: CustomActivityIndicatorView?
     
     var pendingCard: STPCardParams?

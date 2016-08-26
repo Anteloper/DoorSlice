@@ -15,6 +15,8 @@ public enum AlertStyle {
     case CustomImag(imageFile:String)
 }
 
+//Handles all alerts aside from ReceiptController and RatingController
+//Does not present like a standard View Controller, uses the keywindow to show, animate, and dismiss
 public class SweetAlert: UIViewController {
     let kBakcgroundTansperancy: CGFloat = 0.1
     let kHeightMargin: CGFloat = 10.0
@@ -26,7 +28,6 @@ public class SweetAlert: UIViewController {
     let kButtonHeight: CGFloat = 35.0
     var textViewHeight: CGFloat = 90.0
     let kTitleHeight:CGFloat = 30.0
-    var strongSelf:SweetAlert?
     var contentView = UIView()
     var titleLabel: UILabel = UILabel()
     var buttons: [UIButton] = []
@@ -35,6 +36,7 @@ public class SweetAlert: UIViewController {
     var subTitleTextView = UITextView()
     var userAction:((isOtherButton: Bool) -> Void)? = nil
     let kFont = "Myriad Pro"
+     var strongSelf:SweetAlert? //Crucial for not dissapearing early / Other strange behavior
     
     init() {
         super.init(nibName: nil, bundle: nil)

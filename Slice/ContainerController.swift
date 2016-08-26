@@ -11,7 +11,8 @@ import Stripe
 
 //The overseeing ViewController for the entire project. Nothing in this controller is directly visible
 //Even the navigation bar belongs to the SliceController object it keeps track of. 
-//It is a delegate for the menuController, sliceController, newCardController, and paymentController objects it contains
+//It is a delegate for menuController, sliceController, newCardController, paymentController, orderHistoryController and any alertController
+//objects it contains and may present
 class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPaymentAuthorizationViewControllerDelegate {
     
     var navController: UINavigationController!
@@ -409,7 +410,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                             self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                         }
                     }
-                        //If the cardID couldnt be found in the dictionary. Should never reach this point
+                        
+                    //If the cardID couldnt be found in the dictionary. Should never reach this point
                     else{
                         Alerts.catchall({_ in self.logOutUser()})
                     }
@@ -422,7 +424,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     //Saves the order to the backend then submits a charge token to the backend. 
-    //Called only when a card is the payment method
+    //Credit Card exclusive
     func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
         networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
             self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription)
@@ -431,6 +433,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
     
     //MARK: PKPaymentAuthorizationViewControllerDelegate Functions
+    //Apple Pay Exclusive
     func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
         let name = loggedInUser.addresses![loggedInUser.preferredAddress!].getName()
         let addID = loggedInUser.addressIDs[name]
@@ -440,6 +443,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         }
     }
     
+    //Apple Pay Exclusive
     func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
         dismissViewControllerAnimated(true, completion: nil)
         if(applePayCancelled || applePayFailed){
@@ -470,6 +474,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
 
         return string
     }
+    
+    
+    
+    
     
     //MARK: Payable Delegate Methods
     func storeCardID(cardID: String, lastFour: String){
@@ -528,15 +536,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         Alerts.unauthenticated(){ _ in self.logOutUser() }
     }
 
-    
-    //Called if the order saves succesfully and the user is charged. Adds the users loyalty slices to their profile
-    func addLoyalty(slices: Int){
-
-    }
-    
-    func removeLoyalty(slices: Int){
-        
-    }
     
     //MARK: Rateable Delegate Functions
     func dismissed(withRating rating: Int, comment: String?) {

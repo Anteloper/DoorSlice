@@ -8,6 +8,7 @@
 
 import Foundation
 
+//An instance of this class is an object representing a single order. Conforms to NSCoding and NSCopying so it can be stored with the User
 class PastOrder: NSObject, NSCoding, NSCopying{
     var address: Address
     var cheeseSlices: Int

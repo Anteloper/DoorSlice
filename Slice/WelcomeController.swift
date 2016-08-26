@@ -8,6 +8,7 @@
 
 import UIKit
 
+//The first screen the user will see. Contains the logo, a register button, and a login button
 class WelcomeController: UIViewController {
     
     var loginButton = UIButton()
@@ -60,25 +61,6 @@ class WelcomeController: UIViewController {
         return button
     }
     
-    func socialMediaButtons(){
-        let facebookButton = UIButton(frame: CGRect(x: view.frame.midX-40, y: view.frame.height*9/10, width: 17, height: 30))
-        facebookButton.setImage(UIImage(imageLiteral: "facebook"), forState: .Normal)
-        facebookButton.addTarget(self, action: #selector(fbPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(facebookButton)
-        
-        let instaButton = UIButton(frame: CGRect(x: view.frame.midX+10, y: view.frame.height*9/10, width: 30, height: 30))
-        instaButton.setImage(UIImage(imageLiteral: "insta"), forState: .Normal)
-        instaButton.addTarget(self, action: #selector(instaPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(instaButton)
-    }
-    
-    func instaPressed(){
-        
-    }
-    
-    func fbPressed(){
-        
-    }
     
     override func viewDidAppear(animated: Bool) {
         UIView.animateWithDuration(0.5, animations: {self.loginButton.alpha = 1.0}, completion: nil)

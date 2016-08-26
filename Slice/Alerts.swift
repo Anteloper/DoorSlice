@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Class to hold all alerts
 class Alerts{
     
     static func iPhone4(){

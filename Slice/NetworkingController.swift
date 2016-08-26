@@ -28,22 +28,16 @@ class NetworkingController{
     //MARK: Save Order
     //Used for both Apple Pay and card payment. Price is in dollars (6.49 = $6.49)
     func saveOrder(cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: ()->Void){
+       
         let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
-            completion()
-            switch response.result{
-            case .Success:
-                self.containerDelegate!.addLoyalty(cheese+pepperoni)
-            case .Failure:
-                self.containerDelegate!.removeLoyalty(cheese+pepperoni)
-                if response.response?.statusCode == 401{ self.containerDelegate?.unauthenticated() }
-            }
-        }
+        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
+        
     }
     
     
-    //MARK: Card Specific Functions
+    //MARK: Card Functions
     
+    //Credit Card Exclusive
     //Saves a new card regardless of whether it is the user's first card or not. The url passed to it has already taken this into consideration
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
@@ -54,7 +48,6 @@ class NetworkingController{
             else if let token = tokenOpt{
                 let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
                 Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
-                    debugPrint(response)
                     switch response.result{
                     case .Success:
                         if let value = response.result.value{
@@ -84,7 +77,7 @@ class NetworkingController{
         }
     }
 
-    
+    //Credit Card Exclusive
     func changeCard(cardID: String, userID: String, completion: ()->Void){
         Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
@@ -103,11 +96,10 @@ class NetworkingController{
     
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
-    //Amount is in cents (649 = $6.49)
+    //Credit card exclusive
     func chargeUser(url: String, amount: String, description: String){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
-            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
@@ -117,9 +109,7 @@ class NetworkingController{
                     else{
                         self.containerDelegate?.cardPaymentFailed(cardDeclined: true)
                     }
-                    
                 }
-            
             case .Failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
@@ -143,7 +133,7 @@ class NetworkingController{
         return false
     }
     
-    
+    //Apple Pay Exclusive
     func createPaymentRequest(cheese cheese: Double, pepperoni: Double) -> PKPaymentRequest{
         let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId)!
         if cheese != 0 {
@@ -160,7 +150,7 @@ class NetworkingController{
         return paymentRequest
     }
     
-    
+    //Apple Pay Exclusive
     func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
         
         let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
@@ -187,13 +177,13 @@ class NetworkingController{
     }
     
     
-    //MARK: Charge Backend
-    func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
+    //Only called by other functions in this class (applePayAuthorized)
+    //Apple Pay Exclusive
+    private func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
         
         let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON {
             response in
-            debugPrint(response)
             switch response.result{
             case .Success:
                 completion(.Success, nil)
@@ -206,13 +196,12 @@ class NetworkingController{
         }
     }
     
-    //MARK: Addresses
+    //MARK: Non Payment Functions
     func saveAddress(add: Address, userID: String){
         let url = Constants.newAddressURLString+userID
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
         
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
-            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
@@ -306,7 +295,6 @@ class NetworkingController{
         let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
         let parameters = [endpoint : String(boolean)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
-            debugPrint(response)
             if response.response?.statusCode == 401{
                 self.containerDelegate?.unauthenticated()
             }
@@ -317,7 +305,6 @@ class NetworkingController{
     static func checkHours(userID: String)->Bool{
         var isOpen = false
         Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
-            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{

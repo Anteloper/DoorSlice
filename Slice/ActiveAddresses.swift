@@ -10,12 +10,12 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
+//A class to fetch active dorms for the user's school
 class ActiveAddresses{
     private var dorms: [String]?
     
     init(user: User){
         Alamofire.request(.GET, Constants.getAddressesURLString + user.userID, parameters: nil).responseJSON{ response in
-            debugPrint(response)
             switch response.result{
             
             case .Success:

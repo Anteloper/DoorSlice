@@ -7,7 +7,10 @@
 //
 
 import Foundation
+import Alamofire
+import SwiftyJSON
 
+//A singleton class to retrieve current prices of slices
 class CurrentPrices{
     static let sharedInstance = CurrentPrices()
     
@@ -16,7 +19,21 @@ class CurrentPrices{
     
     init(){
         pepperoniPrice = 349
-        cheesePrice = 300
+        cheesePrice = 299
+        Alamofire.request(.GET, Constants.getPricesURLString, parameters: nil).responseJSON{ response in
+            debugPrint(response)
+            switch response.result{
+            case .Success:
+                if let value = response.result.value{
+                    let json = JSON(value)
+                    self.pepperoniPrice = Int(json["Cheese"].doubleValue * 100)
+                    self.cheesePrice = Int(json["Pepperoni"].doubleValue * 100)
+                }
+            case .Failure:
+                self.pepperoniPrice = 349
+                self.cheesePrice = 299
+            }
+        }
     }
     
     func getPepperoniCents()->Int{ return pepperoniPrice }

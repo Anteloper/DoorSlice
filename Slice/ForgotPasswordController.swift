@@ -10,6 +10,8 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+//Simply a controller with a phone number text field. When the user fills it out and hits send it sends a request to /sendCode
+//It then prepares an EnterCodeController to respond appropriately
 class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
     
     var rawNumber : String?

@@ -8,7 +8,8 @@
 
 import Foundation
 
-
+//An instance of this class is an object representing a single address added by a user. Conforms to NSCodign and NSCopying so it can be stored
+//With the user
 class Address: NSObject, NSCoding, NSCopying{
     var school: String
     var dorm: String
@@ -43,7 +44,6 @@ class Address: NSObject, NSCoding, NSCopying{
                 return nil
         }
         self.init(school: school, dorm: dorm, room: room)
-        
     }
     
     

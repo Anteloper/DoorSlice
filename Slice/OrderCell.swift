@@ -8,6 +8,7 @@
 
 import UIKit
 
+//A custom cell used by the Table View in OrderHistoryController
 class OrderCell: UITableViewCell {
     var order: PastOrder!
     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
