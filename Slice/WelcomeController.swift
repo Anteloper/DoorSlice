@@ -30,8 +30,6 @@ class WelcomeController: UIViewController {
         doorsliceLabel.textAlignment = .Center
         view.addSubview(doorsliceLabel)
         
-        //socialMediaButtons()
-        
         loginButton =  setupButton(CGRect(x: view.frame.width/4, y: view.frame.height/2+20, width: view.frame.width/2, height: 40), text: "LOGIN")
         loginButton.addTarget(self, action: #selector(login), forControlEvents: .TouchUpInside)
         loginButton.alpha = 0.0
