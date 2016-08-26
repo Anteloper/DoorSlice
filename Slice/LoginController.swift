@@ -29,6 +29,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     //MARK: LifeCycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.sharedApplication().statusBarHidden = true
         view.backgroundColor = Constants.darkBlue
         
     }
@@ -64,6 +65,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     func loginRequest(){
         let parameters = ["phone" : rawNumber, "password" : passwordField.text!]
         Alamofire.request(.POST, Constants.loginURLString, parameters: parameters).responseJSON{ response in
+            debugPrint(response)
             self.activityIndicator.stopAnimating()
             switch response.result{
             case .Success:
@@ -77,11 +79,7 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                     }
                 }
             case .Failure:
-                self.activityIndicator.stopAnimating()
-                let titleString = "Failed To Send Login Request"
-                let alert = UIAlertController(title: titleString, message: "Check your internet connection and try again", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                Alerts.serverError()
             }
         }
     }
@@ -91,6 +89,14 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         let jwt = fromJson["JWT"].stringValue
         let json = fromJson["User Profile"]
         let userID = json["_id"].stringValue
+        let wantsReceipts = json["wantsReceipts"].boolValue
+        let school = json["school"].stringValue
+        let hasSeenTutorial = json["hasSeenTutorial"].boolValue
+        let wantsOrderConfirmation = json["wantsConfirmation"].boolValue
+        var email: String? = json["email"].stringValue
+        if email == "noEmail"{
+            email = nil
+        }
         let hasCreatedFirstCard = json["hasStripeProfile"].boolValue
         let cardsJson = json["cards"].arrayValue
         let addressesJson = json["addresses"].arrayValue
@@ -139,17 +145,22 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
         for order in json["orders"].arrayValue{
             let jsonAddress = order["address"].arrayValue.first!
             let trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
-            var lastFour = ""
-            for lFour in cards{
-                if cardIDs[lFour] == order["cardUsed"].stringValue{
-                    lastFour = lFour
+            
+            var lastFour = "applePay"
+            if !(order["cardUsed"].stringValue == Constants.applePayCardID){
+                for lFour in cards{
+                    if cardIDs[lFour] == order["cardUsed"].stringValue{
+                        lastFour = lFour
+                    }
                 }
             }
             let cheese = order["cheese"].intValue
             let pepperoni = order["pepperoni"].intValue
+            let price = order["price"].doubleValue
             let timeOrdered = stringToDate(order["orderDate"].stringValue)
-            orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, timeOrdered: timeOrdered, paymentMethod: lastFour))
+            orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, price: price, timeOrdered: timeOrdered, paymentMethod: lastFour))
         }
+        
         
         let user = User(userID: userID, addresses: addresses,
                         addressIDs: addressIDs,
@@ -160,7 +171,14 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
                         hasCreatedFirstCard: hasCreatedFirstCard,
                         isLoggedIn: true,
                         jwt: jwt,
-                        orderHistory: orderHistory)
+                        orderHistory: orderHistory,
+                        hasPromptedRating: nil,
+                        loyaltySlices: 0,
+                        hasSeenTutorial: hasSeenTutorial,
+                        email: email,
+                        wantsReceipts: wantsReceipts,
+                        wantsOrderConfirmation: wantsOrderConfirmation,
+                        school: school)
         return user
             
     }
@@ -188,10 +206,17 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     }
     
     func loginUser(user: User){
-        let cc = ContainerController()
-        cc.loggedInUser = user
         view.endEditing(true)
-        self.presentViewController(cc, animated: false, completion: nil)
+        if user.hasSeenTutorial{
+            let cc = ContainerController()
+            cc.loggedInUser = user
+            self.presentViewController(cc, animated: false, completion: nil)
+        }
+        else{
+            let tc = TutorialController()
+            tc.user = user
+            self.presentViewController(tc, animated: false, completion: nil)
+        }
     }
     
     //Runs twice per call when enterTrue is true
@@ -304,19 +329,27 @@ class LoginController: UIViewController, UITextFieldDelegate, UIGestureRecognize
     
 
     func setup(){
-        let logoWidth = view.frame.width/3
-        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 50, width: logoWidth, height: logoWidth))
+        let doorsliceLabel = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 30))
+        doorsliceLabel.attributedText = Constants.getTitleAttributedString(" DOORSLICE", size: 25, kern: 18.0)
+        doorsliceLabel.textAlignment = .Center
+        view.addSubview(doorsliceLabel)
+        
+        let logoWidth = view.frame.width/4
+        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 100, width: logoWidth, height: logoWidth))
         logoView.contentMode = .ScaleAspectFit
-        logoView.image = UIImage(imageLiteral: "logo")
+        logoView.layer.minificationFilter = kCAFilterTrilinear
+        logoView.image = UIImage(imageLiteral: "pepperoni")
         view.addSubview(logoView)
         
-        phoneField = setupTextField(CGRect(x: view.frame.width/4, y: logoView.frame.maxY+40, width: view.frame.width/2, height: 40))
+        let fieldSpacing:CGFloat = UIScreen.mainScreen().bounds.height <= 568.0 ? 15 : 25
+        
+        phoneField = setupTextField(CGRect(x: view.frame.width/4, y: view.frame.height/2 - (40 + fieldSpacing), width: view.frame.width/2, height: 40))
         phoneField.alpha = 0.0
         phoneField.text = rawNumber
         phoneField.keyboardType = .NumberPad
         phoneField.text = autoFilledNumber != nil ? autoFilledNumber! : ""
         
-        passwordField = setupTextField(CGRect(x: view.frame.width/4, y: phoneField.frame.maxY+60, width: view.frame.width/2, height: 40))
+        passwordField = setupTextField(CGRect(x: view.frame.width/4, y: view.frame.height/2 + fieldSpacing, width: view.frame.width/2, height: 40))
         passwordField.alpha = 0.0
         passwordField.secureTextEntry = true
         

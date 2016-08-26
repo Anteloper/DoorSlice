@@ -13,24 +13,26 @@ internal struct Constants{
     
     static func userFilePath() -> String{
         let paths = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
-        let filePath = paths[0].URLByAppendingPathComponent("finalPath.plist")
+        let filePath = paths[0].URLByAppendingPathComponent("stagingPath.plist")
         return filePath.path!
     }
-    
     
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
     static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
+    static let tiltColorDark = UIColor(red: 0/255.0, green: 140/255.0, blue: 200/255.0, alpha: 1.0)
     static let seaFoam = UIColor(red: 40/255.0, green: 231/255.0, blue: 169/255.0, alpha: 1.0)
     static let tiltColorFade = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 0.8)
     static let darkBlue = UIColor(red: 30/255.0, green: 39/255.0, blue: 68/255.0, alpha: 1.0)
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
+    static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
+    static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
+    static let isOpenURLString = "https://doorslice.herokuapp.com/api/isOpen/"
     
-    static let stripePublishableKey = "pk_test_Lp3E4ypwmrizs2jfEenXdwpr"
-    static let JWTSecretKey = "2vczz6nvmvjpcfv0nrho"
-
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
+    static let rateLastOrderURLString = "https://doorslice.herokuapp.com/api/rateorder/"
+    
     static let sendPassodeURLString = "https://doorslice.herokuapp.com/api/sendPassCode"
     static let resetPasswordURLString = "https://doorslice.herokuapp.com/api/resetPass"
     
@@ -38,10 +40,9 @@ internal struct Constants{
     static let sendCodeURLString = "https://doorslice.herokuapp.com/api/sendCode"
     static let authenticateURLString = "https://doorslice.herokuapp.com/api/users/authenticate"
     static let loginURLString = "https://doorslice.herokuapp.com/api/users/login"
+    static let addEmailURLString = "https://doorslice.herokuapp.com/api/users/addEmail/"
     
-    static let testAuthURLString = "https://doorslice.herokuapp.com/api/users/"
-    
-    static let getAddressesURLString = "https://doorslice.herokuapp.com/api/addresses"
+    static let getAddressesURLString = "https://doorslice.herokuapp.com/api/addresses/"
     static let newAddressURLString = "https://doorslice.herokuapp.com/api/address/"
     static let deleteAddressURLString = "https://doorslice.herokuapp.com/api/address/"
     
@@ -51,24 +52,27 @@ internal struct Constants{
     static let chargeUserURLString = "https://doorslice.herokuapp.com/api/payments/charge/"
     static let deleteCardURLString = "https://doorslice.herokuapp.com/api/payments/removeCard/"
     
+    static let booleanChangeURLString = "https://doorslice.herokuapp.com/api/users/"
+    static let wantsReceipts = "wantsReceipts"
+    static let wantsConfirmation = "wantsConfirmation"
+    static let hasSeenTutorial = "hasSeenTutorial"
     
-    
-    static func getTitleAttributedString(text: String)->NSAttributedString{
+    static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(6.0), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 16)!, range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
         return attributedString
     }
-    
+
     static func getBackButton()->UIButton{
-        let backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 75, height: 32))
+        let backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 20, height: 20))
         backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
         return backButton
     }
     
     static let appleMerchantId = "merchant.com.dormslice"
-    static let userKey = "finalUserKey"
+    static let userKey = "stagingKey"
     static let applePayCardID = "applePay"
     
     static let schools = ["GEORGETOWN UNIVERSITY",  "COLUMBIA UNIVERSITY"]

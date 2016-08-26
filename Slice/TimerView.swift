@@ -18,9 +18,8 @@ class TimerView: UIView {
     
     
     override init(frame: CGRect){
-        
+
         super.init(frame: frame)
-    
         self.backgroundColor = UIColor.clearColor()
         alpha = 0.7
         
@@ -37,9 +36,8 @@ class TimerView: UIView {
         lineLayer.lineWidth = 60
         lineLayer.opacity = 1.0
         lineLayer.strokeEnd = 0.0
-        
+    
         layer.addSublayer(lineLayer)
-
     }
     
 

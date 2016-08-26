@@ -13,6 +13,9 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     var delegate: Slideable?
     var menuWidth: CGFloat?
     
+    let accountStrings = ["SETTINGS", "ORDER HISTORY", "LOGOUT"]
+    let accountScreens: [Int?] = [4, 3, nil]
+    
     let tableView = UITableView()
     let cellHeight: CGFloat = 80
     
@@ -76,7 +79,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             return cardBeingProcessed == nil ? cards.count + 1 : cards.count + 2
         }
         else{
-            return 2
+            return accountStrings.count
         }
     }
     
@@ -142,12 +145,12 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         else{
-            return indexPath.row == 0 ? accountCell("ORDER HISTORY", isRed: false) :  accountCell("LOGOUT", isRed: true)
+            return accountCell(accountStrings[indexPath.row], isRed: indexPath.row == accountStrings.count-1)
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        //toScreen: 1 for newCard, 2 for newAddress, 3 for orderHistory
+        //toScreen: 1 for newCard, 2 for newAddress, 3 for orderHistory, 4 for account settings
         if indexPath.section == 0{
             if indexPath.row < addresses.count{
                 preferredAddress = indexPath.row
@@ -165,7 +168,12 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         else{
-            indexPath.row == 0 ? delegate!.bringMenuToFullscreen(toScreen: 3) : delegate!.logOutUser()
+            if let screen = accountScreens[indexPath.row]{
+                delegate!.bringMenuToFullscreen(toScreen: screen)
+            }
+            else{
+                delegate!.logoutConfirmation()
+            }
         }
     }
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -182,23 +190,26 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         return false
     }
     
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath){}
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete{
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        UIButton.appearance().setAttributedTitle(Constants.getTitleAttributedString("DELETE", size: 14, kern: 3.0), forState: .Normal)
+        
+        let deleteAction = UITableViewRowAction(style: .Normal, title: "DELETE"){ (action, indexPath) in
             if indexPath.section == 0{
-                delegate?.addressRemoved(indexPath.row)
-                addresses.removeAtIndex(indexPath.row)
-                
+                self.delegate?.addressRemoved(indexPath.row)
+                self.addresses.removeAtIndex(indexPath.row)
             }
             else{
-                delegate?.cardRemoved(indexPath.row)
-                cards.removeAtIndex(indexPath.row)
+                self.delegate?.cardRemoved(indexPath.row)
+                self.cards.removeAtIndex(indexPath.row)
             }
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-            
         }
+        deleteAction.backgroundColor = Constants.lightRed
+        return [deleteAction]
     }
-    
     
     //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{

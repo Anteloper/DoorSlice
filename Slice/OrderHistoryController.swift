@@ -17,29 +17,24 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(view.frame.width)
         view.backgroundColor = Constants.darkBlue
-        addTitleLabel()
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
+        navBarSetup()
+        
         view.addGestureRecognizer(swipe)
+        
         if orderHistory.count != 0{
+   
             setupTableView()
             orderHistory = orderHistory.reverse()
+            addTitleLabel()
         }
         else{
-            let trueMidY = (view.frame.height - 170)/2
-            let origin = CGPoint(x: view.frame.midX - 300, y: trueMidY - 150)
-            let size = CGSize(width: 600, height: 600)
-            
-            
-            let emptyDataSetView = UIImageView(frame: CGRect(origin: origin, size: size))
-            emptyDataSetView.image = UIImage(imageLiteral: "noOrders")
-
-            view.addSubview(emptyDataSetView)
+            emptyDataSet()
         }
     }
-
+    
     func didSwipe(recognizer: UIPanGestureRecognizer){
         if recognizer.state == .Ended{
             let point = recognizer.translationInView(view)
@@ -50,21 +45,18 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func addTitleLabel(){
-        let label = UILabel(frame: CGRect(x: 0, y: 20, width: view.frame.width, height: 150))
-        label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY")
+        let label = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 100))
+        label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY", size: 16, kern: 6.0)
         label.textAlignment = .Center
         view.addSubview(label)
-        
-        let backButton = Constants.getBackButton()
-        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
-        view.addSubview(backButton)
     }
     
     func backPressed(){
-        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+        delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
     }
     func setupTableView(){
-        tableView.frame = CGRect(x: 0, y: 150, width: view.frame.width, height: view.frame.height-150)
+        tableView.frame = CGRect(x: 0, y: 160, width: view.frame.width, height: view.frame.height-160)
+        self.automaticallyAdjustsScrollViewInsets = false
         tableView.backgroundColor = Constants.darkBlue
         tableView.delegate = self
         tableView.dataSource = self
@@ -92,5 +84,26 @@ class OrderHistoryController: UIViewController, UITableViewDelegate, UITableView
         return cell
     }
     
+    func navBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
+        titleLabel.textAlignment = .Center
+        navigationItem.titleView = titleLabel
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
+        backButton.frame = CGRect(x: 0, y: -4, width: 20, height: 20)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+    }
+    
+    func emptyDataSet(){
+        let width = UIScreen.mainScreen().bounds.width
+        let imageView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY - width/2, width: width, height: width))
+        imageView.image = UIImage(imageLiteral: "noOrders")
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        view.addSubview(imageView)
+    }
     
 }

@@ -18,6 +18,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     var code: String!
     var shouldPromptPasswordChange: Bool!
     var phoneNumber: String!
+    var school: String!
     
     var password: String? //Must be set if authenticating
     
@@ -41,6 +42,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Constants.darkBlue
+        UIApplication.sharedApplication().statusBarHidden = true
         setup()
     }
     
@@ -81,41 +83,51 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                 }
                 
             case .Failure:
-                let titleString = "Request To Change Password Failed"
-                let alert = UIAlertController(title: titleString, message: "Check your internet connection and try again", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                Alerts.serverError()
             }
         }
     }
     
+    func navBarSetup(){
+        
+    }
+    
     func createAccount(){
-        let parameters = ["phone" : phoneNumber, "password" : password]
+        let parameters1 = ["phone" : phoneNumber, "password" : password, "school" : school]
+        let parameters2 = ["phone" : phoneNumber, "password" : password]
         //Request to /Users
-        Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters).responseJSON { response in
+        Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters1).responseJSON { response in
+            debugPrint(response)
             switch response.result{
+                
             case .Success:
                 if let value = response.result.value{
                     let json = JSON(value)
                     if json["success"].boolValue{
                         let userID = JSON(value)["userID"].stringValue
                         //Request to /Authenticate
-                        Alamofire.request(.POST, Constants.authenticateURLString, parameters: parameters).responseJSON{ response in
+                        Alamofire.request(.POST, Constants.authenticateURLString, parameters: parameters2).responseJSON{ response in
                             self.activityIndicator.stopAnimating()
+                            debugPrint(response)
                             switch response.result{
                             case .Success:
                                 if let value = response.result.value{
                                     let jwt = JSON(value)["token"].stringValue
-                                    let newUser = User(userID: userID, jwt: jwt)
-                                    let cc = ContainerController()
-                                    cc.loggedInUser = newUser
+                                    let newUser = User(userID: userID, jwt: jwt, school: self.school)
+                                    let tc = TutorialController()
+                                    tc.user = newUser
                                     self.view.endEditing(true)
-                                    self.presentViewController(cc, animated: false, completion: nil)
+                                    let navController = tc
+                                    self.presentViewController(navController, animated: false, completion: nil)
                                 }
                             case .Failure:
                                 self.failure()
                             }
                         }
+                    }
+                    else{
+                        self.activityIndicator.stopAnimating()
+                        self.failure()
                     }
                 }
             case .Failure:
@@ -125,10 +137,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
     }
     
     func failure(){
-        activityIndicator.stopAnimating()
-        let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        Alerts.serverError()
     }
     
     //MARK: TextField Management
@@ -156,6 +165,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                 }
             }
         }
+
         else{
             if textField.text == newPassField.text && textField.text?.characters.count >= 5{
                 UIView.animateWithDuration(1.0, animations: {self.confirmPassField.layer.borderColor = Constants.seaFoam.CGColor})
@@ -167,6 +177,7 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
                 })
             }
         }
+        
         if UIColor(CGColor: resetPasswordButton.layer.borderColor!) == Constants.seaFoam{
             if UIColor(CGColor: newPassField.layer.borderColor!) == Constants.seaFoam{
                 if UIColor(CGColor: confirmPassField.layer.borderColor!) == Constants.seaFoam{
@@ -175,7 +186,6 @@ class EnterCodeController: UIViewController,UITextFieldDelegate, UIGestureRecogn
             }
         }
     }
-    
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if textField is CodeField{

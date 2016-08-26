@@ -11,6 +11,8 @@ import UIKit
 //The top bar that appears while a user is in the process of placing an order
 class OrderProgressView: UIView{
     
+    var slices = [UIImageView]()
+    var sliceOutlines = [UIImageView]()
     var timer = TimerView()
     var delegate: Timeable?{
         didSet{
@@ -44,17 +46,36 @@ class OrderProgressView: UIView{
     }
     
     func addSlice(ofType: Slice){
-        let topSlice = UIButton(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: 40, height: 40))
+        let size:CGFloat = frame.width >= 375 ? 40 : 33
+        let yVal:CGFloat = frame.width >= 375 ? 70 : 75
+        let topSlice = UIImageView(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: size, height: size))
+        topSlice.layer.minificationFilter = kCAFilterTrilinear
         let image = ofType == .Cheese ? UIImage(imageLiteral: "smallCheese") : UIImage(imageLiteral: "smallPepperoni")
-        topSlice.setBackgroundImage(image, forState: .Normal)
+        topSlice.image = image
         topSlice.alpha = 1
         addSubview(topSlice)
         sendSubviewToBack(topSlice)
-        UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*40), y: 70) } )
+        slices.append(topSlice)
         
+        UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*size), y: yVal) } )
         bringSubviewToFront(topSlice)
+        
+        /*let overlapView = UIImageView(frame: topSlice.frame)
+        overlapView.image = UIImage(imageLiteral: "outline")
+        overlapView.layer.minificationFilter = kCAFilterTrilinear
+        sliceOutlines.append(overlapView)*/
     }
     
+    func addToLoyalty(frame: CGRect){
+        for slice in slices{
+            slice.removeFromSuperview()
+        }
+        for outline in sliceOutlines{
+            self.window!.addSubview(outline)
+        }
+        let o = sliceOutlines[0]
+        UIView.animateWithDuration(1.0, animations: {o.frame = CGRect(x: frame.origin.x+(13 - 13/2), y: frame.origin.y+20, width: 13, height: 13)})
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

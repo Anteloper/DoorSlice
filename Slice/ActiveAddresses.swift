@@ -11,27 +11,27 @@ import Alamofire
 import SwiftyJSON
 
 class ActiveAddresses{
-    private var data: [String : [String]]?
+    private var dorms: [String]?
     
-    init(){
-        Alamofire.request(.GET, Constants.getAddressesURLString, parameters: nil).responseJSON{
-            response in
+    init(user: User){
+        Alamofire.request(.GET, Constants.getAddressesURLString + user.userID, parameters: nil).responseJSON{ response in
+            debugPrint(response)
             switch response.result{
             
             case .Success:
-                self.data = [String : [String]]()
                 if let value = response.result.value{
-                    let dict = JSON(value)["Schools"].dictionaryValue
-                    for(school, _) in dict{
-                        self.data![school] = dict[school]?.arrayObject as? [String]
+                    self.dorms = [String]()
+                    for dorm in JSON(value)["Dorms"].arrayValue{
+                        self.dorms?.append(dorm.stringValue)
                     }
                 }
+               
             default: break
             }
         }
     }
     
-    func getData() -> [String : [String]] {
-        return data ?? ["Columbia University" : Constants.columbiaDorms, "Georgetown University" : Constants.georgetownDorms]
+    func getDorms() -> [String]? {
+        return dorms
     }
 }

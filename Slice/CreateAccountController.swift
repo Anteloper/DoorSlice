@@ -13,15 +13,17 @@ import SwiftyJSON
 class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate{
     var webtoken: String?
     var userID: String?
-    
-    let fieldHeight: CGFloat = 40
-    var fieldWidth: CGFloat!
+
     var rawNumber = ""
+    
+    let georgetownButton = UIButton()
+    let columbiaButton = UIButton()
     
     var phoneField = UITextField()
     var passwordField = UITextField()
     var confirmPasswordField = UITextField()
 
+    let schoolViewLeft = UIImageView()
     let phoneViewLeft = UIImageView()
     let passViewLeft = UIImageView()
     let confirmViewLeft = UIImageView()
@@ -33,6 +35,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     var keyboardShouldMoveScreen = false //True for iphone 5 and smaller
     var hasSetUp = false
     
+    var isGeorgetown: Bool? = nil
+    
     lazy private var activityIndicator : CustomActivityIndicatorView = {
         return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
@@ -40,6 +44,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        UIApplication.sharedApplication().statusBarHidden = true
         keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0 //Check Screen size
         view.backgroundColor = Constants.darkBlue
         addObservers()
@@ -50,9 +55,23 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        UIView.animateWithDuration(0.5, animations: {self.phoneField.alpha = 1.0; self.phoneViewLeft.alpha = 1.0})
+        
+        let doorsliceLabel = UILabel(frame: CGRect(x: 0, y: 18, width: view.frame.width, height: 30))
+        doorsliceLabel.attributedText = Constants.getTitleAttributedString(" DOORSLICE", size: 20, kern: 18.0)
+        doorsliceLabel.textAlignment = .Center
+        view.addSubview(doorsliceLabel)
+        
+        let logoWidth = view.frame.width/4
+        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 50, width: logoWidth, height: logoWidth))
+        logoView.contentMode = .ScaleAspectFit
+        logoView.layer.minificationFilter = kCAFilterTrilinear
+        logoView.image = UIImage(imageLiteral: "pepperoni")
+        view.addSubview(logoView)
+       
+        UIView.animateWithDuration(0.5, delay: 0.0, options: [], animations: {self.phoneField.alpha = 1.0; self.phoneViewLeft.alpha = 1.0}, completion: nil)
         UIView.animateWithDuration(0.5, delay: 0.2, options: [], animations: {self.passwordField.alpha = 1.0; self.passViewLeft.alpha = 1.0}, completion: nil)
         UIView.animateWithDuration(0.5, delay: 0.4, options: [], animations: {self.confirmPasswordField.alpha = 1.0; self.confirmViewLeft.alpha = 1.0} , completion: nil)
+         UIView.animateWithDuration(0.5, delay: 0.6, options: [], animations: {self.georgetownButton.alpha = 1.0; self.columbiaButton.alpha = 1.0; self.schoolViewLeft.alpha = 1.0}, completion: nil)
     }
     
     //MARK: Account Creation and Setup
@@ -60,7 +79,12 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         if rawNumber.characters.count >= 10{
             if passwordField.text?.characters.count >= 5{
                 if confirmPasswordField.text == passwordField.text{
-                    createAccount()
+                    if isGeorgetown != nil{
+                        createAccount()
+                    }
+                    else{
+                        shakeButtons(enterTrue: true)
+                    }
                 }
                 else{
                     shakeTextField(confirmPasswordField,leftView: confirmViewLeft, enterTrue: true)
@@ -117,8 +141,10 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
                     if JSON(value)["success"].boolValue{
                         let ec = EnterCodeController()
                         ec.code = JSON(value)["message"].stringValue
+                        print(ec.code)
                         ec.phoneNumber = self.rawNumber
                         ec.password = self.confirmPasswordField.text!
+                        ec.school = self.isGeorgetown! ? "GEORGETOWN" : "COLUMBIA"
                         ec.shouldPromptPasswordChange = false
                         self.presentViewController(ec, animated: false, completion: nil)
                     }
@@ -141,10 +167,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     }
     
     func accountExists(){
-        let alert = UIAlertController(title: "Phone Number Already In Use", message: "Did you mean to login?", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: .Default , handler: {_ in self.activityIndicator.stopAnimating()}))
-        alert.addAction(UIAlertAction(title: "Login", style: .Default, handler: { _ in self.login() }))
-        presentViewController(alert, animated: true, completion: nil)
+        Alerts.accountExists(){ if ($0){ self.login() } }
     }
     
     func login(){
@@ -157,22 +180,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     func failure(){
         activityIndicator.stopAnimating()
-        let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
-    }
-    
-    
-    //MARK: Navigation Bar Setup
-    func navBarSetup(){
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        titleLabel.backgroundColor = UIColor.clearColor()
-        titleLabel.font = UIFont(name: "GillSans-Light", size: 25)
-        titleLabel.textColor = Constants.tiltColor
-        titleLabel.alpha = 0.8
-        titleLabel.textAlignment = .Center
-        titleLabel.text = "Slice"
-        navigationItem.titleView = titleLabel
+        Alerts.serverError()
     }
     
 
@@ -358,13 +366,8 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
     
     //MARK: Setup
     func setup(){
-        let logoWidth = view.frame.width/3
-        let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 50, width: logoWidth, height: logoWidth))
-        logoView.contentMode = .ScaleAspectFit
-        logoView.image = UIImage(imageLiteral: "logo")
-        view.addSubview(logoView)
-        
-        phoneField = setupTextField(CGRect(x: view.frame.width/4, y: logoView.frame.maxY+60, width: view.frame.width/2, height: 40))
+        let spacer: CGFloat = !keyboardShouldMoveScreen ? 40 : 0
+        phoneField = setupTextField(CGRect(x: view.frame.width/4, y: 150 + spacer, width: view.frame.width/2, height: 40))
         phoneField.alpha = 0.0
         phoneField.keyboardType = .NumberPad
         
@@ -383,15 +386,39 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         
         passViewLeft.image =  UIImage(imageLiteral: "padlock")
         passViewLeft.alpha = 0.0
+        passViewLeft.layer.minificationFilter = kCAFilterTrilinear
         passViewLeft.frame = CGRect(x:passwordField.frame.minX-40, y: passwordField.frame.minY+5, width: 30, height: 30)
         view.addSubview(passViewLeft)
         
         confirmViewLeft.image = UIImage(imageLiteral: "padlock")
         confirmViewLeft.alpha = 0.0
+        confirmViewLeft.layer.minificationFilter = kCAFilterTrilinear
         confirmViewLeft.frame = CGRect(x: confirmPasswordField.frame.minX-40, y: confirmPasswordField.frame.minY+5, width: 30, height: 30)
         view.addSubview(confirmViewLeft)
+    
+        let buttonYVal = (view.frame.height*6/7 - ((view.frame.height*6/7 - confirmPasswordField.frame.maxY)/2 + 20))
+        georgetownButton.frame = CGRect(x: 20, y: buttonYVal, width: view.frame.width/2-23, height: 40)
+        georgetownButton.setAttributedTitle(Constants.getTitleAttributedString("GEORGETOWN", size: 10, kern: 4.0), forState: .Normal)
+        georgetownButton.layer.cornerRadius = 5
+        georgetownButton.clipsToBounds = true
+        georgetownButton.layer.borderColor = UIColor.whiteColor().CGColor
+        georgetownButton.layer.borderWidth = 1.0
+        georgetownButton.addTarget(self, action: #selector(georgetownPressed), forControlEvents: .TouchUpInside)
+        georgetownButton.alpha = 0.0
+        view.addSubview(georgetownButton)
+        
+        columbiaButton.frame = CGRect(x: view.frame.width/2+3, y: buttonYVal, width: view.frame.width/2-23, height: 40)
+        columbiaButton.addTarget(self, action: #selector(columbiaPressed), forControlEvents: .TouchUpInside)
+        columbiaButton.setAttributedTitle(Constants.getTitleAttributedString("COLUMBIA", size: 10, kern: 4.0), forState: .Normal)
+        columbiaButton.layer.cornerRadius = 5
+        columbiaButton.clipsToBounds = true
+        columbiaButton.layer.borderWidth = 1.0
+        columbiaButton.layer.borderColor = UIColor.whiteColor().CGColor
+        columbiaButton.alpha = 0.0
+        view.addSubview(columbiaButton)
   
-        goButton.frame = CGRect(x: view.frame.width/4, y: 4*view.frame.height/5, width: view.frame.width/2, height: 40)
+        
+        goButton.frame = CGRect(x: view.frame.width/4, y: 6*view.frame.height/7, width: view.frame.width/2, height: 40)
         goButton.addTarget(self, action: #selector(createAccountPressed), forControlEvents: .TouchUpInside)
         let attributedString = NSMutableAttributedString(string: "REGISTER")
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString("REGISTER"))
@@ -400,6 +427,7 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         goButton.setAttributedTitle(attributedString, forState: .Normal)
         goButton.backgroundColor = UIColor.clearColor()
         view.addSubview(goButton)
+     
         
         let backButton = Constants.getBackButton()
         backButton.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
@@ -409,6 +437,58 @@ class CreateAccountController: UIViewController, UITextFieldDelegate, UIGestureR
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
 
+    }
+    
+    func georgetownPressed(){
+        let at = Constants.getTitleAttributedString("GEORGETOWN", size: 10, kern: 4.0)
+        at.addAttribute(NSForegroundColorAttributeName, value: Constants.seaFoam, range: (at.string as NSString).rangeOfString("GEORGETOWN"))
+        georgetownButton.setAttributedTitle(at, forState: .Normal)
+        georgetownButton.layer.borderColor = Constants.seaFoam.CGColor
+        isGeorgetown = true
+        
+        columbiaButton.setAttributedTitle(Constants.getTitleAttributedString("COLUMBIA", size: 10, kern: 4.0), forState: .Normal)
+        columbiaButton.layer.borderColor = UIColor.whiteColor().CGColor
+        
+    }
+    
+    func columbiaPressed(){
+        let at = Constants.getTitleAttributedString("COLUMBIA", size: 10, kern: 4.0)
+        at.addAttribute(NSForegroundColorAttributeName, value: Constants.seaFoam, range: (at.string as NSString).rangeOfString("COLUMBIA"))
+        columbiaButton.setAttributedTitle(at, forState: .Normal)
+        columbiaButton.layer.borderColor = Constants.seaFoam.CGColor
+        isGeorgetown = false
+        
+        georgetownButton.setAttributedTitle(Constants.getTitleAttributedString("GEORGETOWN", size: 10, kern: 4.0), forState: .Normal)
+        georgetownButton.layer.borderColor = UIColor.whiteColor().CGColor
+    }
+    
+    func shakeButtons(enterTrue enterTrue: Bool){
+        
+        UIView.animateWithDuration(0.1, animations: {
+            self.georgetownButton.frame.origin.x += 10
+            self.columbiaButton.frame.origin.x += 10
+            }, completion:{ _ in UIView.animateWithDuration(0.1, animations: {
+                self.georgetownButton.frame.origin.x -= 10
+                self.columbiaButton.frame.origin.x -= 10
+                }, completion: { _ in
+                    UIView.animateWithDuration(0.1, animations: {
+                        self.georgetownButton.frame.origin.x += 10
+                        self.columbiaButton.frame.origin.x += 10
+                        }, completion: { _ in
+                            UIView.animateWithDuration(0.1, animations: {
+                                self.georgetownButton.frame.origin.x -= 10
+                                self.columbiaButton.frame.origin.x -= 10
+                                }, completion: { _ in
+                                    if enterTrue{
+                                        self.shakeButtons(enterTrue: false)
+                                    }
+                                })
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){

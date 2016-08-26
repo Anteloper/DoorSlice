@@ -26,6 +26,7 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.sharedApplication().statusBarHidden = true
         view.backgroundColor = Constants.darkBlue
         setup()
     }
@@ -140,7 +141,6 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
             activityIndicator.startAnimating()
             let parameters = ["phone" : rawNumber!]
             Alamofire.request(.POST, Constants.sendPassodeURLString, parameters: parameters).responseJSON { response in
-                debugPrint(response)
                 self.activityIndicator.stopAnimating()
                 switch response.result{
                 case .Success:
@@ -156,16 +156,12 @@ class ForgotPasswordController: UIViewController, UITextFieldDelegate, UIGesture
                             self.presentViewController(ec, animated: false, completion: nil)
                         }
                         else{
-                            let alert = UIAlertController(title: "No Account Found", message: "No acccount with this phone number was found.", preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                            self.presentViewController(alert, animated: false, completion: nil)
+                            Alerts.noAccount()
                         }
                     }
                 case .Failure:
                     self.isSending = false
-                    let alert = UIAlertController(title: "Couldn't Connect to Server", message: "Try again later", preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    Alerts.serverError()
                 }
             }
         }

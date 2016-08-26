@@ -17,28 +17,46 @@ protocol Slideable{
     func userTap()
     func menuCurrentlyShowing()->Bool
     func bringMenuToFullscreen(toScreen screen: Int)
-    func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?)
-    func payForOrder(cheese cheese: Double, pepperoni: Double)
+    func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?, fromSettings: Bool)
+    func timerEnded(cheese cheese: Double, pepperoni: Double)
     func getPaymentAndAddress() -> (String, String)
+    func retrieveAddresses()
     func cardRemoved(index: Int)
     func addressRemoved(index: Int)
-    func logOutUser()
+    func logoutConfirmation()
     func orderHistory()
 
 }
 
-//Objects that conform to this protocol can call paymentController functions
+//Objects that conform to this protocol can name themselves as a networkController delegate functions
 protocol Payable {
     var applePayFailed: Bool{ get set }
-    func amountPaid(amount: Double)
     func storeCardID(cardID: String, lastFour: String)
-    func cardStoreageFailed(trueFailure trueFailure: Bool)
+    func cardStoreageFailed(cardDeclined declined: Bool)
     func cardPaymentSuccesful()
-    func cardPaymentFailed()
+    func cardPaymentFailed(cardDeclined declined: Bool)
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
+    func addLoyalty(slices: Int)
+    func removeLoyalty(slices: Int)
+    func emailSaveFailed()
+    func unauthenticated()
+}
+
+//Only responsible for responding to functions related to cards and addresses. Used by the tutorial screen when configuring a user
+protocol Configurable{
+    func storeCardID(cardID: String, lastFour: String)
+    func cardStoreageFailed(cardDeclined declined: Bool)
+    func addressSaveSucceeded(add: Address, orderID: String)
+    func addressSaveFailed()
+    func unauthenticated()
 }
 
 protocol Timeable{
-    func timerEnded(didComplete: Bool)
+   func timerEnded(didComplete: Bool)
+}
+
+protocol Rateable{
+    func dismissed(withRating rating: Int, comment: String?)
+    func addEmail(email: String)
 }

@@ -15,20 +15,44 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
     let paymentTextField = STPPaymentCardTextField()
     var delegate: Slideable?
     var validated = false
+    var user: User!
+
+    var shouldDismissWithApplePayAlert: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navBarSetup()
         view.backgroundColor = Constants.darkBlue
         paymentTextField.textColor = UIColor.whiteColor()
         paymentTextField.frame = CGRect(x: 15, y: 100, width: view.frame.width-30, height: 44)
         paymentTextField.delegate = self
         view.addSubview(paymentTextField)
-        addCancel()
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(self.didSwipe(_:)))
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
         
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if shouldDismissWithApplePayAlert != nil{
+            if shouldDismissWithApplePayAlert!{
+                Alerts.applePayFound(self)
+            }
+        }
+    }
+    
+    func navBarSetup(){
+        navigationController?.navigationBar.barTintColor = Constants.darkBlue
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
+        titleLabel.textAlignment = .Center
+        navigationItem.titleView = titleLabel
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton.addTarget(self, action: #selector(exit), forControlEvents: .TouchUpInside)
+        backButton.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
     
     func didSwipe(recognizer: UIPanGestureRecognizer){
@@ -39,15 +63,16 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
             }
         }
     }
-
-    func addCancel(){
-        let cancelButton = Constants.getBackButton()
-        cancelButton.addTarget(self, action: #selector(self.exit), forControlEvents: .  TouchUpInside)
-        view.addSubview(cancelButton)
-    }
     
     func exit(){
-        self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil)
+        if delegate != nil{
+            self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
+        }
+        else{
+            let tc = TutorialController()
+            tc.user = self.user
+            presentViewController(tc, animated: false, completion: nil)
+        }
     }
     
     func paymentCardTextFieldDidChange(textField: STPPaymentCardTextField) {
@@ -81,7 +106,15 @@ class NewCardController: UIViewController, STPPaymentCardTextFieldDelegate, UIGe
                                                 checkView.alpha = 0.0
                                                 }, completion:{
                                                     if($0){
-                                                        self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil)
+                                                        if self.delegate != nil{
+                                                            self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil, fromSettings: false)
+                                                        }
+                                                        else{
+                                                            let tc = TutorialController()
+                                                            tc.user = self.user
+                                                            tc.pendingCard = textField.cardParams
+                                                            self.presentViewController(tc, animated: false, completion: nil)
+                                                        }
                                                     }
                                                 }
                                             )
