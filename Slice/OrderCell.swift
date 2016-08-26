@@ -56,7 +56,7 @@ class OrderCell: UITableViewCell {
     func addPrice(){
         let label = UILabel(frame: CGRect(x: 20, y: midLabelY, width: frame.width*3/5, height: labelHeight))
         var priceString = String(order.price)
-        if order.price % 3.00 == 0{
+        if order.price % 1.00 == 0{
             priceString += "0"
         }
         label.attributedText = getAttributedText("$\(priceString)", size: 14, kern: 5.0, color: UIColor.whiteColor())

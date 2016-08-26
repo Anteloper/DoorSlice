@@ -148,13 +148,13 @@ class NetworkingController{
         let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId)!
         if cheese != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Cheese slices",
-                amount:NSDecimalNumber(double: cheese*3.00)))
+                amount:NSDecimalNumber(double: cheese*CurrentPrices.sharedInstance.getCheeseDollars())))
         }
         if pepperoni != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Pepperoni slices",
-                amount:NSDecimalNumber(double: pepperoni*3.59)))
+                amount:NSDecimalNumber(double: pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars())))
         }
-        let total = cheese*3 + pepperoni*3.59
+        let total = cheese*CurrentPrices.sharedInstance.getCheeseDollars() + pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars()
         paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "DoorSlice Order", amount: NSDecimalNumber(double: total)))
         
         return paymentRequest

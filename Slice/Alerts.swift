@@ -29,9 +29,9 @@ class Alerts{
     
     static func confirmOrder(cheese: Double, pepperoni: Double, cc: ContainerController, confirmedHandler: ()->Void){
         //String creation
-        let value = cheese*3.00 + pepperoni*3.49
+        let value = cheese*CurrentPrices.sharedInstance.getCheeseDollars() + pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars()
         var total = String(value)
-        if value%3.00 == 0{
+        if value%1.00 == 0{
             total += "0"
         }
         let chs = Int(cheese)
