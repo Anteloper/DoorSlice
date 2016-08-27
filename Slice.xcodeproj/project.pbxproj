@@ -37,7 +37,6 @@
 		4CDAFE2D1D443BD100659C93 /* OrderHistoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */; };
 		4CDAFE2F1D44462C00659C93 /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2E1D44462C00659C93 /* OrderCell.swift */; };
 		4CF756721D0A177C00746AEE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756711D0A177C00746AEE /* AppDelegate.swift */; };
-		4CF756771D0A177C00746AEE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CF756751D0A177C00746AEE /* Main.storyboard */; };
 		4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CF756781D0A177C00746AEE /* Assets.xcassets */; };
 		4CF7567C1D0A177C00746AEE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7567A1D0A177C00746AEE /* LaunchScreen.storyboard */; };
 		4CF756871D0A177C00746AEE /* SliceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756861D0A177C00746AEE /* SliceTests.swift */; };
@@ -107,7 +106,6 @@
 		4CDAFE2E1D44462C00659C93 /* OrderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 		4CF7566E1D0A177C00746AEE /* Slice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CF756711D0A177C00746AEE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4CF756761D0A177C00746AEE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4CF756781D0A177C00746AEE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4CF7567B1D0A177C00746AEE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4CF7567D1D0A177C00746AEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -223,7 +221,6 @@
 			children = (
 				4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */,
 				4C47CD031D1B396200AEEB97 /* Slice.entitlements */,
-				4CF756751D0A177C00746AEE /* Main.storyboard */,
 				4CF756781D0A177C00746AEE /* Assets.xcassets */,
 				4CF7567A1D0A177C00746AEE /* LaunchScreen.storyboard */,
 				4CF7567D1D0A177C00746AEE /* Info.plist */,
@@ -476,7 +473,6 @@
 				4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */,
 				4CF7567C1D0A177C00746AEE /* LaunchScreen.storyboard in Resources */,
 				4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */,
-				4CF756771D0A177C00746AEE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,14 +690,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4CF756751D0A177C00746AEE /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4CF756761D0A177C00746AEE /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		4CF7567A1D0A177C00746AEE /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
