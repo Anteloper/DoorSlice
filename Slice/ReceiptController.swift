@@ -214,5 +214,3 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     }
     
 }
-
-

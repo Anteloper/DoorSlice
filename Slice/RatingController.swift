@@ -269,4 +269,4 @@ class RatingControl: UIView {
             Alerts.shakeView(button, enterTrue: true)
         }
     }
-    }
+}

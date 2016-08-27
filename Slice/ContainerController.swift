@@ -547,7 +547,4 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         networkController.addEmail(loggedInUser.userID, email: email)
         networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: true)
     }
-    
-  
-
 }

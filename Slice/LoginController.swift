@@ -369,5 +369,4 @@ class LoginController: NavBarless, UITextFieldDelegate{
         }
         presentViewController(fc, animated: false, completion: nil)
     }
-    
 }

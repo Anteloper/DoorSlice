@@ -71,5 +71,4 @@ class NavBarred: NavBarless{
         backButton!.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton!)
     }
-    
 }

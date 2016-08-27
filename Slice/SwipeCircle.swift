@@ -36,5 +36,4 @@ class SwipeCircle: UIView {
         backgroundColor = UIColor.clearColor()
         layer.borderColor = UIColor.grayColor().CGColor
     }
-    
 }

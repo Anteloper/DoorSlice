@@ -74,5 +74,4 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
         imageView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(imageView)
     }
-    
 }

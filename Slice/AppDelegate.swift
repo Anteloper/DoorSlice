@@ -28,14 +28,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         if user.isLoggedIn{
             if user.hasSeenTutorial{
-                
                 containerController = ContainerController()
                 containerController!.loggedInUser = user
                 window?.rootViewController = containerController!
-                
             }
             else{
-
                 let tc = TutorialController()
                 tc.user = user
                 window?.rootViewController = tc
@@ -44,7 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         else{
             window?.rootViewController = LoginController()
         }
-        
         window!.makeKeyAndVisible()
         
         if UIScreen.mainScreen().bounds.height <= 480.0{ Alerts.iPhone4() }
@@ -73,8 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             containerController!.promptUserFeedBack()
         }
     }
-    
-    
 }
 
 

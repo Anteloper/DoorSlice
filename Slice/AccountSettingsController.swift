@@ -325,5 +325,4 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailTest.evaluateWithObject(testStr)
     }
-    
 }

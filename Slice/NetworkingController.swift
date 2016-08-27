@@ -322,6 +322,3 @@ class NetworkingController{
         return isOpen
     }
 }
-
-
-

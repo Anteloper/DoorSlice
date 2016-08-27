@@ -57,5 +57,4 @@ class Address: NSObject, NSCoding, NSCopying{
     func getName()-> String{
         return Constants.dormNicknames[self.dorm] == nil ? self.dorm + " " + self.room : Constants.dormNicknames[self.dorm]! + " " + self.room
     }
-    
 }

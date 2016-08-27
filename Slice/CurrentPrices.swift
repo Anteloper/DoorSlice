@@ -43,5 +43,4 @@ class CurrentPrices{
     func getPepperoniDollars() -> Double { return Double(Double(pepperoniPrice)/Double(100)) }
     
     func getCheeseDollars() -> Double { return Double(Double(cheesePrice)/Double(100)) }
-    
 }

@@ -8,11 +8,6 @@
 
 import UIKit
 
-enum Slice{
-    case Cheese
-    case Pepperoni
-}
-
 //The main view controller displayed when a user is logged in and Doorslice is open.
 //The main role of this class is to allow a user to place an order and notify the delegate when they do
 class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
@@ -271,4 +266,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             delegate?.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }
+}
+
+enum Slice{
+    case Cheese
+    case Pepperoni
 }

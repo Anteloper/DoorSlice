@@ -144,5 +144,4 @@ class User: NSObject, NSCoding{
     func saveToDefaults(){
         NSKeyedArchiver.archiveRootObject(self, toFile: Constants.userFilePath())
     }
-    
 }

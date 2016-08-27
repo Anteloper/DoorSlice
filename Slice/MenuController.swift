@@ -304,7 +304,6 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             return row == pref
         }
     }
-    
 }
 
 class PreferenceLight: UIView{

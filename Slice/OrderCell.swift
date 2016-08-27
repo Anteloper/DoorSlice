@@ -108,5 +108,4 @@ class OrderCell: UITableViewCell {
         attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: size)!, range: (attributedString.string as NSString).rangeOfString(text))
         return attributedString
     }
-
 }

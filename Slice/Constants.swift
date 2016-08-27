@@ -17,8 +17,18 @@ internal struct Constants{
         return filePath.path!
     }
     
+    static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
+        let attributedString = NSMutableAttributedString(string: text)
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
+        return attributedString
+    }
+    
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
+    
+    //Colors
     static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
     static let tiltColorDark = UIColor(red: 0/255.0, green: 140/255.0, blue: 200/255.0, alpha: 1.0)
     static let seaFoam = UIColor(red: 40/255.0, green: 231/255.0, blue: 169/255.0, alpha: 1.0)
@@ -27,8 +37,7 @@ internal struct Constants{
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
     static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
-    static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
-    
+    //URLS
     static let isOpenURLString = "https://doorslice.herokuapp.com/api/isOpen/"
     static let getPricesURLString = "https://doorslice.herokuapp.com/api/prices"
     static let saveOrderURLString = "https://doorslice.herokuapp.com/api/orders/"
@@ -58,24 +67,11 @@ internal struct Constants{
     static let wantsConfirmation = "wantsConfirmation"
     static let hasSeenTutorial = "hasSeenTutorial"
     
-    static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
-        let attributedString = NSMutableAttributedString(string: text)
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
-        return attributedString
-    }
-
     
+    static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
     static let appleMerchantId = "merchant.com.dormslice"
     static let userKey = "stagingKey"
     static let applePayCardID = "applePay"
-    
-    static let schools = ["GEORGETOWN UNIVERSITY",  "COLUMBIA UNIVERSITY"]
-    
-    static let columbiaDorms = ["CARMAN HALL", "JOHN JAY HALL", "MCBAIN HALL",  "WIEN HALL", "48 CLAREMONT", "601 WEST 113TH STREET", "BROADWAY HALL", "CARLTON ARMS", "EAST CAMPUS", "FURNALD HALL", "HARMONY HALL", "HARTLEY HALL", "HOGAN HALL", "RIVER HALL" , "JUGGLES HALL", "SHAPIRO HALL", "WALLACH HALL", "WATT HALL", "WOODBRIDGE HALL"]
-    
-    static let georgetownDorms = [ "VILLAGE C EAST", "VILLAGE C WEST", "NEW SOUTH", "KENNEDY HALL", "LXR", "HARBIN HALL", "NORTH EAST HALL", "COPLEY HALL", "REYNOLDS HALL", "MCCARTHY HALL", "DARNALL HALL", "HENLE VILLAGE", "VILLAGE A", "VILLAGE B", "NEVILS", "FREEDOM HALL"]
     
     static let dormNicknames = ["CARMAN HALL" : "CARMAN", "JOHN JAY HALL" : "JOHN JAY", "MCBAIN HALL" : "MCBAIN",  "WIEN HALL" : "WIEN", "48 CLAREMONT" : "48 CLAREMONT", "601 WEST 113TH STREET" : "601 113TH", "BROADWAY HALL" : "BROADWAY", "CARLTON ARMS" : "CARLTON ARMS", "EAST CAMPUS" : "EC", "FURNALD HALL" : "FURNALD", "HARMONY HALL" : "HARMONY", "HARTLEY HALL" : "HARTLEY", "HOGAN HALL" : "HOGAN", "RIVER HALL" : "RIVER" , "JUGGLES HALL" : "JUGGLES", "SHAPIRO HALL" : "SHAPIRO", "WALLACH HALL" : "WALLACH", "WATT HALL" : "WATT", "WOODBRIDGE HALL" : "WOODBRIDGE", "VILLAGE C EAST" : "VCE", "VILLAGE C WEST" : "VCW", "NEW SOUTH" : "NEW SOUTH", "KENNEDY HALL" : "KENNEDY", "LXR" : "LXR", "HARBIN HALL" : "HARBIN", "NORTH EAST HALL" : "NET", "COPLEY HALL" : "COPLEY", "REYNOLDS HALL" : "REYNOLDS", "MCCARTHY HALL" : "MCCARTHY", "DARNALL HALL" : "DARNALL", "HENLE VILLAGE" : "HENLE", "VILLAGE A" : "VILLAGE A", "VILLAGE B" : "VILLAGE B", "NEVILS" : "NEVILS", "FREEDOM HALL" : "FREEDOM"]
     
