@@ -7,6 +7,8 @@
 //
 import UIKit
 import Stripe
+import Alamofire
+import SwiftyJSON
 
 
 @UIApplicationMain
@@ -17,9 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        //Initialize Singleton Classes
         Stripe.setDefaultPublishableKey(Constants.stripePublishableKey)
-        _ = CurrentPrices()
+        retrieveAndSetPrices()
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
        
@@ -35,7 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if user.isLoggedIn{
             setupWithUser(user)
         }
-        
         else{
             window?.rootViewController = LoginController()
         }
@@ -72,6 +72,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func checkiPhone4(){ if UIScreen.mainScreen().bounds.height <= 480.0{ Alerts.iPhone4() } }
     
+    func retrieveAndSetPrices(){
+        Alamofire.request(.GET, Constants.getPricesURLString, parameters: nil).responseJSON{ response in
+            switch response.result{
+            case .Success:
+                if let value = response.result.value{
+                    let json = JSON(value)
+                    let cheesePrice = Int(json["Cheese"].doubleValue * 100)
+                    let pepperoniPrice = Int(json["Pepperoni"].doubleValue * 100)
+                    Constants.setPrices(cheese: cheesePrice, pepperoni: pepperoniPrice)
+                }
+            case .Failure:
+                break
+            }
+        }
+    }
+    
     func application(application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
         let windows = UIApplication.sharedApplication().windows
         for window in windows {
@@ -85,6 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             containerController!.promptUserFeedBack()
         }
     }
+    
 }
 
 

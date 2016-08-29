@@ -400,7 +400,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese: Double, pepperoni: Double) {
         if Alerts.checkValidity(loggedInUser, cc: self){
-            amount = (cheese*CurrentPrices.sharedInstance.getCheeseDollars()  + pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars())
+            amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
             orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)

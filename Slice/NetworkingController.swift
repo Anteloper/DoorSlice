@@ -28,10 +28,8 @@ class NetworkingController{
     //MARK: Save Order
     //Used for both Apple Pay and card payment. Price is in dollars (6.49 = $6.49)
     func saveOrder(cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: ()->Void){
-       
         let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
-        
     }
     
     
@@ -138,13 +136,13 @@ class NetworkingController{
         let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId)!
         if cheese != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Cheese slices",
-                amount:NSDecimalNumber(double: cheese*CurrentPrices.sharedInstance.getCheeseDollars())))
+                amount:NSDecimalNumber(double: cheese*Constants.getCheesePriceDollars())))
         }
         if pepperoni != 0 {
             paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Pepperoni slices",
-                amount:NSDecimalNumber(double: pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars())))
+                amount:NSDecimalNumber(double: pepperoni*Constants.getPepperoniPriceDollars())))
         }
-        let total = cheese*CurrentPrices.sharedInstance.getCheeseDollars() + pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars()
+        let total = cheese*Constants.getCheesePriceDollars() + pepperoni*Constants.getPepperoniPriceDollars()
         paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "DoorSlice Order", amount: NSDecimalNumber(double: total)))
         
         return paymentRequest
@@ -152,7 +150,6 @@ class NetworkingController{
     
     //Apple Pay Exclusive
     func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
-        
         let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
         apiClient.createTokenWithPayment(payment, completion: { (token, error) -> Void in
             if error == nil {
@@ -180,10 +177,8 @@ class NetworkingController{
     //Only called by other functions in this class (applePayAuthorized)
     //Apple Pay Exclusive
     private func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
-        
         let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON {
-            response in
+        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
             switch response.result{
             case .Success:
                 completion(.Success, nil)

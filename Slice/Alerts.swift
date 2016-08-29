@@ -11,7 +11,6 @@ import UIKit
 
 //Class to hold all alerts
 class Alerts{
-    
     static func iPhone4(){
         SweetAlert().showAlert("NOT SUPPORTED", subTitle: "Sorry, our app isn't compatible with your device", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
     }
@@ -31,7 +30,7 @@ class Alerts{
     
     static func confirmOrder(cheese: Double, pepperoni: Double, cc: ContainerController, confirmedHandler: ()->Void){
         //String creation
-        let value = cheese*CurrentPrices.sharedInstance.getCheeseDollars() + pepperoni*CurrentPrices.sharedInstance.getPepperoniDollars()
+        let value = cheese*Constants.getCheesePriceDollars() + pepperoni*Constants.getPepperoniPriceDollars()
         var total = String(value)
         if value%1.00 == 0{
             total += "0"

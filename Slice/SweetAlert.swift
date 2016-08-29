@@ -348,9 +348,7 @@ public class SweetAlert: UIViewController {
 // MARK: Animatable Views
 
 class AnimatableView: UIView {
-    func animate(){
-        print("Should overide by subclasss", terminator: "")
-    }
+    func animate(){}//Should be overridden by subclass
 }
 
 class CancelAnimatedView: AnimatableView {
