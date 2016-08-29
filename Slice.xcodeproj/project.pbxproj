@@ -32,7 +32,6 @@
 		4CB29D1B1D301C22009C2CA5 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D1A1D301C22009C2CA5 /* Address.swift */; };
 		4CB6DFE91D2216FF0050FABF /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6DFE81D2216FF0050FABF /* LoginController.swift */; };
 		4CB6DFEB1D2217BA0050FABF /* CreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */; };
-		4CBFD9C81D7157A600CDC900 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CBFD9C71D7157A600CDC900 /* Main.storyboard */; };
 		4CD419A11D6FCB8A00F4CEDB /* CurrentPrices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD419A01D6FCB8A00F4CEDB /* CurrentPrices.swift */; };
 		4CDAFE2B1D442F5400659C93 /* PastOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2A1D442F5400659C93 /* PastOrder.swift */; };
 		4CDAFE2D1D443BD100659C93 /* OrderHistoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */; };
@@ -101,7 +100,6 @@
 		4CB29D1A1D301C22009C2CA5 /* Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		4CB6DFE81D2216FF0050FABF /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		4CB6DFEA1D2217BA0050FABF /* CreateAccountController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateAccountController.swift; sourceTree = "<group>"; };
-		4CBFD9C71D7157A600CDC900 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4CD419A01D6FCB8A00F4CEDB /* CurrentPrices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentPrices.swift; sourceTree = "<group>"; };
 		4CDAFE2A1D442F5400659C93 /* PastOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PastOrder.swift; sourceTree = "<group>"; };
 		4CDAFE2C1D443BD100659C93 /* OrderHistoryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderHistoryController.swift; sourceTree = "<group>"; };
@@ -222,7 +220,6 @@
 			isa = PBXGroup;
 			children = (
 				4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */,
-				4CBFD9C71D7157A600CDC900 /* Main.storyboard */,
 				4C47CD031D1B396200AEEB97 /* Slice.entitlements */,
 				4CF756781D0A177C00746AEE /* Assets.xcassets */,
 				4CF7567A1D0A177C00746AEE /* LaunchScreen.storyboard */,
@@ -476,7 +473,6 @@
 				4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */,
 				4CF7567C1D0A177C00746AEE /* LaunchScreen.storyboard in Resources */,
 				4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */,
-				4CBFD9C81D7157A600CDC900 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
