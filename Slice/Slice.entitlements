@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.com.dormslice</string>
+		<string>merchant.jumpsnipe.doorslice</string>
 	</array>
 </dict>
 </plist>

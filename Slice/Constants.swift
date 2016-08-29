@@ -69,9 +69,9 @@ internal struct Constants{
     
     
     static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
-    static let appleMerchantId = "merchant.com.dormslice"
-    static let userKey = "stagingKey"
-    static let applePayCardID = "applePay"
+    static let appleMerchantId = "merchant.jumpsnipe.doorslice"
+
+    static let applePayCardID = "applePay"//Used for identifying if apple pay was used when parsing a user from server login
     
     static let dormNicknames = ["CARMAN HALL" : "CARMAN", "JOHN JAY HALL" : "JOHN JAY", "MCBAIN HALL" : "MCBAIN",  "WIEN HALL" : "WIEN", "48 CLAREMONT" : "48 CLAREMONT", "601 WEST 113TH STREET" : "601 113TH", "BROADWAY HALL" : "BROADWAY", "CARLTON ARMS" : "CARLTON ARMS", "EAST CAMPUS" : "EC", "FURNALD HALL" : "FURNALD", "HARMONY HALL" : "HARMONY", "HARTLEY HALL" : "HARTLEY", "HOGAN HALL" : "HOGAN", "RIVER HALL" : "RIVER" , "JUGGLES HALL" : "JUGGLES", "SHAPIRO HALL" : "SHAPIRO", "WALLACH HALL" : "WALLACH", "WATT HALL" : "WATT", "WOODBRIDGE HALL" : "WOODBRIDGE", "VILLAGE C EAST" : "VCE", "VILLAGE C WEST" : "VCW", "NEW SOUTH" : "NEW SOUTH", "KENNEDY HALL" : "KENNEDY", "LXR" : "LXR", "HARBIN HALL" : "HARBIN", "NORTH EAST HALL" : "NET", "COPLEY HALL" : "COPLEY", "REYNOLDS HALL" : "REYNOLDS", "MCCARTHY HALL" : "MCCARTHY", "DARNALL HALL" : "DARNALL", "HENLE VILLAGE" : "HENLE", "VILLAGE A" : "VILLAGE A", "VILLAGE B" : "VILLAGE B", "NEVILS" : "NEVILS", "FREEDOM HALL" : "FREEDOM"]
     
