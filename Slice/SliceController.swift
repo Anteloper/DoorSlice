@@ -103,7 +103,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
     //Animates the new button in and the old one out
     func swapButton(newButtonIsCheese isCheese: Bool, comingFromRight: Bool){
-        let positions = startPosition(comingFromRight)
+        let positions = startPosition(fromRight: comingFromRight)
         let newButton = currentButtonShowing == cheeseButton ? pepperoniButton : cheeseButton
         
         newButton.frame.origin = positions[0]
@@ -119,22 +119,15 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                                    completion: { didcomplete in
                                         self.currentButtonShowing = newButton
                                    }
-            
         )
     }
     
     //Returns an array where the first point is the beginning point for the new button sliding in
     //The second point is the end position of the button sliding out
-    func startPosition(right: Bool)-> [CGPoint]{
+    func startPosition(fromRight right: Bool)-> [CGPoint]{
+        let positions = [CGPoint(x: 0 - currentButtonShowing.frame.width, y: view.frame.width/2+30), CGPoint(x: view.frame.width, y: view.frame.width/2+30)]
         
-        let pos1 = CGPoint(x: 0 - currentButtonShowing.frame.width, y: view.frame.width/2+30)
-        let pos2 = CGPoint(x: view.frame.width, y: view.frame.width/2+30)
-        
-        if right{
-            return [pos2,pos1]
-        }
-        return [pos1, pos2]
-        
+        return right ? positions.reverse() : positions
     }
     
     //MARK Touches Began
@@ -169,8 +162,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         orderProgressBar?.removeFromSuperview()
         cancelButton.removeFromSuperview()
         order.clear()
-
-        
     }
     
     func orderCancelled(){
@@ -200,13 +191,11 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         
-        
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(SliceController.toggleMenu), forControlEvents: .TouchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
-        
     }
     
     //Called by menu press

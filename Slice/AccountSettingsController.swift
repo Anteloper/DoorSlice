@@ -104,7 +104,7 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
         saveButton.transform = CGAffineTransformMakeScale(0, 0)
         UIView.animateWithDuration(0.6, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 15, options: .CurveLinear, animations: { self.saveButton.transform = CGAffineTransformIdentity}, completion: nil)
         if shouldExit{
-            self.delegate.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: true)
+            self.delegate.returnFromSettings()
         }
     
     }

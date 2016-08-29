@@ -218,7 +218,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
             delegate?.retrieveAddresses()
         }
         if delegate != nil{
-            delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
+            delegate!.returnFromNewAddress(withAddress: nil)
         }
         else{
             let tc = TutorialController()
@@ -233,7 +233,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
             if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
                 let address = Address(school: schoolFullName!, dorm: dormField.text!, room: roomField.text!)
                 if delegate != nil{
-                    delegate!.returnFromFullscreen(withCard: nil, orAddress: address, fromSettings: false)
+                    delegate!.returnFromNewAddress(withAddress: address)
                 }
                 else{
                     let tc = TutorialController()

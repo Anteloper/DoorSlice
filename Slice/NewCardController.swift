@@ -29,6 +29,7 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         if shouldDismissWithApplePayAlert != nil{
             if shouldDismissWithApplePayAlert!{
                 Alerts.applePayFound(self)
@@ -38,7 +39,7 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     
     func exit(){
         if delegate != nil{
-            self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)
+            self.delegate!.returnFromNewCard(withCard: nil)
         }
         else{
             let tc = TutorialController()
@@ -48,9 +49,7 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     }
     
     func paymentCardTextFieldDidChange(textField: STPPaymentCardTextField) {
-        
         if(textField.isValid && !validated){
-            
             validated = true //Because it was running this code twice for some reason
             textField.resignFirstResponder()
             
@@ -64,35 +63,28 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
             
             //Animate
             checkView.transform = CGAffineTransformMakeScale(0,0)
-            UIView.animateWithDuration(0.75,
-                                       delay: 0.0,
-                                       usingSpringWithDamping: 0.5,
-                                       initialSpringVelocity: 15,
-                                       options: .CurveLinear,
-                                       animations: {
-                                        checkView.transform = CGAffineTransformIdentity
-                                       },
-                                       completion: {
-                                        if($0){
-                                            UIView.animateWithDuration(0.3, animations: {
-                                                checkView.alpha = 0.0
-                                                }, completion:{
-                                                    if($0){
-                                                        if self.delegate != nil{
-                                                            self.delegate!.returnFromFullscreen(withCard: textField.cardParams, orAddress: nil, fromSettings: false)
-                                                        }
-                                                        else{
-                                                            let tc = TutorialController()
-                                                            tc.user = self.user
-                                                            tc.pendingCard = textField.cardParams
-                                                            self.presentViewController(tc, animated: false, completion: nil)
-                                                        }
-                                                    }
-                                                }
-                                            )
-                                        }
-                                    }
-            )
+            UIView.animateWithDuration(0.75, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 15, options: .CurveLinear, animations: {
+                checkView.transform = CGAffineTransformIdentity
+            }){
+                if($0){
+                    UIView.animateWithDuration(0.3, animations: {
+                        checkView.alpha = 0.0
+                        }, completion:{
+                            if($0){
+                                if self.delegate != nil{
+                                    self.delegate!.returnFromNewCard(withCard: textField.cardParams)
+                                }
+                                else{
+                                    let tc = TutorialController()
+                                    tc.user = self.user
+                                    tc.pendingCard = textField.cardParams
+                                    self.presentViewController(tc, animated: false, completion: nil)
+                                }
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 }

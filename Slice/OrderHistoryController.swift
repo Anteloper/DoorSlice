@@ -17,7 +17,7 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        actionForBackButton({self.delegate!.returnFromFullscreen(withCard: nil, orAddress: nil, fromSettings: false)})
+        actionForBackButton({self.delegate!.returnFromOrderHistory()})
         
         if orderHistory.count != 0{
    

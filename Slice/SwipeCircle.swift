@@ -14,7 +14,6 @@ class SwipeCircle: UIView {
     
     
     override init(frame: CGRect){
-        
         super.init(frame: frame)
         self.backgroundColor = UIColor.clearColor()
         self.frame = frame
@@ -24,9 +23,7 @@ class SwipeCircle: UIView {
         layer.borderWidth = 1.0
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
     func fill(){
         backgroundColor = Constants.tiltColor

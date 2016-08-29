@@ -12,7 +12,7 @@ import UIKit
 //To use: 1. make sure to call super.viewDidLoad()
 //        2. call actionForBackButton(:_)
 //The addition of the back button and the handling of its control events will be taken care of
-
+//Although not strictly true, this class should be viewed as an abstract class, never present an instance of it, only its children
 class NavBarless: UIViewController, UIGestureRecognizerDelegate {
     var backButton: UIButton?
     var backAction: (()->Void)?
@@ -56,6 +56,9 @@ class NavBarless: UIViewController, UIGestureRecognizerDelegate {
     
 }
 
+//A Base class for a View Controller that has a the theme navigation bar with a back button that can be accessed by tapping or swiping
+//Use in the exact same way NavBarless is used
+//Although not strictly true, this class should be viewed as an abstract class, never present an instance of it, only its children
 class NavBarred: NavBarless{
     
     //Adds the full navigation bar rather than just the back button

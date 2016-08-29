@@ -243,25 +243,35 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         controller.didMoveToParentViewController(self)
     }
 
-    
-    func returnFromFullscreen(withCard card: STPCardParams?, orAddress address: Address?, fromSettings: Bool = false) {
-        
+    //MARK: Return From Fullscreen
+    //New Address
+    func returnFromNewCard(withCard card: STPCardParams?) {
         if card != nil{
             let lastFour = card!.last4()!
             if !loggedInUser.cards!.contains(lastFour){
                 menuController?.cardBeingProcessed = lastFour
                 let url = (loggedInUser.cardIDs.count == 0 && !loggedInUser.hasCreatedFirstCard) ? Constants.firstCardURLString : Constants.newCardURLString
-                networkController.saveNewCard(card!, url: url+loggedInUser.userID, lastFour: lastFour)
-                
+                networkController.saveNewCard(card, url: url+loggedInUser.userID, lastFour: lastFour)
             }
             else{
                 Alerts.duplicate(isCard: true)
             }
         }
-        if address != nil {
+        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){
+            if ($0){
+                self.newCardController?.view.removeFromSuperview()
+                self.menuController?.tableView.reloadData()
+                self.newCardController = nil
+            }
+        }
+    }
+    
+    //New Card
+    func returnFromNewAddress(withAddress address: Address?){
+        if address != nil{
             if loggedInUser.addresses != nil{
                 if !loggedInUser.addressIDs.keys.contains(address!.getName()){
-                    menuController?.addressBeingProcessed = address!
+                    menuController?.addressBeingProcessed = address
                     networkController.saveAddress(address!, userID: loggedInUser.userID)
                 }
                 else{
@@ -269,29 +279,40 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 }
             }
         }
-        
-        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){ didComplete in
-            if didComplete{
-                self.newCardController?.view.removeFromSuperview()
-                self.newCardController = nil
+        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){
+            if ($0){
                 self.newAddressController?.view.removeFromSuperview()
                 self.newAddressController = nil
                 self.menuController?.tableView.reloadData()
-                self.orderHistoryController?.view.removeFromSuperview()
-                self.orderHistoryController = nil
+            }
+        }
+    }
+    
+    //Account Settings
+    func returnFromSettings(){
+        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){
+            if ($0){
                 self.accountSettingsController?.view.removeFromSuperview()
                 self.accountSettingsController = nil
             }
         }
-        
-        if fromSettings{
-            networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: loggedInUser.wantsReceipts)
-            networkController.booleanChange(Constants.wantsConfirmation, userID: loggedInUser.userID, boolean: loggedInUser.wantsOrderConfirmation)
-            if loggedInUser.email != nil{
-                networkController.addEmail(loggedInUser.userID, email: loggedInUser.email!)
+        networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: loggedInUser.wantsReceipts)
+        networkController.booleanChange(Constants.wantsConfirmation, userID: loggedInUser.userID, boolean: loggedInUser.wantsOrderConfirmation)
+        if loggedInUser.email != nil{
+            networkController.addEmail(loggedInUser.userID, email: loggedInUser.email!)
+        }
+    }
+    
+    //Order History
+    func returnFromOrderHistory(){
+        animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){
+            if ($0){
+                self.orderHistoryController?.view.removeFromSuperview()
+                self.orderHistoryController = nil
             }
         }
     }
+
     
     //Called after a user tries to select an address with no internet
     func retrieveAddresses(){
@@ -470,14 +491,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
             let plural = cheese == 1 ? "Slice" : "Slices"
             string = "\(cheese) Cheese \(plural)"
         }
-
         return string
     }
     
-    
-    
-    
-    
+
     //MARK: Payable Delegate Methods
     func storeCardID(cardID: String, lastFour: String){
         loggedInUser.hasCreatedFirstCard = true
@@ -525,16 +542,11 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         menuController?.addressBeingProcessed = nil
         Alerts.saveNotSuccesful(isCard: false, internetError: true)
     }
-    
 
-    func emailSaveFailed() {
-        Alerts.emailSaveFailed()
-    }
+    func emailSaveFailed() { Alerts.emailSaveFailed() }
     
-    func unauthenticated() {
-        Alerts.unauthenticated(){ _ in self.logOutUser() }
-    }
-
+    func unauthenticated() { Alerts.unauthenticated(){ _ in self.logOutUser() }}
+    
     
     //MARK: Rateable Delegate Functions
     func dismissed(withRating rating: Int, comment: String?) {
