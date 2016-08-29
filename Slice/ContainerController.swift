@@ -9,7 +9,7 @@
 import UIKit
 import Stripe
 
-//The overseeing ViewController for the entire project. Nothing in this controller is directly visible
+//The overseeing ViewController for the entire flow when the user is logged in. Nothing in this controller is directly visible
 //Even the navigation bar belongs to the SliceController object it keeps track of. 
 //It is a delegate for menuController, sliceController, newCardController, paymentController, orderHistoryController and any alertController
 //objects it contains and may present
@@ -181,7 +181,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         }
     }
     
-    func logoutConfirmation() {
+    func logoutConfirmation() {//Asks the user if they're sure and logs them out if they are
         Alerts.logoutConfirmation(self)
     }
     
@@ -194,10 +194,23 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         return menuIsVisible
     }
     
-    //1 for NewCard, 2 for NewAddress, 3 for OrderHistory, 4 for Account Settings
-    func bringMenuToFullscreen(toScreen screen: Int) {
-        let completion: (Bool)->Void = { if ($0) { self.menuController?.removeFromParentViewController() }}
-        if newCardController == nil && screen == 1{
+    //MARK: Transitions from menu to fullscreen
+    //New Address
+    func bringMenuToNewAddress(){
+        if newAddressController == nil{
+            let na = NewAddressController()
+            na.delegate = self
+            na.dorms = activeAddresses.getDorms()
+            na.schoolFullName = "\(loggedInUser.school) UNIVERSITY"
+            newAddressController = UINavigationController(rootViewController: na)
+            prepareControllerForFullsreen(newAddressController!)
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: { if ($0) { self.menuController?.removeFromParentViewController() } })
+        }
+    }
+    
+    //NewCard
+    func bringMenuToNewCard(){
+        if newCardController == nil{
             let nc = NewCardController()
             nc.delegate = self
             newCardController = UINavigationController(rootViewController: nc)
@@ -209,32 +222,31 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
                 }
             }
         }
-        else if newAddressController == nil && screen == 2{
-            let na = NewAddressController()
-            na.delegate = self
-            na.dorms = activeAddresses.getDorms()
-            na.schoolFullName = "\(loggedInUser.school) UNIVERSITY"
-            newAddressController = UINavigationController(rootViewController: na)
-            prepareControllerForFullsreen(newAddressController!)
-            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
-        }
-            
-        else if orderHistoryController == nil && screen == 3{
-            let oc = OrderHistoryController()
-            oc.delegate = self
-            oc.orderHistory = loggedInUser.orderHistory
-            orderHistoryController = UINavigationController(rootViewController: oc)
-            prepareControllerForFullsreen(orderHistoryController!)
-            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
-        }
-        else if accountSettingsController == nil && screen == 4{
+    }
+    
+    //Account Settings
+    func bringMenuToSettings(){
+        if accountSettingsController == nil{
             let asc = AccountSettingsController()
             asc.user = loggedInUser
             asc.delegate = self
             accountSettingsController = UINavigationController(rootViewController: asc)
             prepareControllerForFullsreen(accountSettingsController!)
-            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: completion)
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: { if ($0) { self.menuController?.removeFromParentViewController() } })
         }
+    }
+    
+    //Order History
+    func bringMenuToOrderHistory(){
+        if orderHistoryController == nil{
+            let oc = OrderHistoryController()
+            oc.delegate = self
+            oc.orderHistory = loggedInUser.orderHistory
+            orderHistoryController = UINavigationController(rootViewController: oc)
+            prepareControllerForFullsreen(orderHistoryController!)
+            animateCenterPanelXPosition(view.frame.width, fromFullScreen: false, completion: { if ($0) { self.menuController?.removeFromParentViewController() } })
+        }
+
     }
     
     func prepareControllerForFullsreen(controller: UIViewController){
@@ -368,17 +380,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         loggedInUser.isLoggedIn = false
         let lc = LoginController()
         presentViewController(lc, animated: false, completion: nil)
-    }
-    
-    func orderHistory(){
-        if !menuIsVisible{
-            toggleMenu(){
-                self.bringMenuToFullscreen(toScreen: 3)
-            }
-        }
-        else{
-            bringMenuToFullscreen(toScreen: 3)
-        }
     }
 
     func timerEnded(cheese cheese: Double, pepperoni: Double){

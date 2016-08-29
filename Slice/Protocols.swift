@@ -16,7 +16,10 @@ protocol Slideable{
     func toggleMenu(completion: (()->Void)?)
     func userTap()
     func menuCurrentlyShowing()->Bool
-    func bringMenuToFullscreen(toScreen screen: Int)
+    func bringMenuToNewCard()
+    func bringMenuToNewAddress()
+    func bringMenuToSettings()
+    func bringMenuToOrderHistory()
     func returnFromNewCard(withCard card: STPCardParams?)
     func returnFromNewAddress(withAddress address: Address?)
     func returnFromSettings()
@@ -27,8 +30,6 @@ protocol Slideable{
     func cardRemoved(index: Int)
     func addressRemoved(index: Int)
     func logoutConfirmation()
-    func orderHistory()
-
 }
 
 //Objects that conform to this protocol can name themselves as a networkController delegate functions

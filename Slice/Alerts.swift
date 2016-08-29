@@ -23,7 +23,7 @@ class Alerts{
                                otherButtonColor: Constants.darkBlue) {
                                 if !($0) {
                                     cc.toggleMenu(){
-                                        cc.bringMenuToFullscreen(toScreen: 3)
+                                        cc.bringMenuToOrderHistory()
                                     }
                                 }
         }
@@ -113,7 +113,7 @@ class Alerts{
         if case .ApplePay = loggedInUser.paymentMethod!{
             if !NetworkingController.canApplePay(){
                 let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
-                let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {cc.bringMenuToFullscreen(toScreen: 1)} : nil
+                let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {cc.bringMenuToNewCard()} : nil
                 SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
                     if ($0){
                         cc.toggleMenu(toggleCompleted)
@@ -126,7 +126,7 @@ class Alerts{
         if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
             SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
                 if ($0){
-                    cc.toggleMenu({cc.bringMenuToFullscreen(toScreen: 2)})
+                    cc.toggleMenu({cc.bringMenuToNewAddress()})
                 }
             }
             cc.sliceController?.orderCancelled()

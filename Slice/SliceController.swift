@@ -43,17 +43,13 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             if orderProgressBar == nil || orderProgressBar?.superview == nil{
                 self.addProgressBar()
             }
-       
             if order.totalSlices() < 8{
                 currentButtonShowing.transform = CGAffineTransformMakeScale(0, 0)
-                
                 let sliceType: Slice = currentButtonShowing == cheeseButton ? .Cheese : .Pepperoni
                 order.add(sliceType)
-            
                 orderProgressBar?.resetTimer()
                 orderProgressBar?.addSlice(sliceType)
                 orderProgressBar?.numSlices += 1
-            
             
                 UIView.animateWithDuration(0.2,
                                            delay: 0.0,
@@ -61,8 +57,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                                            initialSpringVelocity: 15,
                                            options: .CurveLinear,
                                            animations: { self.currentButtonShowing.transform = CGAffineTransformIdentity},
-                                           completion: nil
-                )
+                                           completion: nil)
             }
             else{
                 orderProgressBar?.timer.pause()
@@ -168,7 +163,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         order.clear()
         clearCurrentOrder()
     }
-    
     
     //MARK: Setup Functions
     override func viewDidLoad() {

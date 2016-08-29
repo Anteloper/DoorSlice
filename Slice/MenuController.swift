@@ -112,7 +112,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let title = UILabel(frame: headerView.frame)
         let message = section == 2 ? "ACCOUNT" : (section == 0 ? "DELIVER TO" : "PAY WITH")
-        title.attributedText =  getAttributedCellTitle(message)
+        title.attributedText =  Constants.getTitleAttributedString(message, size: 16, kern: 4.0)
         title.backgroundColor = UIColor.clearColor()
         title.textAlignment = .Center
         
@@ -158,7 +158,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                 preferredAddress = indexPath.row
             }
             else{
-                delegate!.bringMenuToFullscreen(toScreen: 2)
+                delegate!.bringMenuToNewAddress()
             }
         }
         else if indexPath.section == 1{
@@ -166,14 +166,17 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                 preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
             }
             else{
-                delegate!.bringMenuToFullscreen(toScreen: 1)
+                delegate!.bringMenuToNewAddress()
             }
         }
         else{
-            if let screen = accountScreens[indexPath.row]{
-                delegate!.bringMenuToFullscreen(toScreen: screen)
+            if indexPath.row == 0{
+                delegate!.bringMenuToSettings()
             }
-            else{
+            else if indexPath.row == 1{
+                delegate!.bringMenuToOrderHistory()
+            }
+            else if indexPath.row == 2{
                 delegate!.logoutConfirmation()
             }
         }
@@ -224,7 +227,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         
         cell.backgroundColor = Constants.darkBlue
-        cell.textLabel?.attributedText = getAttributedCellTitle(title)
+        cell.textLabel?.attributedText = Constants.getTitleAttributedString(title, size: 16, kern: 4.0)
         cell.textLabel?.textAlignment = .Left
         let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
      
@@ -243,7 +246,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         cell.backgroundColor = Constants.darkBlue
-        cell.textLabel?.attributedText = getAttributedCellTitle(title)
+        cell.textLabel?.attributedText = Constants.getTitleAttributedString(title, size: 16, kern: 4.0)
         cell.textLabel?.textAlignment = .Left
         let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
         let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
@@ -279,20 +282,12 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         
         cell.backgroundColor = Constants.darkBlue
-        cell.textLabel?.attributedText = getAttributedCellTitle(text)
+        cell.textLabel?.attributedText = Constants.getTitleAttributedString(text, size: 16, kern: 4.0)
         if isRed{
             cell.textLabel?.textColor = Constants.lightRed
         }
         cell.textLabel?.textAlignment = .Center
         return cell
-    }
-    
-    func getAttributedCellTitle(text: String) -> NSAttributedString{
-        let attributedString = NSMutableAttributedString(string: text)
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(4.0), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 16)!, range: (attributedString.string as NSString).rangeOfString(text))
-        return attributedString
     }
     
     
@@ -304,6 +299,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             return row == pref
         }
     }
+    
 }
 
 class PreferenceLight: UIView{
