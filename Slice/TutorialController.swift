@@ -40,7 +40,6 @@ class TutorialController: UIViewController, Configurable {
     
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
-        UIButton.appearance().setAttributedTitle(Constants.getTitleAttributedString("", size: 14, kern: 3.0), forState: .Normal)
         super.viewDidLoad()
         addresses = ActiveAddresses(user: user)
         networkController.tutorialDelegate = self

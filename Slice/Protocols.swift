@@ -25,7 +25,6 @@ protocol Slideable{
     func returnFromSettings()
     func returnFromOrderHistory()
     func timerEnded(cheese cheese: Double, pepperoni: Double)
-    func getPaymentAndAddress() -> (String, String)
     func retrieveAddresses()
     func cardRemoved(index: Int)
     func addressRemoved(index: Int)

@@ -67,7 +67,7 @@ class OrderCell: UITableViewCell {
     
     func addAddress(){
         let label = UILabel(frame: CGRect(x: 20, y: bottomLabelY, width: frame.width*3/5, height: labelHeight))
-        label.attributedText = getAttributedText(order.address.getName(), size: 14, kern: 5.0, color: UIColor.whiteColor())
+        label.attributedText = getAttributedText(order.address.getName().capitalizedString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(label)
     }
     
@@ -95,7 +95,7 @@ class OrderCell: UITableViewCell {
         
         var payString = order.paymentMethod
         if payString != ""{
-            payString = order.paymentMethod == Constants.applePayCardID ? "Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
+            payString = order.paymentMethod == Constants.applePayCardID ? "Apple Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
         }
         payLabel.attributedText = getAttributedText(payString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(payLabel)

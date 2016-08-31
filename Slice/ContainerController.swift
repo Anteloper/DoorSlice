@@ -53,7 +53,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .LightContent
-        if !NetworkingController.checkHours(loggedInUser.userID){
+        if NetworkingController.checkHours(loggedInUser.userID){
             sliceController = SliceController()
             sliceController.delegate = self
             navController = UINavigationController(rootViewController: sliceController)
@@ -89,27 +89,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     //MARK: Slideable Functions
-    func getPaymentAndAddress() -> (String, String){
-        var digits = "Pay"
-        if loggedInUser.paymentMethod != nil{
-            switch loggedInUser.paymentMethod!{
-            case .CardIndex(let index):
-                if(loggedInUser.cards != nil){
-                    digits = loggedInUser.cards![index]
-                }
-            default:break
-            }
-        }
-        if let add = loggedInUser.addresses?[loggedInUser.preferredAddress!].getName(){
-             return(digits, add)
-        }
-        else{
-            Alerts.catchall() { _ in self.logOutUser() }
-        }
-       return(digits, String())
-    }
-    
-    
+
     func toggleMenu(completion: (()->Void)?) {
         //Display menu when no menu is visible
         if !menuIsVisible && menuController == nil{
@@ -401,6 +381,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     func payForOrder(cheese: Double, pepperoni: Double) {
         if Alerts.checkValidity(loggedInUser, cc: self){
             amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
+            
             cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
             pepperoniSlices = Int(pepperoni)
             orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)

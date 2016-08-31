@@ -30,9 +30,16 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         
-        let closedView = UIImageView(frame: view.frame)
+        
+        let closedView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY-view.frame.width/3, width: view.frame.width, height: view.frame.width))
+        closedView.layer.minificationFilter = kCAFilterTrilinear
         closedView.image = UIImage(imageLiteral: "closed")
         view.addSubview(closedView)
+        
+        let closedLabel = UILabel(frame: CGRect(x: 0, y: closedView.frame.minY-80, width: view.frame.width, height: 40))
+        closedLabel.textAlignment = .Center
+        closedLabel.attributedText = Constants.getTitleAttributedString("WE'RE CLOSED RIGHT NOW :(", size: 18, kern: 4.0)
+        view.addSubview(closedLabel)
         
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)

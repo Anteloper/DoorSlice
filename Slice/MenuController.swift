@@ -18,14 +18,14 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     let accountStrings = ["SETTINGS", "ORDER HISTORY", "LOGOUT"]
     let accountScreens: [Int?] = [4, 3, nil]
     
-    let tableView = UITableView()
+    let tableView = MenuTable()
     let cellHeight: CGFloat = 80
     
     //User Info
     var addresses: [Address]!
     var cards: [String]!
     
-    //The 0th element in cards will always be the string "Pay"
+    //The 0th element in cards will always be the string "Apple Pay"
     var preferredAddress: Int! { didSet{ tableView.reloadData() } }
     var preferredCard: PaymentPreference = .ApplePay { didSet{ tableView.reloadData()} }
     
@@ -33,7 +33,6 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     var addressBeingProcessed: Address?{didSet{ tableView.reloadData() }}
     
     let cardBeginning = "\u{2022}\u{2022}\u{2022}\u{2022} "
-    
     
     //MARK: ViewDidLoad
     override func viewDidLoad() {
@@ -299,8 +298,13 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             return row == pref
         }
     }
-    
 }
 
-class PreferenceLight: UIView{
+class PreferenceLight: UIView{}
+
+class MenuTable: UITableView{
+    override func reloadData() {
+        super.reloadData()
+        UIButton.appearance().setAttributedTitle(Constants.getTitleAttributedString("", size: 14, kern: 3.0), forState: .Normal)
+    }
 }

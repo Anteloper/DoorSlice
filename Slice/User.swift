@@ -33,7 +33,7 @@ class User: NSObject, NSCoding{
     
     init(userID: String,
          addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
-         preferredAddress: Int? = 0, cards: [String] = ["Pay"],
+         preferredAddress: Int? = 0, cards: [String] = ["APPLE PAY"],
          cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
          hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,
          orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil,

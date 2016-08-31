@@ -113,7 +113,7 @@ class Alerts{
             if !NetworkingController.canApplePay(){
                 let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
                 let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {cc.bringMenuToNewCard()} : nil
-                SweetAlert().showAlert("NO PAY", subTitle: messageString, style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
+                SweetAlert().showAlert("NO APPLE PAY", subTitle: messageString, style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
                     if ($0){
                         cc.toggleMenu(toggleCompleted)
                     }

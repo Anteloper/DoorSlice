@@ -105,7 +105,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
         
         var addressIDs = [String : String]()
         var addresses = [Address]()
-        var cards = ["Pay"]
+        var cards = ["APPLE PAY"]
         var cardIDs = [String : String]()
         var preferredAddress: Int? = nil
         var preferredPayment: PaymentPreference = PaymentPreference.ApplePay
@@ -148,7 +148,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
             let jsonAddress = order["address"].arrayValue.first!
             let trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
             
-            var lastFour = "applePay"
+            var lastFour = Constants.applePayCardID
             if !(order["cardUsed"].stringValue == Constants.applePayCardID){
                 for lFour in cards{
                     if cardIDs[lFour] == order["cardUsed"].stringValue{
