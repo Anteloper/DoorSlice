@@ -68,6 +68,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
         let parameters = ["phone" : rawNumber, "password" : passwordField.text!]
         Alamofire.request(.POST, Constants.loginURLString, parameters: parameters).responseJSON{ response in
             self.activityIndicator.stopAnimating()
+            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
@@ -145,8 +146,11 @@ class LoginController: NavBarless, UITextFieldDelegate{
         }
         
         for order in json["orders"].arrayValue{
-            let jsonAddress = order["address"].arrayValue.first!
-            let trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
+            var trueAddress = Address()
+            if let jsonAddress = order["address"].arrayValue.first {
+                trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
+            }
+            
             
             var lastFour = Constants.applePayCardID
             if !(order["cardUsed"].stringValue == Constants.applePayCardID){

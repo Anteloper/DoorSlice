@@ -29,7 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let user = NSKeyedUnarchiver.unarchiveObjectWithFile(Constants.userFilePath()) as? User else{
             window?.rootViewController = LoginController()
             window!.makeKeyAndVisible()
-            checkiPhone4()
             return true
         }
         
@@ -41,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         window!.makeKeyAndVisible()
-        checkiPhone4()
+        //checkiPhone4()
         return true
     }
     
@@ -52,7 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "isNotFirstLaunch")
             window?.rootViewController = WelcomeController()
             window!.makeKeyAndVisible()
-            checkiPhone4()
         }
         return !isNotFirstLaunch
     }
@@ -69,8 +67,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = tc
         }
     }
-    
-    func checkiPhone4(){ if UIScreen.mainScreen().bounds.height <= 480.0{ Alerts.iPhone4() } }
     
     func retrieveAndSetPrices(){
         Alamofire.request(.GET, Constants.getPricesURLString, parameters: nil).responseJSON{ response in
