@@ -101,27 +101,23 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         let positions = startPosition(fromRight: comingFromRight)
         let newButton = currentButtonShowing == cheeseButton ? pepperoniButton : cheeseButton
         
-        newButton.frame.origin = positions[0]
+        newButton.frame.origin.x = positions[0]
         view.addSubview(newButton)
         UIView.animateWithDuration(0.1,
                                    delay: 0.0,
                                    options: UIViewAnimationOptions.CurveEaseIn,
                                    animations: {
-                                        self.currentButtonShowing.frame.origin = positions[1]
-                                        newButton.frame.origin = CGPoint(x: self.view.frame.width/12, y: self.view.frame.width/2+30)
-                                    
+                                        self.currentButtonShowing.frame.origin.x = positions[1]
+                                        newButton.frame.origin.x = self.view.frame.width/12
                                    },
-                                   completion: { didcomplete in
-                                        self.currentButtonShowing = newButton
-                                   }
+                                   completion: { _ in self.currentButtonShowing = newButton }
         )
     }
     
-    //Returns an array where the first point is the beginning point for the new button sliding in
-    //The second point is the end position of the button sliding out
-    func startPosition(fromRight right: Bool)-> [CGPoint]{
-        let positions = [CGPoint(x: 0 - currentButtonShowing.frame.width, y: view.frame.width/2+30), CGPoint(x: view.frame.width, y: view.frame.width/2+30)]
-        
+    //Returns an array where the first number is the beginning x position for the new button sliding in
+    //The second number is the end x position of the button sliding out
+    func startPosition(fromRight right: Bool)-> [CGFloat]{
+        let positions = [0 - currentButtonShowing.frame.width, view.frame.width]
         return right ? positions.reverse() : positions
     }
     
@@ -206,7 +202,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     func configureSlices(){
         pepperoniButton.setBackgroundImage(UIImage(imageLiteral: "pepperoni"), forState: .Normal)
         pepperoniButton.contentMode = .ScaleAspectFit
-        pepperoniButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
+        
+        let screenSizeAdjuster: CGFloat = UIScreen.mainScreen().bounds.height <= 480.0 ? -5 : 30
+        pepperoniButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+screenSizeAdjuster), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
         pepperoniButton.layer.minificationFilter = kCAFilterTrilinear
         pepperoniButton.adjustsImageWhenHighlighted = false
         pepperoniButton.alpha = 1.0
@@ -216,7 +214,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         cheeseButton.layer.minificationFilter = kCAFilterTrilinear
         cheeseButton.adjustsImageWhenHighlighted = false
         cheeseButton.contentMode = .ScaleAspectFit
-        cheeseButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+30), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
+        cheeseButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+screenSizeAdjuster), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
         cheeseButton.alpha = 1.0
         cheeseButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
     }

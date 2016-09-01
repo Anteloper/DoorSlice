@@ -68,7 +68,6 @@ class LoginController: NavBarless, UITextFieldDelegate{
         let parameters = ["phone" : rawNumber, "password" : passwordField.text!]
         Alamofire.request(.POST, Constants.loginURLString, parameters: parameters).responseJSON{ response in
             self.activityIndicator.stopAnimating()
-            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
@@ -302,6 +301,18 @@ class LoginController: NavBarless, UITextFieldDelegate{
             return false
         }
         return true
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == passwordField{
+            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y -= 200})
+        }
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == passwordField{
+            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y += 200})
+        }
     }
     
 

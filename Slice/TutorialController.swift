@@ -25,8 +25,9 @@ class TutorialController: UIViewController, Configurable {
     var pendingCard: STPCardParams?
     var pendingAddress: Address?
     
-    let startHeight:CGFloat = TutorialController.getStartHeight()
-    let rowHeight:CGFloat = TutorialController.getRowHeight()
+    let startHeight:CGFloat = TutorialController.getStartHeightAndRowHeight().0
+    let rowHeight:CGFloat = TutorialController.getStartHeightAndRowHeight().1
+
     let checkSize:CGFloat = 20
     var backgroundColor: UIColor = UIColor()
     
@@ -34,9 +35,6 @@ class TutorialController: UIViewController, Configurable {
     var hasPayment = false
     
     let networkController = NetworkingController()
-    
-    static func getStartHeight()->CGFloat{ return UIScreen.mainScreen().bounds.height == 736.0 ? 130 : (UIScreen.mainScreen().bounds.height <= 568.0 ? 104: 120)}
-    static func getRowHeight()->CGFloat{return UIScreen.mainScreen().bounds.height == 736.0 ? 130 : (UIScreen.mainScreen().bounds.height <= 568.0 ? 99 : 115)}
     
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
@@ -215,6 +213,7 @@ class TutorialController: UIViewController, Configurable {
     func addGoButton(){
         let goButton = UIButton(frame: CGRect(x: view.frame.midX-40, y: view.frame.height*7/8-20, width: 80, height: 80))
         goButton.setTitle("", forState: .Normal)
+        goButton.alpha = 0.0
         goButton.addTarget(self, action: #selector(goPressed), forControlEvents: .TouchUpInside)
         view.addSubview(goButton)
     }
@@ -237,7 +236,6 @@ class TutorialController: UIViewController, Configurable {
             }
             Alerts.holdUp(string)
         }
-        
     }
     
     func addForwardButton(frame: CGRect){
@@ -261,7 +259,6 @@ class TutorialController: UIViewController, Configurable {
     }
     
     func checkAndAddPaymentCheck(){
-        
         if hasPayment && pendingCard == nil{
             let checkFrame = CGRect(x: view.frame.width - checkSize*2, y: startHeight + rowHeight*3/2 - checkSize/2, width: checkSize, height: checkSize)
             let addCheck = getCheckView(checkFrame)
@@ -327,7 +324,23 @@ class TutorialController: UIViewController, Configurable {
         addressSpinner?.stopAnimating()
         Alerts.unauthenticated(){_ in }
     }
+    static func getStartHeightAndRowHeight()->(CGFloat, CGFloat){
+        let height = UIScreen.mainScreen().bounds.height
+        if height == 736.0{ //6+ or 6s+
+            return (130, 130)
+        }
+        else if height == 667.0{//6 or 6s
+            return (120, 115)
+        }
+        else if height == 568.0{//5 or 5s or 6se
+            return (104, 99)
+        }
+        else{
+            return (85, 85)
+        }
     
+    }
+
 }
 
 extension UIImage {

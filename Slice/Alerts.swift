@@ -146,6 +146,10 @@ class Alerts{
         SweetAlert().showAlert("HOLD UP", subTitle: "We're still processing your \(string), give us one second", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
     }
     
+    static func passwordReset(){
+        SweetAlert().showAlert("PASSWORD RESET", subTitle: "Your password was sucessfully reset", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue, action: nil)
+    }
+    
     static func overload(sc: SliceController){
         SweetAlert().showAlert("OVERLOAD", subTitle: "We have an 8 slice maximum for now, sorry!", style: .Warning, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){
             _ in sc.orderProgressBar?.timer.resume()

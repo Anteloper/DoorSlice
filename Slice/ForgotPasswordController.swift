@@ -108,12 +108,14 @@ class ForgotPasswordController: NavBarless, UITextFieldDelegate{
     
 
     func sendPassCode(){
+        view.endEditing(true)
         if rawNumber != nil && rawNumber?.characters.count >= 10 && !isSending{
             isSending = true
             activityIndicator.startAnimating()
             let parameters = ["phone" : rawNumber!]
             Alamofire.request(.POST, Constants.sendPassodeURLString, parameters: parameters).responseJSON { response in
                 self.activityIndicator.stopAnimating()
+                self.isSending = false
                 switch response.result{
                 case .Success:
                     if let value = response.result.value{
@@ -132,7 +134,6 @@ class ForgotPasswordController: NavBarless, UITextFieldDelegate{
                         }
                     }
                 case .Failure:
-                    self.isSending = false
                     Alerts.serverError()
                 }
             }
@@ -158,7 +159,6 @@ class ForgotPasswordController: NavBarless, UITextFieldDelegate{
         phoneViewLeft.image = UIImage(imageLiteral: "phone")
         phoneViewLeft.frame = CGRect(x:phoneField.frame.minX-35, y: phoneField.frame.minY+5,  width: 30, height: 30)
         view.addSubview(phoneViewLeft)
-        
         
         sendButton.frame = CGRect(x: view.frame.width/4, y: phoneField.frame.maxY+30, width: view.frame.width/2, height: 40)
         sendButton.addTarget(self, action: #selector(sendPassCode), forControlEvents: .TouchUpInside)

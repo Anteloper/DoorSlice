@@ -51,7 +51,6 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                 self.presentViewController(previousVc, animated: false, completion: nil)
             }
         }
-        
         setup()
     }
     
@@ -87,7 +86,7 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                             lc.autoFilledNumber = self.placeHolder
                             lc.rawNumber = self.phoneNumber
                         }
-                        self.presentViewController(lc, animated: false, completion: nil)
+                        self.presentViewController(lc, animated: false, completion: {_ in Alerts.passwordReset()})
                     }
                 }
                 
@@ -95,10 +94,6 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                 Alerts.serverError()
             }
         }
-    }
-    
-    func navBarSetup(){
-        
     }
     
     func createAccount(){
@@ -148,9 +143,20 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
     }
     
     //MARK: TextField Management
+    func textFieldDidBeginEditing(textField: UITextField) {
+        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == confirmPassField{
+            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y -= 200})
+        }
+    }
     
+    func textFieldDidEndEditing(textField: UITextField) {
+        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == confirmPassField{
+            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y += 200})
+        }
+    }
+    
+
     func textFieldDidChange(textField: UITextField){
-  
         if textField == newPassField{
             if textField.text?.characters.count == 5{
                 UIView.animateWithDuration(1.0, animations: {self.newPassField.layer.borderColor = Constants.seaFoam.CGColor})

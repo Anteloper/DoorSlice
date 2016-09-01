@@ -53,7 +53,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .LightContent
-        if NetworkingController.checkHours(loggedInUser.userID){
+        if !NetworkingController.checkHours(loggedInUser.userID){
             sliceController = SliceController()
             sliceController.delegate = self
             navController = UINavigationController(rootViewController: sliceController)

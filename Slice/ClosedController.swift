@@ -31,7 +31,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         navigationItem.titleView = titleLabel
         
         
-        let closedView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY-view.frame.width/3, width: view.frame.width, height: view.frame.width))
+        let closedView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY-view.frame.width/3+15, width: view.frame.width, height: view.frame.width))
         closedView.layer.minificationFilter = kCAFilterTrilinear
         closedView.image = UIImage(imageLiteral: "closed")
         view.addSubview(closedView)

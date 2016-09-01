@@ -165,7 +165,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
                 preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
             }
             else{
-                delegate!.bringMenuToNewAddress()
+                delegate!.bringMenuToNewCard()
             }
         }
         else{
