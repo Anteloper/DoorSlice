@@ -189,7 +189,6 @@ class TutorialController: UIViewController, Configurable {
         return checkView
     }
     
-    
     //MARK: Slice Views
     func addSliceLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: startHeight + (rowHeight*2) + 7, width: view.frame.width, height: 30))
@@ -213,7 +212,6 @@ class TutorialController: UIViewController, Configurable {
     func addGoButton(){
         let goButton = UIButton(frame: CGRect(x: view.frame.midX-40, y: view.frame.height*7/8-20, width: 80, height: 80))
         goButton.setTitle("", forState: .Normal)
-        goButton.alpha = 0.0
         goButton.addTarget(self, action: #selector(goPressed), forControlEvents: .TouchUpInside)
         view.addSubview(goButton)
     }
@@ -338,9 +336,7 @@ class TutorialController: UIViewController, Configurable {
         else{
             return (85, 85)
         }
-    
     }
-
 }
 
 extension UIImage {
