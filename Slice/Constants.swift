@@ -11,9 +11,8 @@ import UIKit
 
 internal struct Constants{
     
-    private static var pepperoniPrice = 12
-    private static var cheesePrice = 12
-    
+    private static var pepperoniPrice = 349
+    private static var cheesePrice = 299
     
     static func setPrices(cheese cheese: Int, pepperoni: Int){
         cheesePrice = cheese
