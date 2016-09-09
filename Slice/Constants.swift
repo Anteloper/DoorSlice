@@ -47,7 +47,6 @@ internal struct Constants{
     }
     
     
-    
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
     
