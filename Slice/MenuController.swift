@@ -25,9 +25,8 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     var addresses: [Address]!
     var cards: [String]!
     
-    //The 0th element in cards will always be the string "Apple Pay"
     var preferredAddress: Int! { didSet{ tableView.reloadData() } }
-    var preferredCard: PaymentPreference = .ApplePay { didSet{ tableView.reloadData()} }
+    var preferredCard: Int! { didSet{ tableView.reloadData()} }
     
     var cardBeingProcessed: String?{didSet{ tableView.reloadData() }}//Will be not nil while a card is being verified by the backend
     var addressBeingProcessed: Address?{didSet{ tableView.reloadData() }}
@@ -133,10 +132,8 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         else if indexPath.section == 1{
-            let str = indexPath.row != 0 ? cardBeginning : ""
-            
             if indexPath.row < cards.count{
-                return preferenceCellWithTitle(str + cards[indexPath.row], isPreferred: isPreferredCard(indexPath.row))
+                return preferenceCellWithTitle(cardBeginning + cards[indexPath.row], isPreferred: indexPath.row == preferredCard)
             }
             else if indexPath.row == cards.count && cardBeingProcessed != nil {
                 return preferenceCellBeingProcessed(cardBeginning + cardBeingProcessed!)
@@ -151,7 +148,6 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        //toScreen: 1 for newCard, 2 for newAddress, 3 for orderHistory, 4 for account settings
         if indexPath.section == 0{
             if indexPath.row < addresses.count{
                 preferredAddress = indexPath.row
@@ -162,7 +158,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         else if indexPath.section == 1{
             if indexPath.row < cards.count{
-                preferredCard = indexPath.row == 0 ? .ApplePay : PaymentPreference.CardIndex(indexPath.row)
+                preferredCard = indexPath.row
             }
             else{
                 delegate!.bringMenuToNewCard()
@@ -180,13 +176,14 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
     }
+    
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         if indexPath.section == 0{
             if indexPath.row < addresses.count || (indexPath.row == addresses.count && addressBeingProcessed != nil){
                 return true
             }
         }
-        else if indexPath.section == 1 && indexPath.row != 0{
+        else if indexPath.section == 1{
             if indexPath.row < cards.count || (indexPath.row == cards.count && cardBeingProcessed != nil){
                 return true
             }
@@ -217,7 +214,6 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     //MARK: Helper Functions
     func preferenceCellWithTitle(title: String, isPreferred: Bool) -> UITableViewCell{
-        
         let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("InfoCell")! as UITableViewCell
         for subview in cell.subviews{
             if subview is PreferenceLight || subview is CustomActivityIndicatorView{
@@ -228,12 +224,12 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.backgroundColor = Constants.darkBlue
         cell.textLabel?.attributedText = Constants.getTitleAttributedString(title, size: 16, kern: 4.0)
         cell.textLabel?.textAlignment = .Left
+        cell.selectionStyle = .None
         let width = menuWidth ?? view.frame.width-Constants.sliceControllerShowing
      
         if isPreferred{
             cell.addSubview(getCircleView(CGPoint(x: width - 20, y: cellHeight/2 - 5)))
         }
-
         return cell
     }
     
@@ -269,6 +265,7 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.textLabel?.textColor = Constants.seaFoam
         cell.textLabel?.font = UIFont(name: "Myriad Pro", size: 20)
         cell.textLabel?.text = "+"
+        cell.selectionStyle = .None
         return cell
     }
     
@@ -286,18 +283,10 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.textLabel?.textColor = Constants.lightRed
         }
         cell.textLabel?.textAlignment = .Center
+        cell.selectionStyle = .None
         return cell
     }
     
-    
-    func isPreferredCard(row: Int)->Bool{
-        switch preferredCard{
-        case .ApplePay:
-            return row == 0
-        case .CardIndex(let pref):
-            return row == pref
-        }
-    }
 }
 
 class PreferenceLight: UIView{}

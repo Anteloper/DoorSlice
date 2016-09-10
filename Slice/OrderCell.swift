@@ -95,7 +95,7 @@ class OrderCell: UITableViewCell {
         
         var payString = order.paymentMethod
         if payString != ""{
-            payString = order.paymentMethod == Constants.applePayCardID ? "Apple Pay" : "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
+            payString = "\u{2022}\u{2022}\u{2022}\u{2022} \(order.paymentMethod)"
         }
         payLabel.attributedText = getAttributedText(payString, size: 14, kern: 3.0, color: UIColor.whiteColor())
         addSubview(payLabel)

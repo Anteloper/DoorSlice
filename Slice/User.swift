@@ -13,12 +13,12 @@ import UIKit
 class User: NSObject, NSCoding{
     
     var userID: String //User can't login without it
-    var addresses: [Address]? {didSet{saveToDefaults()}}
+    var addresses: [Address] {didSet{saveToDefaults()}}
     var addressIDs: [String: String] {didSet{saveToDefaults()}}
-    var preferredAddress: Int? {didSet{saveToDefaults()}}
-    var cards: [String]? {didSet{saveToDefaults()}}
+    var preferredAddress: Int {didSet{saveToDefaults()}}
+    var cards: [String] {didSet{saveToDefaults()}}
     var cardIDs: [String : String] {didSet{saveToDefaults()}} //key: last four digits, value: cardID provided by the database
-    var paymentMethod: PaymentPreference? {didSet{saveToDefaults()}}
+    var preferredCard: Int {didSet{saveToDefaults()}}
     var hasCreatedFirstCard: Bool{didSet{saveToDefaults()}}//To avoid hitting the newStripeUser endpoint when not applicable
     var isLoggedIn: Bool{didSet{saveToDefaults()}}//For checking at launchtime
     var orderHistory: [PastOrder]{didSet{saveToDefaults()}}
@@ -28,13 +28,13 @@ class User: NSObject, NSCoding{
     var hasSeenTutorial: Bool{didSet{saveToDefaults()}}
     var email: String?{didSet{saveToDefaults()}}//Email address for receipts if the user provided one
     var wantsReceipts: Bool{didSet{saveToDefaults()}}
-    var wantsOrderConfirmation: Bool{didSet{saveToDefaults()}}//Whether an alert should confirm an order when not using apple pay
+    var wantsOrderConfirmation: Bool{didSet{saveToDefaults()}}//Whether an alert should confirm an order
     var school: String //All caps, the name of the school, no "university" or "college" ex: "GEORGETOWN"
     
     init(userID: String,
-         addresses: [Address]? = [Address](), addressIDs: [String: String] = [String : String](),
-         preferredAddress: Int? = 0, cards: [String] = ["APPLE PAY"],
-         cardIDs: [String : String] = [String : String](), paymentMethod: PaymentPreference? = .ApplePay,
+         addresses: [Address] = [Address](), addressIDs: [String: String] = [String : String](),
+         preferredAddress: Int = 0, cards: [String] = [String](),
+         cardIDs: [String : String] = [String : String](), preferredCard: Int = 0,
          hasCreatedFirstCard: Bool = false, isLoggedIn: Bool = true, jwt: String,
          orderHistory: [PastOrder] = [PastOrder](), hasPromptedRating: Bool? = nil,
          loyaltySlices: Int = 0, hasSeenTutorial: Bool = false, email: String? = nil,
@@ -43,10 +43,10 @@ class User: NSObject, NSCoding{
         self.userID = userID
         self.addresses = addresses
         self.addressIDs = addressIDs
-        self.preferredAddress = preferredAddress ?? 0
+        self.preferredAddress = preferredAddress
         self.cards = cards
         self.cardIDs = cardIDs
-        self.paymentMethod = paymentMethod ?? PaymentPreference.ApplePay
+        self.preferredCard = preferredCard
         self.hasCreatedFirstCard = hasCreatedFirstCard
         self.isLoggedIn = isLoggedIn
         self.jwt = jwt
@@ -80,16 +80,14 @@ class User: NSObject, NSCoding{
             else{
                 return nil
             }
-        let pref = decoder.decodeIntegerForKey("paymentMethod")
-        let prefEnum = pref == -1 ? PaymentPreference.ApplePay : PaymentPreference.CardIndex(pref)
-        
+    
         self.init(userID:  userID,
                   addresses: addresses,
                   addressIDs:  addressIDs,
                   preferredAddress: decoder.decodeIntegerForKey("preferredAddress"),
                   cards: cards,
                   cardIDs: cardIDs,
-                  paymentMethod: prefEnum,
+                  preferredCard: decoder.decodeIntegerForKey("preferredCard"),
                   hasCreatedFirstCard: decoder.decodeBoolForKey("hasCreated"),
                   isLoggedIn: decoder.decodeBoolForKey("isLoggedIn"),
                   jwt: jwt,
@@ -108,10 +106,10 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.userID, forKey:  "userID")
         aCoder.encodeObject(self.addresses, forKey: "addresses")
         aCoder.encodeObject(self.addressIDs, forKey: "addressIDs")
-        aCoder.encodeInteger(self.preferredAddress ?? -1, forKey: "preferredAddress")
+        aCoder.encodeInteger(self.preferredAddress, forKey: "preferredAddress")
         aCoder.encodeObject(self.cards, forKey: "cards")
         aCoder.encodeObject(self.cardIDs, forKey: "cardIDs")
-        aCoder.encodeInteger(self.preferenceToInt(self.paymentMethod), forKey: "paymentMethod")
+        aCoder.encodeInteger(self.preferredCard, forKey: "preferredCard")
         aCoder.encodeBool(self.hasCreatedFirstCard, forKey: "hasCreated")
         aCoder.encodeBool(self.isLoggedIn, forKey: "isLoggedIn")
         aCoder.encodeObject(self.jwt, forKey: "jwt")
@@ -123,22 +121,6 @@ class User: NSObject, NSCoding{
         aCoder.encodeObject(self.wantsReceipts, forKey: "wantsReceipts")
         aCoder.encodeObject(self.wantsOrderConfirmation, forKey: "confirmation")
         aCoder.encodeObject(self.school, forKey: "school")
-    }
-    
-    private func preferenceToInt(pref: PaymentPreference?)-> Int{
-        if pref != nil{
-            switch(pref!){
-            case .ApplePay:
-                return -1
-            case .CardIndex(let index):
-                return index
-            }
-        }
-        return -1
-    }
-    
-    private func intToPreference(num: Int)->PaymentPreference{
-        return num == -1 ? PaymentPreference.ApplePay : PaymentPreference.CardIndex(num)
     }
     
     func saveToDefaults(){

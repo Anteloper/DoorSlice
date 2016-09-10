@@ -26,16 +26,13 @@ class NetworkingController{
     var headers: [String : String]!
     
     //MARK: Save Order
-    //Used for both Apple Pay and card payment. Price is in dollars (6.49 = $6.49)
+    // Price is in dollars (6.49 = $6.49)
     func saveOrder(cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: ()->Void){
         let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
     }
     
-    
-    //MARK: Card Functions
-    
-    //Credit Card Exclusive
+
     //Saves a new card regardless of whether it is the user's first card or not. The url passed to it has already taken this into consideration
     func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
         STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
@@ -75,7 +72,7 @@ class NetworkingController{
         }
     }
 
-    //Credit Card Exclusive
+
     func changeCard(cardID: String, userID: String, completion: ()->Void){
         Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
@@ -94,7 +91,6 @@ class NetworkingController{
     
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
-    //Credit card exclusive
     func chargeUser(url: String, amount: String, description: String){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
@@ -119,77 +115,6 @@ class NetworkingController{
         }
     }
     
-    
-    
-    //MARK: Apple Pay Functions
-    static func canApplePay() -> Bool{
-        if let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId){
-            if Stripe.canSubmitPaymentRequest(paymentRequest){
-                return true
-            }
-        }
-        return false
-    }
-    
-    //Apple Pay Exclusive
-    func createPaymentRequest(cheese cheese: Double, pepperoni: Double) -> PKPaymentRequest{
-        let paymentRequest = Stripe.paymentRequestWithMerchantIdentifier(Constants.appleMerchantId)!
-        if cheese != 0 {
-            paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Cheese slices",
-                amount:NSDecimalNumber(double: cheese*Constants.getCheesePriceDollars())))
-        }
-        if pepperoni != 0 {
-            paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "Pepperoni slices",
-                amount:NSDecimalNumber(double: pepperoni*Constants.getPepperoniPriceDollars())))
-        }
-        let total = cheese*Constants.getCheesePriceDollars() + pepperoni*Constants.getPepperoniPriceDollars()
-        paymentRequest.paymentSummaryItems.append(PKPaymentSummaryItem(label: "DoorSlice Order", amount: NSDecimalNumber(double: total)))
-        
-        return paymentRequest
-    }
-    
-    //Apple Pay Exclusive
-    func applePayAuthorized(payment: PKPayment, userID: String, amount: Int, description: String, completion: ((PKPaymentAuthorizationStatus) -> Void)){
-        let apiClient = STPAPIClient(publishableKey: Constants.stripePublishableKey)
-        apiClient.createTokenWithPayment(payment, completion: { (token, error) -> Void in
-            if error == nil {
-                if let token = token {
-                    self.createBackendChargeWithToken(token, userID: userID, amount: amount, description: description, completion: { (result, error) -> Void in
-                        if result == STPBackendChargeResult.Success {
-                            completion(PKPaymentAuthorizationStatus.Success)
-                            self.containerDelegate?.applePayFailed = false
-                        }
-                        else {
-                            completion(PKPaymentAuthorizationStatus.Failure)
-                            self.containerDelegate?.applePayFailed = true
-                        }
-                    })
-                }
-            }
-            else {
-                completion(PKPaymentAuthorizationStatus.Failure)
-                self.containerDelegate?.applePayFailed = true
-            }
-        })
-    }
-    
-    
-    //Only called by other functions in this class (applePayAuthorized)
-    //Apple Pay Exclusive
-    private func createBackendChargeWithToken(token: STPToken, userID: String, amount: Int, description: String, completion: STPTokenSubmissionHandler) {
-        let parameters = ["stripeToken" : token, "chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, Constants.chargeUserURLString+userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
-            switch response.result{
-            case .Success:
-                completion(.Success, nil)
-            case .Failure:
-                if response.response?.statusCode == 401{
-                    self.containerDelegate?.unauthenticated()
-                }
-                completion(.Failure, NSError(domain: StripeDomain, code: 50, userInfo: [NSLocalizedDescriptionKey: "There was an error communication with your payment backend."]))
-            }
-        }
-    }
     
     //MARK: Non Payment Functions
     func saveAddress(add: Address, userID: String){
@@ -295,7 +220,6 @@ class NetworkingController{
             }
         }
     }
-    
     
     static func checkHours(userID: String)->Bool{
         var isOpen = false

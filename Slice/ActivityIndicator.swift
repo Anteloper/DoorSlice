@@ -78,10 +78,7 @@ class CustomActivityIndicatorView: UIView {
     }
     
     func startAnimating () {
-        
-        if isAnimating {
-            return
-        }
+        if isAnimating { return }
         
         if hidesWhenStopped {
             self.hidden = false

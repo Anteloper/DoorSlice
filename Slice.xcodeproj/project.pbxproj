@@ -44,7 +44,6 @@
 		4CF756A21D0A17FA00746AEE /* SliceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A11D0A17FA00746AEE /* SliceController.swift */; };
 		4CF756A41D0A182800746AEE /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A31D0A182800746AEE /* MenuController.swift */; };
 		4CF756AA1D0B47C700746AEE /* SwipeCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756A91D0B47C700746AEE /* SwipeCircle.swift */; };
-		4CF756AE1D0B5E3200746AEE /* PaymentPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756AD1D0B5E3200746AEE /* PaymentPreference.swift */; };
 		4CF756B01D0C81BF00746AEE /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756AF1D0C81BF00746AEE /* TimerView.swift */; };
 		4CF756B21D0C828700746AEE /* OrderProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF756B11D0C828700746AEE /* OrderProgressView.swift */; };
 		5EB10D2BD6E04A8E5A58F05F /* Pods_SliceUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C2B173548C9DECE8DE59FFC /* Pods_SliceUITests.framework */; };
@@ -117,7 +116,6 @@
 		4CF756A11D0A17FA00746AEE /* SliceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliceController.swift; sourceTree = "<group>"; };
 		4CF756A31D0A182800746AEE /* MenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		4CF756A91D0B47C700746AEE /* SwipeCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeCircle.swift; sourceTree = "<group>"; };
-		4CF756AD1D0B5E3200746AEE /* PaymentPreference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentPreference.swift; sourceTree = "<group>"; };
 		4CF756AF1D0C81BF00746AEE /* TimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		4CF756B11D0C828700746AEE /* OrderProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderProgressView.swift; sourceTree = "<group>"; };
 		611DA45BE68A0BA5EDE01089 /* Pods-SliceTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SliceTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SliceTests/Pods-SliceTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -245,7 +243,6 @@
 				4CB29D1A1D301C22009C2CA5 /* Address.swift */,
 				4CDAFE2A1D442F5400659C93 /* PastOrder.swift */,
 				4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */,
-				4CF756AD1D0B5E3200746AEE /* PaymentPreference.swift */,
 				4CB29D0B1D2EC314009C2CA5 /* Order.swift */,
 				4CB29D071D2EC2F7009C2CA5 /* User.swift */,
 			);
@@ -428,7 +425,7 @@
 						DevelopmentTeam = 6C89EFDVCM;
 						SystemCapabilities = {
 							com.apple.OMC = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -632,7 +629,6 @@
 				4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */,
 				4CF756721D0A177C00746AEE /* AppDelegate.swift in Sources */,
 				4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */,
-				4CF756AE1D0B5E3200746AEE /* PaymentPreference.swift in Sources */,
 				4C0BD4DC1D591DA4000A28D4 /* ReceiptController.swift in Sources */,
 				4C0BD4E01D5BF4B6000A28D4 /* AccountSettingsController.swift in Sources */,
 				4C466D5F1D70D48D00CDD604 /* ParentControllers.swift in Sources */,

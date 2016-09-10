@@ -96,27 +96,28 @@ class LoginController: NavBarless, UITextFieldDelegate{
         let hasSeenTutorial = json["hasSeenTutorial"].boolValue
         let wantsOrderConfirmation = json["wantsConfirmation"].boolValue
         var email: String? = json["email"].stringValue
-        if email == "noEmail"{
-            email = nil
-        }
+        if email == "noEmail"{email = nil}
         let hasCreatedFirstCard = json["hasStripeProfile"].boolValue
         let cardsJson = json["cards"].arrayValue
         let addressesJson = json["addresses"].arrayValue
         
+        //Variable initialization to blank values
         var addressIDs = [String : String]()
         var addresses = [Address]()
-        var cards = ["APPLE PAY"]
+        var cards = [String]()
         var cardIDs = [String : String]()
-        var preferredAddress: Int? = nil
-        var preferredPayment: PaymentPreference = PaymentPreference.ApplePay
+        var preferredAddress = 0
+        var preferredCard = 0
         var orderHistory = [PastOrder]()
         
+        //User Addresses
         for address in addressesJson{
             let add = Address(school: address["School"].stringValue, dorm: address["Dorm"].stringValue, room: address["Room"].stringValue)
             addresses.append(add)
             addressIDs[add.getName()] = address["_id"].stringValue
         }
         
+        //User Cards
         for card in cardsJson{
             let lastFour = card["lastFour"].stringValue
             let cardID = card["cardID"].stringValue
@@ -126,39 +127,41 @@ class LoginController: NavBarless, UITextFieldDelegate{
             }
         }
         
+        //Last Used Address and Card
         if let lastOrder = json["orders"].arrayValue.last{
             let lastAddID = lastOrder["address"].stringValue
             for possAdd in addresses{
                 if addressIDs[possAdd.getName()] == lastAddID{
-                    preferredAddress = addresses.indexOf(possAdd)
+                    if let pa = addresses.indexOf(possAdd){
+                        preferredAddress = pa
+                    }
                 }
             }
             let lastCardID = lastOrder["cardUsed"].stringValue
         
-            if lastCardID != Constants.applePayCardID{
-                for lastFour in cards{
-                    if cardIDs[lastFour] == lastCardID{
-                        preferredPayment = PaymentPreference.CardIndex(cards.indexOf(lastFour)!)
+            for lastFour in cards{
+                if cardIDs[lastFour] == lastCardID{
+                    if let pc = cards.indexOf(lastFour){
+                        preferredCard = pc
                     }
                 }
             }
         }
         
+        //Order History
         for order in json["orders"].arrayValue{
             var trueAddress = Address()
             if let jsonAddress = order["address"].arrayValue.first {
                 trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
             }
             
-            
-            var lastFour = Constants.applePayCardID
-            if !(order["cardUsed"].stringValue == Constants.applePayCardID){
-                for lFour in cards{
-                    if cardIDs[lFour] == order["cardUsed"].stringValue{
-                        lastFour = lFour
-                    }
+            var lastFour = ""
+            for lFour in cards{
+                if cardIDs[lFour] == order["cardUsed"].stringValue{
+                    lastFour = lFour
                 }
             }
+            
             let cheese = order["cheese"].intValue
             let pepperoni = order["pepperoni"].intValue
             let price = order["price"].doubleValue
@@ -166,13 +169,13 @@ class LoginController: NavBarless, UITextFieldDelegate{
             orderHistory.append(PastOrder(address: trueAddress, cheeseSlices: cheese, pepperoniSlices: pepperoni, price: price, timeOrdered: timeOrdered, paymentMethod: lastFour))
         }
         
-        
+        //Create User
         let user = User(userID: userID, addresses: addresses,
                         addressIDs: addressIDs,
                         preferredAddress: preferredAddress,
                         cards: cards,
                         cardIDs: cardIDs,
-                        paymentMethod: preferredPayment,
+                        preferredCard: preferredCard,
                         hasCreatedFirstCard: hasCreatedFirstCard,
                         isLoggedIn: true,
                         jwt: jwt,
