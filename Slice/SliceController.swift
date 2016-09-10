@@ -67,7 +67,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         else{
             delegate?.toggleMenu(nil)
         }
-        
     }
     
     func addProgressBar(){

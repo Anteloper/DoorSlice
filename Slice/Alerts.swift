@@ -106,20 +106,16 @@ class Alerts{
     
     //Returns true if the user has a valid address and payment method, false otherwise. Means force unwrapping options is ok in payForOrder
     static func checkValidity(loggedInUser: User, cc: ContainerController)->Bool{
-        if case .ApplePay = loggedInUser.paymentMethod!{
-            if !NetworkingController.canApplePay(){
-                let messageString = loggedInUser.cards?.count == 1 ? "Please add a credit card in the menu" : "Please change your payment method in the menu"
-                let toggleCompleted: (()->Void)? = loggedInUser.cards?.count == 1 ? {cc.bringMenuToNewCard()} : nil
-                SweetAlert().showAlert("NO APPLE PAY", subTitle: messageString, style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
-                    if ($0){
-                        cc.toggleMenu(toggleCompleted)
-                    }
+        if loggedInUser.cards.count == 0{
+            SweetAlert().showAlert("NO CARD", subTitle: "Please add a credit card in the menu", style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
+                if ($0){
+                    cc.toggleMenu({cc.bringMenuToNewCard()})
                 }
-                cc.sliceController?.orderCancelled()
-                return false
             }
+            cc.sliceController?.orderCancelled()
+            return false
         }
-        if loggedInUser.addresses == nil || loggedInUser.addresses?.count == 0{
+        if loggedInUser.addresses.count == 0{
             SweetAlert().showAlert("NO ADDRESS", subTitle: "Enter a delivery address in the menu and then place your order.", style: .Warning, buttonTitle: "SHOW ME", buttonColor: Constants.darkBlue, otherButtonTitle: "DISMISS", otherButtonColor: Constants.darkBlue){
                 if ($0){
                     cc.toggleMenu({cc.bringMenuToNewAddress()})
@@ -159,14 +155,6 @@ class Alerts{
     static func noAddresses(na: NewAddressController){
         SweetAlert().showAlert("NETWORK ERROR", subTitle: "Failed to fetch list of active dorms. Please check your network connection", style: .Error, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
             na.exitWithoutAddress(true)
-        }
-    }
-    
-    static func applePayFound(nc: NewCardController){
-        SweetAlert().showAlert("YOU'RE ALL SET", subTitle: "We've set up Apple Pay for you. Your payment is good to go!", style: .None, buttonTitle: "OKAY", buttonColor: Constants.darkBlue){ _ in
-            let tc = TutorialController()
-            tc.user = nc.user
-            nc.presentViewController(tc, animated: false, completion: nil)
         }
     }
     

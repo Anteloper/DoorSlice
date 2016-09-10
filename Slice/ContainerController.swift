@@ -13,7 +13,7 @@ import Stripe
 //Even the navigation bar belongs to the SliceController object it keeps track of. 
 //It is a delegate for menuController, sliceController, newCardController, paymentController, orderHistoryController and any alertController
 //objects it contains and may present
-class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPaymentAuthorizationViewControllerDelegate {
+class ContainerController: UIViewController, Slideable, Payable, Rateable{
     
     var navController: UINavigationController!
     var sliceController: SliceController!
@@ -42,9 +42,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     
     var orderDescription = ""
     var activeAddresses: ActiveAddresses!
-    
-    var applePayCancelled = true
-    var applePayFailed = false
     
     let buttonColor = Constants.darkBlue
     
@@ -94,10 +91,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         //Display menu when no menu is visible
         if !menuIsVisible && menuController == nil{
             menuController = MenuController()
-            menuController?.addresses = loggedInUser.addresses ?? [Address]()
+            menuController?.addresses = loggedInUser.addresses
             menuController?.cards = loggedInUser.cards
             menuController?.preferredAddress = loggedInUser.preferredAddress
-            menuController?.preferredCard = loggedInUser.paymentMethod ?? .ApplePay
+            menuController?.preferredCard = loggedInUser.preferredCard
             menuController?.delegate = self
             view.insertSubview(menuController!.view, atIndex: 0)
             addChildViewController(menuController!)
@@ -118,11 +115,11 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
         //Hide menu when one is visible and completion is nil
         else if completion == nil{
             //Check if changed and update preferenceChanged property so we can update card on backend if needed when they try to buy
-            if menuController!.preferredCard != (loggedInUser.paymentMethod == nil ? .CardIndex(23452) : loggedInUser.paymentMethod!) {
+            if menuController!.preferredCard != (loggedInUser.preferredCard) {
                 paymentPreferenceChanged = true
             }
-            loggedInUser.paymentMethod = menuController!.preferredCard
-            loggedInUser.preferredAddress = menuController?.preferredAddress
+            loggedInUser.preferredCard = menuController!.preferredCard
+            loggedInUser.preferredAddress = menuController!.preferredAddress
             animateCenterPanelXPosition(0, fromFullScreen: false) { finished in
                 self.menuIsVisible = false
                 self.menuController?.view.removeFromSuperview()
@@ -240,7 +237,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     func returnFromNewCard(withCard card: STPCardParams?) {
         if card != nil{
             let lastFour = card!.last4()!
-            if !loggedInUser.cards!.contains(lastFour){
+            if !loggedInUser.cards.contains(lastFour){
                 menuController?.cardBeingProcessed = lastFour
                 let url = (loggedInUser.cardIDs.count == 0 && !loggedInUser.hasCreatedFirstCard) ? Constants.firstCardURLString : Constants.newCardURLString
                 networkController.saveNewCard(card, url: url+loggedInUser.userID, lastFour: lastFour)
@@ -261,14 +258,12 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //New Card
     func returnFromNewAddress(withAddress address: Address?){
         if address != nil{
-            if loggedInUser.addresses != nil{
-                if !loggedInUser.addressIDs.keys.contains(address!.getName()){
-                    menuController?.addressBeingProcessed = address
-                    networkController.saveAddress(address!, userID: loggedInUser.userID)
-                }
-                else{
-                    Alerts.duplicate(isCard: false)
-                }
+            if !loggedInUser.addressIDs.keys.contains(address!.getName()){
+                menuController?.addressBeingProcessed = address
+                networkController.saveAddress(address!, userID: loggedInUser.userID)
+            }
+            else{
+                Alerts.duplicate(isCard: false)
             }
         }
         animateCenterPanelXPosition(navController.view.frame.width - amountVisibleOfSliceController, fromFullScreen: true){
@@ -312,20 +307,20 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func cardRemoved(index: Int) {
-        let lastFour = loggedInUser.cards![index]
+        let lastFour = loggedInUser.cards[index]
         let url = Constants.deleteCardURLString + loggedInUser.userID
         networkController.deleteCard(url, card: loggedInUser.cardIDs[lastFour]!){
             if ($0){
-                self.loggedInUser.cards?.removeAtIndex(index)
+                self.loggedInUser.cards.removeAtIndex(index)
                 self.loggedInUser.cardIDs.removeValueForKey(lastFour)
-                let val = self.loggedInUser.paymentMethod!.value()
-                if val != -1 && val != 1 {
-                    self.loggedInUser.paymentMethod = PaymentPreference.CardIndex(val-1)
+                if index == self.loggedInUser.preferredCard{
+                    self.loggedInUser.preferredCard = 0
                 }
-                else if val == 1{
-                    self.loggedInUser.paymentMethod = .ApplePay
+                else if self.loggedInUser.preferredCard != 0{
+                    self.loggedInUser.preferredCard -= 1
                 }
-                self.menuController?.preferredCard = self.loggedInUser.paymentMethod!
+                
+                self.menuController?.preferredCard = self.loggedInUser.preferredCard
             }
             else{
                 Alerts.failedDeleteAlert(true)
@@ -335,17 +330,17 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func addressRemoved(index: Int) {
-        let name = loggedInUser.addresses![index].getName()
+        let name = loggedInUser.addresses[index].getName()
         let url = Constants.deleteAddressURLString + loggedInUser.userID + "/" + loggedInUser.addressIDs[name]!
         networkController.deleteAddress(url){ [unowned self] in
             if ($0){
-                self.loggedInUser.addresses?.removeAtIndex(index)
+                self.loggedInUser.addresses.removeAtIndex(index)
                 self.loggedInUser.addressIDs.removeValueForKey(name)
                 if index == self.loggedInUser.preferredAddress{
                     self.loggedInUser.preferredAddress = 0
                 }
                 else if self.loggedInUser.preferredAddress != 0{
-                    self.loggedInUser.preferredAddress! -= 1
+                    self.loggedInUser.preferredAddress -= 1
                 }
                 self.menuController?.preferredAddress = self.loggedInUser.preferredAddress
             }
@@ -363,15 +358,17 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
 
     func timerEnded(cheese cheese: Double, pepperoni: Double){
-        if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
-            let receiptController = ReceiptController()
-            receiptController.delegate = self
-            receiptController.showAlert() { [unowned self] in
-                self.payForOrder(cheese, pepperoni: pepperoni)
+        if Alerts.checkValidity(loggedInUser, cc: self){
+            if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
+                let receiptController = ReceiptController()
+                receiptController.delegate = self
+                receiptController.showAlert() { [unowned self] in
+                    self.payForOrder(cheese, pepperoni: pepperoni)
+                }
             }
-        }
-        else{
+            else{
             self.payForOrder(cheese, pepperoni: pepperoni)
+            }
         }
     }
     
@@ -379,83 +376,45 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //The beginning point for any payment process when the sliceController timer runs out. This function decides which
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese: Double, pepperoni: Double) {
-        if Alerts.checkValidity(loggedInUser, cc: self){
-            amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
-            
-            cheeseSlices = Int(cheese) //So that apple pay delegate functions can see these values
-            pepperoniSlices = Int(pepperoni)
-            orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)
-            applePayCancelled = true //It will be set to false when payment is properly authorized but must be reset every order in this way
-            
-            if case .ApplePay = loggedInUser.paymentMethod!{
-                if NetworkingController.canApplePay(){
-                    let paymentRequest = networkController.createPaymentRequest(cheese: cheese, pepperoni: pepperoni)
-                    //Send it to an apple-made viewcontroller. This will take my PKPaymentRequest and turn it into a PKPayment which is passed to function below. This function will save order and charge user on the backend
-                    let paymentAuthVC = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
-                    paymentAuthVC.delegate = self
-                    sliceController.presentViewController(paymentAuthVC, animated: true, completion: nil)
-                }
-            }
-            else{
-                let cardPayment: ()->Void = {
-                    let lastFour = self.loggedInUser.cards![self.loggedInUser.paymentMethod!.value()]
-                    let id = self.loggedInUser.cardIDs[lastFour]!
-                    if let currentAddressID = self.loggedInUser.addressIDs[self.loggedInUser.addresses![self.loggedInUser.preferredAddress!].getName()]{
-                        self.sliceController.orderProcessing()
-                        if self.paymentPreferenceChanged{
-                            self.networkController.changeCard(id, userID: self.loggedInUser.userID){
-                                self.paymentPreferenceChanged = false
-                                self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
-                            }
-                        }
-                        else{
+        cheeseSlices = Int(cheese)
+        pepperoniSlices = Int(cheese)
+        amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
+        orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)
+        
+        //To avoid code duplication in prompting the user for order confirmation or not
+        let cardPayment: ()->Void = {
+            let lastFour = self.loggedInUser.cards[self.loggedInUser.preferredCard]
+            if let id = self.loggedInUser.cardIDs[lastFour]{
+                if let currentAddressID = self.loggedInUser.addressIDs[self.loggedInUser.addresses[self.loggedInUser.preferredAddress].getName()]{
+                    
+                    self.sliceController.orderProcessing()
+                    if self.paymentPreferenceChanged{
+                        self.networkController.changeCard(id, userID: self.loggedInUser.userID){
+                            self.paymentPreferenceChanged = false
                             self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                         }
                     }
-                        
-                    //If the cardID couldnt be found in the dictionary. Should never reach this point
                     else{
-                        Alerts.catchall({_ in self.logOutUser()})
+                        self.saveOrderThenCharge(Int(cheese), pepperoni: Int(pepperoni), addressID: currentAddressID, cardID: id)
                     }
                 }
-                
-                //Actual Card Payment
-                loggedInUser.wantsOrderConfirmation ? Alerts.confirmOrder(cheese, pepperoni: pepperoni, cc: self, confirmedHandler: cardPayment) : cardPayment()
+            
+                //If the cardID couldnt be found in the dictionary. Should never reach this point
+                else{
+                    Alerts.catchall({_ in self.logOutUser()})
+                }
             }
         }
+        
+        //Actual Card Payment
+        loggedInUser.wantsOrderConfirmation ? Alerts.confirmOrder(cheese, pepperoni: pepperoni, cc: self, confirmedHandler: cardPayment) : cardPayment()
     }
     
-    //Saves the order to the backend then submits a charge token to the backend. 
+    //Saves the order to the backend then submits a charge token to the backend.
     //Credit Card exclusive
     func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
         networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
             self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription)
-        }
-    }
-    
-    
-    //MARK: PKPaymentAuthorizationViewControllerDelegate Functions
-    //Apple Pay Exclusive
-    func paymentAuthorizationViewController(controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: ((PKPaymentAuthorizationStatus) -> Void)) {
-        let name = loggedInUser.addresses![loggedInUser.preferredAddress!].getName()
-        let addID = loggedInUser.addressIDs[name]
-        networkController.saveOrder(cheeseSlices, pepperoni: pepperoniSlices, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addID!, cardID: Constants.applePayCardID, price: getAmountString()){
-            self.networkController.applePayAuthorized(payment, userID: self.loggedInUser.userID, amount: self.getAmountInt(), description: self.orderDescription, completion: completion)
-            self.applePayCancelled = false
-        }
-    }
-    
-    //Apple Pay Exclusive
-    func paymentAuthorizationViewControllerDidFinish(controller: PKPaymentAuthorizationViewController) {
-        dismissViewControllerAnimated(true, completion: nil)
-        if(applePayCancelled || applePayFailed){
-            sliceController.orderCancelled()
-        }
-        else{
-            let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: Constants.applePayCardID)
-            loggedInUser.orderHistory.append(order)
-            sliceController.orderCompleted()
-            Alerts.successfulOrder(loggedInUser, cc: self, total: pepperoniSlices + cheeseSlices)
         }
     }
     
@@ -480,9 +439,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     //MARK: Payable Delegate Methods
     func storeCardID(cardID: String, lastFour: String){
         loggedInUser.hasCreatedFirstCard = true
-        loggedInUser.cards!.append(lastFour)
-        loggedInUser.paymentMethod = .CardIndex(loggedInUser.cards!.count-1)
-        menuController?.preferredCard = loggedInUser.paymentMethod!
+        loggedInUser.cards.append(lastFour)
+        loggedInUser.preferredCard = loggedInUser.cards.count-1
+        menuController?.preferredCard = loggedInUser.preferredCard
         menuController?.cards = loggedInUser.cards
         menuController?.cardBeingProcessed = nil
         loggedInUser.cardIDs[lastFour] = cardID
@@ -496,12 +455,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func cardPaymentSuccesful(){
-        if let val = loggedInUser.paymentMethod?.value(){
-            if let payString = loggedInUser?.cards?[val]{
-                let order = PastOrder(address: loggedInUser.addresses![loggedInUser.preferredAddress!], cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
-                loggedInUser.orderHistory.append(order)
-            }
-        }
+        
+        let payString = loggedInUser.cards[loggedInUser.preferredCard]
+        let address = loggedInUser.addresses[loggedInUser.preferredAddress]
+        let order = PastOrder(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
+            loggedInUser.orderHistory.append(order)
+
+        
         sliceController.orderCompleted()
         Alerts.successfulOrder(loggedInUser, cc: self, total: pepperoniSlices + cheeseSlices)
     }
@@ -512,8 +472,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable, PKPay
     }
     
     func addressSaveSucceeded(add: Address, orderID: String) {
-        loggedInUser.addresses!.append(add)
-        loggedInUser.preferredAddress = loggedInUser.addresses!.count-1
+        loggedInUser.addresses.append(add)
+        loggedInUser.preferredAddress = loggedInUser.addresses.count-1
         menuController?.preferredAddress = loggedInUser.preferredAddress
         menuController?.addresses = loggedInUser.addresses
         menuController?.addressBeingProcessed = nil

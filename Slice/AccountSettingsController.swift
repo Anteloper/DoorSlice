@@ -19,7 +19,6 @@ enum CellType{
 //based on whether the wants receipts switch is toggled on or off
 
 class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
-    
     var delegate: Slideable!
     var user: User!
     
@@ -151,7 +150,6 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
             tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: 1, inSection: 0)], withRowAnimation: .Automatic)
             animateExplainLabel()
         }
-
     }
     
     //MARK: TextField Delegate Functions

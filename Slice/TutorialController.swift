@@ -59,9 +59,7 @@ class TutorialController: UIViewController, Configurable {
 
         
         if pendingAddress != nil {
-            if user.addresses == nil{
-                user.addresses = [Address]() //Make sure its safe to force unwrap
-            }
+
             //Duplicate Check
             if !user.addressIDs.keys.contains(pendingAddress!.getName()){
                 networkController.saveAddress(pendingAddress!, userID: user.userID)
@@ -76,7 +74,7 @@ class TutorialController: UIViewController, Configurable {
         if pendingCard != nil{
             //Duplicate Check
             let lastFour = pendingCard!.last4()!
-            if !user.cards!.contains(lastFour){
+            if !user.cards.contains(lastFour){
                 let url = (user.cardIDs.count == 0 && !user.hasCreatedFirstCard) ? Constants.firstCardURLString : Constants.newCardURLString
                 networkController.saveNewCard(pendingCard!, url: url+user.userID, lastFour: lastFour)
                 cardSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize*3/2, y: startHeight + rowHeight*3/2))
@@ -116,7 +114,7 @@ class TutorialController: UIViewController, Configurable {
         label.alpha = 0.0
         view.addSubview(label)
         
-        if user.addresses?.count == 0 || user.addresses == nil{
+        if user.addresses.count == 0 {
             if pendingAddress == nil{
                 addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
                 hasAddress = false
@@ -156,9 +154,8 @@ class TutorialController: UIViewController, Configurable {
         paymentButton.addTarget(self, action: #selector(paymentPressed), forControlEvents: .TouchUpInside)
         view.addSubview(paymentButton)
         
-
-        if !NetworkingController.canApplePay() && (user.cards?.count == 0 || user.cards == nil){
-            if pendingCard != nil{
+        if  user.cards.count == 0 {
+            if pendingCard == nil{
                 addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
                 hasPayment = false
             }
@@ -174,12 +171,7 @@ class TutorialController: UIViewController, Configurable {
     func paymentPressed(){
         let nc = NewCardController()
         nc.user = user
-        var completion: (() -> Void)? = {_ in nc.paymentTextField.becomeFirstResponder()}
-        if NetworkingController.canApplePay(){
-            nc.shouldDismissWithApplePayAlert = true
-            completion = nil
-        }
-        presentViewController(UINavigationController(rootViewController: nc), animated: false, completion: completion)
+        presentViewController(UINavigationController(rootViewController: nc), animated: false) {_ in nc.paymentTextField.becomeFirstResponder()}
     }
     
     
@@ -280,7 +272,7 @@ class TutorialController: UIViewController, Configurable {
     func addressSaveFailed() {
         addressSpinner?.stopAnimating()
         pendingAddress = nil
-        if user.addresses?.count == 0 || user.addresses == nil{
+        if user.addresses.count == 0 {
             addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight/2) - 10, width: 20, height: 20))
         }
         Alerts.serverError()
@@ -288,8 +280,8 @@ class TutorialController: UIViewController, Configurable {
     
     func addressSaveSucceeded(add: Address, orderID: String) {
         addressSpinner?.stopAnimating()
-        user.addresses!.append(add)
-        user.preferredAddress = user.addresses!.count-1
+        user.addresses.append(add)
+        user.preferredAddress = user.addresses.count-1
         user.addressIDs[add.getName()] = orderID
         pendingAddress = nil
         hasAddress = true
@@ -299,7 +291,7 @@ class TutorialController: UIViewController, Configurable {
     func cardStoreageFailed(cardDeclined declined: Bool) {
         cardSpinner?.stopAnimating()
         pendingCard = nil
-        if !NetworkingController.canApplePay() && (user.cards?.count == 0 || user.cards == nil){
+        if user.cards.count == 0 {
             addForwardButton(CGRect(x: view.frame.width-30, y: startHeight+(rowHeight*3/2) - 10, width: 20, height: 20))
         }
         declined ? Alerts.cardDeclined() : Alerts.serverError()
@@ -308,8 +300,8 @@ class TutorialController: UIViewController, Configurable {
     
     func storeCardID(cardID: String, lastFour: String) {
         user.hasCreatedFirstCard = true
-        user.cards!.append(lastFour)
-        user.paymentMethod = .CardIndex(user.cards!.count-1)
+        user.cards.append(lastFour)
+        user.preferredCard = user.cards.count-1
         user.cardIDs[lastFour] = cardID
         pendingCard = nil
         hasPayment = true

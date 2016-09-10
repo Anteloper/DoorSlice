@@ -78,7 +78,6 @@ class TimerView: UIView {
         let pausedTime = lineLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
         lineLayer.speed = 0.0
         lineLayer.timeOffset = pausedTime
-        
     }
     
     func resume(){

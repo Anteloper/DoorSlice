@@ -34,7 +34,7 @@ internal struct Constants{
     
     static func userFilePath() -> String{
         let paths = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
-        let filePath = paths[0].URLByAppendingPathComponent("stagingPath.plist")
+        let filePath = paths[0].URLByAppendingPathComponent("productionPath.plist")
         return filePath.path!
     }
     
@@ -45,7 +45,6 @@ internal struct Constants{
         attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
         return attributedString
     }
-    
     
     //The amount of the main view that is still showing when the side menu slides out. Should match amountVisibleOfSliceController
     static let sliceControllerShowing: CGFloat = 110
@@ -81,7 +80,7 @@ internal struct Constants{
     static let firstCardURLString = "https://prod-doorslice.herokuapp.com/api/payments/newStripeUser/"
     static let newCardURLString = "https://prod-doorslice.herokuapp.com/api/payments/newStripeCard/"
     static let updateCardURLString = "https://prod-doorslice.herokuapp.com/api/payments/updateDefaultCard/"
-    static let chargeUserURLString = "https://prod-doorslice.herokuapp.com/api/payments/charge/" //Used by both Apple Pay and Credit Card payments
+    static let chargeUserURLString = "https://prod-doorslice.herokuapp.com/api/payments/charge/"
     static let deleteCardURLString = "https://prod-doorslice.herokuapp.com/api/payments/removeCard/"
     
     static let booleanChangeURLString = "https://prod-doorslice.herokuapp.com/api/users/"
@@ -90,10 +89,7 @@ internal struct Constants{
     static let hasSeenTutorial = "hasSeenTutorial"
     
     static let stripePublishableKey = "pk_live_zDpdr6lg6Y5rdeJRK4Efu9AQ"
-    static let appleMerchantId = "merchant.jumpsnipe.doorslice"
 
-    static let applePayCardID = "applePay"//Used for identifying if apple pay was used when parsing a user from server login
-    
     static let dormNicknames = ["CARMAN HALL" : "CARMAN", "JOHN JAY HALL" : "JOHN JAY", "MCBAIN HALL" : "MCBAIN",  "WIEN HALL" : "WIEN", "48 CLAREMONT" : "48 CLAREMONT", "601 WEST 113TH STREET" : "601 113TH", "BROADWAY HALL" : "BROADWAY", "CARLTON ARMS" : "CARLTON ARMS", "EAST CAMPUS" : "EC", "FURNALD HALL" : "FURNALD", "HARMONY HALL" : "HARMONY", "HARTLEY HALL" : "HARTLEY", "HOGAN HALL" : "HOGAN", "RIVER HALL" : "RIVER" , "JUGGLES HALL" : "JUGGLES", "SHAPIRO HALL" : "SHAPIRO", "WALLACH HALL" : "WALLACH", "WATT HALL" : "WATT", "WOODBRIDGE HALL" : "WOODBRIDGE", "VILLAGE C EAST" : "VCE", "VILLAGE C WEST" : "VCW", "NEW SOUTH" : "NEW SOUTH", "KENNEDY HALL" : "KENNEDY", "LXR" : "LXR", "HARBIN HALL" : "HARBIN", "NORTH EAST HALL" : "NET", "COPLEY HALL" : "COPLEY", "REYNOLDS HALL" : "REYNOLDS", "MCCARTHY HALL" : "MCCARTHY", "DARNALL HALL" : "DARNALL", "HENLE VILLAGE" : "HENLE", "VILLAGE A" : "VILLAGE A", "VILLAGE B" : "VILLAGE B", "NEVILS" : "NEVILS", "FREEDOM HALL" : "FREEDOM"]
     
 }

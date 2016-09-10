@@ -33,7 +33,6 @@ protocol Slideable{
 
 //Objects that conform to this protocol can name themselves as a networkController delegate functions
 protocol Payable {
-    var applePayFailed: Bool{ get set }
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed(cardDeclined declined: Bool)
     func cardPaymentSuccesful()

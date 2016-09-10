@@ -17,7 +17,6 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     var validated = false
     
     var user: User!//Only needed when presented by an instance of TutorialController
-    var shouldDismissWithApplePayAlert: Bool?//Will be true when presented by an instance of TutorialController and the user has Apple Pay
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,11 +29,6 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        if shouldDismissWithApplePayAlert != nil{
-            if shouldDismissWithApplePayAlert!{
-                Alerts.applePayFound(self)
-            }
-        }
     }
     
     func exit(){
