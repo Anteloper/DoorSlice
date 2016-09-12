@@ -364,7 +364,6 @@ class LoginController: NavBarless, UITextFieldDelegate{
         goButton.backgroundColor = UIColor.clearColor()
         view.addSubview(goButton)
         
-
         let forgotPassword = UIButton(frame: CGRect(x: view.frame.width/4, y: goButton.frame.maxY+60, width: view.frame.width/2, height: 40))
         forgotPassword.addTarget(self, action: #selector(forgotPasswordPressed), forControlEvents: .TouchUpInside)
         
