@@ -46,10 +46,15 @@ class NetworkingController{
                     switch response.result{
                     case .Success:
                         if let value = response.result.value{
-                            let cardID = JSON(value)["card"]["cardID"].stringValue
+                            let json = JSON(value)
+                            let cardID = json["card"]["cardID"].stringValue
                             if cardID != ""{
                                 self.containerDelegate?.storeCardID(cardID, lastFour: lastFour)
                                 self.tutorialDelegate?.storeCardID(cardID, lastFour: lastFour)
+                            }
+                            else if json["code"].stringValue == "card_declined"{
+                                self.containerDelegate?.cardStoreageFailed(cardDeclined: true)
+                                self.tutorialDelegate?.cardStoreageFailed(cardDeclined: true)
                             }
                             else{
                                 self.containerDelegate?.cardStoreageFailed(cardDeclined: false)
@@ -65,7 +70,6 @@ class NetworkingController{
                             self.containerDelegate?.cardStoreageFailed(cardDeclined: false)
                             self.tutorialDelegate?.cardStoreageFailed(cardDeclined: false)
                         }
-
                     }
                 }
             }
@@ -91,14 +95,15 @@ class NetworkingController{
     
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
-    func chargeUser(url: String, amount: String, description: String){
+    //Only called indirectly by NewtorkingController through a completion passed to it by ContainerController
+    func chargeUser(url: String, amount: String, description: String, cheese: Int, pepperoni: Int){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
                 if let value = response.result.value{
                     if JSON(value)["succesful charge"] != JSON("blank"){
-                        self.containerDelegate?.cardPaymentSuccesful()
+                        self.containerDelegate?.cardPaymentSuccesful(cheese, pepperoniSlices: pepperoni)
                     }
                     else{
                         self.containerDelegate?.cardPaymentFailed(cardDeclined: true)

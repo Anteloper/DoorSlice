@@ -151,7 +151,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
         //Order History
         for order in json["orders"].arrayValue{
             var trueAddress = Address()
-            if let jsonAddress = order["address"].arrayValue.first {
+            if let jsonAddress = order["Address"].arrayValue.first {
                 trueAddress = Address(school: jsonAddress["School"].stringValue, dorm: jsonAddress["Dorm"].stringValue, room: jsonAddress["Room"].stringValue)
             }
             
