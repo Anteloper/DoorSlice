@@ -36,10 +36,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func getAmountInt()->Int{ return Int(amount*100) }//The amount in cents. (649 represents $6.49)
     func getAmountString()->String {return String(amount)}// The double as a string (6.49 represents $6.49)
     
-    //These two are to be mutated by the payForOrder function
-    var cheeseSlices = 0
-    var pepperoniSlices = 0
-    
     var orderDescription = ""
     var activeAddresses: ActiveAddresses!
     
@@ -86,7 +82,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
     
     //MARK: Slideable Functions
-
     func toggleMenu(completion: (()->Void)?) {
         //Display menu when no menu is visible
         if !menuIsVisible && menuController == nil{
@@ -350,7 +345,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         }
     }
     
-    
     func logOutUser(){
         loggedInUser.isLoggedIn = false
         let lc = LoginController()
@@ -367,7 +361,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
                 }
             }
             else{
-            self.payForOrder(cheese, pepperoni: pepperoni)
+                self.payForOrder(cheese, pepperoni: pepperoni)
             }
         }
     }
@@ -376,10 +370,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     //The beginning point for any payment process when the sliceController timer runs out. This function decides which
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese: Double, pepperoni: Double) {
-        cheeseSlices = Int(cheese)
-        pepperoniSlices = Int(cheese)
+
         amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
-        orderDescription = getOrderDescription(cheeseSlices, pepperoni: pepperoniSlices)
+        orderDescription = getOrderDescription(Int(cheese), pepperoni: Int(pepperoni))
         
         //To avoid code duplication in prompting the user for order confirmation or not
         let cardPayment: ()->Void = {
@@ -414,7 +407,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     //Credit Card exclusive
     func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
         networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
-            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription)
+            self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription, cheese: cheese, pepperoni: pepperoni)
         }
     }
     
@@ -454,8 +447,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         declined ? Alerts.cardDeclined() : Alerts.saveNotSuccesful(isCard: true, internetError: false)
     }
     
-    func cardPaymentSuccesful(){
-        
+    func cardPaymentSuccesful(cheeseSlices: Int, pepperoniSlices: Int){
         let payString = loggedInUser.cards[loggedInUser.preferredCard]
         let address = loggedInUser.addresses[loggedInUser.preferredAddress]
         let order = PastOrder(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)

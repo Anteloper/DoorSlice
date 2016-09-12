@@ -243,7 +243,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Timeable Protocol Functions
     func timerEnded(didComplete: Bool) {
         if didComplete{
-            delegate?.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
+            delegate!.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
     }
 }

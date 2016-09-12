@@ -35,7 +35,7 @@ protocol Slideable{
 protocol Payable {
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed(cardDeclined declined: Bool)
-    func cardPaymentSuccesful()
+    func cardPaymentSuccesful(cheeseSlices: Int, pepperoniSlices: Int)
     func cardPaymentFailed(cardDeclined declined: Bool)
     func addressSaveSucceeded(add: Address, orderID: String)
     func addressSaveFailed()
