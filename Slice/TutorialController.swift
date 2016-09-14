@@ -59,7 +59,6 @@ class TutorialController: UIViewController, Configurable {
 
         
         if pendingAddress != nil {
-
             //Duplicate Check
             if !user.addressIDs.keys.contains(pendingAddress!.getName()){
                 networkController.saveAddress(pendingAddress!, userID: user.userID)
