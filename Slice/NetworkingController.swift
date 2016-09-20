@@ -228,7 +228,6 @@ class NetworkingController{
     
     func checkHours(userID: String){
         Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
-            debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
