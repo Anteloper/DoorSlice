@@ -33,6 +33,8 @@ protocol Slideable{
 
 //Objects that conform to this protocol can name themselves as a networkController delegate functions
 protocol Payable {
+    func open()
+    func closed(closedString: String)
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed(cardDeclined declined: Bool)
     func cardPaymentSuccesful(cheeseSlices: Int, pepperoniSlices: Int)

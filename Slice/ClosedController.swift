@@ -14,6 +14,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
     
     var delegate: Slideable!
     var userID: String!
+    var closedMessage: String!
     
     override func viewDidLoad() {
         view.backgroundColor = Constants.darkBlue
@@ -40,6 +41,17 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         closedLabel.textAlignment = .Center
         closedLabel.attributedText = Constants.getTitleAttributedString("WE'RE CLOSED RIGHT NOW :(", size: 18, kern: 4.0)
         view.addSubview(closedLabel)
+        
+        let closedMess = UILabel(frame: CGRect(x: 10, y: closedView.frame.midY + 80, width: view.frame.width-20, height: 90))
+        closedMess.numberOfLines = 0
+        let attString = Constants.getTitleAttributedString(closedMessage, size: 16, kern: 2.0)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 9
+        attString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attString.length))
+        closedMess.attributedText = attString
+        closedMess.textAlignment = .Center
+        view.addSubview(closedMess)
+        
         
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)

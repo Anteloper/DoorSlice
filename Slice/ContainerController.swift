@@ -38,7 +38,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     
     var orderDescription = ""
     var activeAddresses: ActiveAddresses!
-    
+
     let buttonColor = Constants.darkBlue
     
     //MARK: Lifecycle
@@ -46,24 +46,34 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .LightContent
-        if NetworkingController.checkHours(loggedInUser.userID){
-            sliceController = SliceController()
-            sliceController.delegate = self
-            navController = UINavigationController(rootViewController: sliceController)
-        }
-        else{
-            let cc = ClosedController()
-            cc.delegate = self
-            navController = UINavigationController(rootViewController: cc)
-        }
-        activeAddresses = ActiveAddresses(user: loggedInUser)
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
+        networkController.checkHours(loggedInUser.userID)
+    }
+    
+    func open(){
+        sliceController = SliceController()
+        sliceController.delegate = self
+        navController = UINavigationController(rootViewController: sliceController)
+        finishSetup()
+    }
+    func closed(closedString: String){
+        let cc = ClosedController()
+        cc.delegate = self
+        cc.closedMessage = closedString
+        navController = UINavigationController(rootViewController: cc)
+        finishSetup()
+    }
+    
+    //Both open and closed call this function to complete setup of the viewcontroller hierarchy
+    func finishSetup(){
+        activeAddresses = ActiveAddresses(user: loggedInUser)
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
-        
     }
+    
+    
     override func viewDidLayoutSubviews() {
         promptUserFeedBack()
     }
@@ -480,7 +490,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func emailSaveFailed() { Alerts.emailSaveFailed() }
     
     func unauthenticated() { Alerts.unauthenticated(){ _ in self.logOutUser() }}
-    
     
     
     //MARK: Rateable Delegate Functions

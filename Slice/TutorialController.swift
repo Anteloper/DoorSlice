@@ -56,7 +56,6 @@ class TutorialController: UIViewController, Configurable {
         
         fullView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(fullView)
-
         
         if pendingAddress != nil {
             //Duplicate Check

@@ -94,6 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         if containerController != nil{
+            containerController!.viewDidLoad()
             containerController!.promptUserFeedBack()
         }
     }

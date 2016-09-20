@@ -16,9 +16,7 @@ class TimerView: UIView {
     
     var startTime: NSDate!
     
-    
     override init(frame: CGRect){
-
         super.init(frame: frame)
         self.backgroundColor = UIColor.clearColor()
         alpha = 0.7
@@ -42,7 +40,6 @@ class TimerView: UIView {
     
 
     func animate(duration: NSTimeInterval){
-        
         startTime = NSDate()
         CATransaction.begin()
         CATransaction.setCompletionBlock({
