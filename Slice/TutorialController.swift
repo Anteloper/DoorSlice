@@ -333,7 +333,7 @@ class TutorialController: UIViewController, Configurable {
 extension UIImage {
     func getPixelColor(pos: CGPoint) -> UIColor {
         
-        let pixelData = CGDataProviderCopyData(CGImageGetDataProvider(self.CGImage))
+        let pixelData = CGDataProviderCopyData(CGImageGetDataProvider(self.CGImage!)!)
         let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
         
         let pixelInfo: Int = ((Int(self.size.width) * Int(pos.y)) + Int(pos.x)) * 4

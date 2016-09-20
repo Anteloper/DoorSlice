@@ -117,7 +117,6 @@ public enum ServerTrustPolicy {
     case PinPublicKeys(publicKeys: [SecKey], validateCertificateChain: Bool, validateHost: Bool)
     case DisableEvaluation
     case CustomEvaluation((serverTrust: SecTrust, host: String) -> Bool)
-
     // MARK: - Bundle Location
 
     /**
@@ -239,13 +238,13 @@ public enum ServerTrustPolicy {
 
     private func trustIsValid(trust: SecTrust) -> Bool {
         var isValid = false
-
-        var result = SecTrustResultType(kSecTrustResultInvalid)
+    
+        var result = SecTrustResultType.Invalid
         let status = SecTrustEvaluate(trust, &result)
 
         if status == errSecSuccess {
-            let unspecified = SecTrustResultType(kSecTrustResultUnspecified)
-            let proceed = SecTrustResultType(kSecTrustResultProceed)
+            let unspecified = SecTrustResultType.Unspecified
+            let proceed = SecTrustResultType.Proceed
 
             isValid = result == unspecified || result == proceed
         }
@@ -254,7 +253,6 @@ public enum ServerTrustPolicy {
     }
 
     // MARK: - Private - Certificate Data
-
     private func certificateDataForTrust(trust: SecTrust) -> [NSData] {
         var certificates: [SecCertificate] = []
 
@@ -279,7 +277,7 @@ public enum ServerTrustPolicy {
         for index in 0..<SecTrustGetCertificateCount(trust) {
             if let
                 certificate = SecTrustGetCertificateAtIndex(trust, index),
-                publicKey = publicKeyForCertificate(certificate)
+                let publicKey = publicKeyForCertificate(certificate)
             {
                 publicKeys.append(publicKey)
             }

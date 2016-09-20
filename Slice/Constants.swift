@@ -35,7 +35,7 @@ internal struct Constants{
     static func userFilePath() -> String{
         let paths = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
         let filePath = paths[0].URLByAppendingPathComponent("productionPath.plist")
-        return filePath.path!
+        return filePath!.path!
     }
     
     static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{

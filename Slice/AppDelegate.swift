@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         window!.makeKeyAndVisible()
-        //checkiPhone4()
+
         return true
     }
     

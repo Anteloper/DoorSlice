@@ -482,6 +482,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func unauthenticated() { Alerts.unauthenticated(){ _ in self.logOutUser() }}
     
     
+    
     //MARK: Rateable Delegate Functions
     func dismissed(withRating rating: Int, comment: String?) {
         loggedInUser.hasPromptedRating = true
