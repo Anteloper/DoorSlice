@@ -56,7 +56,11 @@ class TutorialController: UIViewController, Configurable {
         
         fullView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(fullView)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> Swift2.3
         if pendingAddress != nil {
             //Duplicate Check
             if !user.addressIDs.keys.contains(pendingAddress!.getName()){
@@ -68,7 +72,6 @@ class TutorialController: UIViewController, Configurable {
             }
         }
         
-        
         if pendingCard != nil{
             //Duplicate Check
             let lastFour = pendingCard!.last4()!
@@ -77,7 +80,6 @@ class TutorialController: UIViewController, Configurable {
                 networkController.saveNewCard(pendingCard!, url: url+user.userID, lastFour: lastFour)
                 cardSpinner = getSpinnerWithCenter(CGPoint(x: view.frame.width-checkSize*3/2, y: startHeight + rowHeight*3/2))
             }
-                
             else{
                 Alerts.duplicate(isCard: true)
             }
@@ -101,7 +103,6 @@ class TutorialController: UIViewController, Configurable {
         
         checkAndAddAddressCheck()
         checkAndAddPaymentCheck()
-
     }
     
     //MARK: Address Views
@@ -323,12 +324,14 @@ class TutorialController: UIViewController, Configurable {
         else if height == 568.0{//5 or 5s or 6se
             return (104, 99)
         }
-        else{
+        else{//4 or iPad or earlier
             return (85, 85)
         }
     }
 }
 
+//For animation of checkmark, a view that slides to the right revealing the check mark makes it appear as if the checkmark is being drawn
+//Because the tutorial background is an image this extension is used to grab the exact runtime color of that image
 extension UIImage {
     func getPixelColor(pos: CGPoint) -> UIColor {
         

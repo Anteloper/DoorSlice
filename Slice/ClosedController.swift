@@ -58,6 +58,17 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         menuButton.addTarget(self, action: #selector(toggleMenu), forControlEvents: .TouchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
+        
+        let closedMessageLabel = UILabel(frame: CGRect(x: 10, y: closedView.frame.midY + 80, width: view.frame.width-20, height: 90))
+        closedMessageLabel.numberOfLines = 0
+        let attString = Constants.getTitleAttributedString(closedMessage, size: 16, kern: 2.0)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 9
+        attString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attString.length))
+        closedMessageLabel.attributedText = attString
+        closedMessageLabel.textAlignment = .Center
+        view.addSubview(closedMessageLabel)
+
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {

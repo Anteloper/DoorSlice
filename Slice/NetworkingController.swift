@@ -232,6 +232,7 @@ class NetworkingController{
             case .Success:
                 if let value = response.result.value{
                     if JSON(value)["open"].boolValue{
+<<<<<<< HEAD
                         self.containerDelegate?.open()
                     }
                     else{
@@ -241,6 +242,17 @@ class NetworkingController{
                 }
             case .Failure:
                 self.containerDelegate?.closed("Couldn't establish a network connection")
+=======
+                      self.containerDelegate?.open()
+                    }
+                    else{
+                        let closedMessage = JSON(value)["closedMessage"].stringValue
+                        self.containerDelegate?.closed(closedMessage)
+                    }
+                }
+            case .Failure:
+                self.containerDelegate?.closed("Failed to establish a network connection")
+>>>>>>> Swift2.3
             }
         }
     }

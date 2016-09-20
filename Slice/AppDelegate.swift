@@ -96,6 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if containerController != nil{
             containerController!.viewDidLoad()
             containerController!.promptUserFeedBack()
+            containerController!.viewDidLoad()
         }
     }
     

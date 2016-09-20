@@ -49,6 +49,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
         networkController.checkHours(loggedInUser.userID)
+<<<<<<< HEAD
     }
     
     func open(){
@@ -70,6 +71,37 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
     
     //Both open and closed call this function to complete setup of the viewcontroller hierarchy
+=======
+        closed("")
+    }
+    
+    func open(){
+        clearViewControllerHierarchy()
+        sliceController = SliceController()
+        sliceController.delegate = self
+        navController = UINavigationController(rootViewController: sliceController)
+        finishSetup()
+    }
+    func closed(closedMessage: String){
+        clearViewControllerHierarchy()
+        let cc = ClosedController()
+        cc.delegate = self
+        cc.closedMessage = closedMessage
+        navController = UINavigationController(rootViewController: cc)
+        finishSetup()
+    }
+    
+    //Called by both open and closed to clear the contained view controllers
+    func clearViewControllerHierarchy(){
+        if navController != nil{
+            navController.view.removeFromSuperview()
+            navController.willMoveToParentViewController(nil)
+            navController.removeFromParentViewController()
+        }
+    }
+    
+    //Called by both open and closed to finish the setup of the contained view controllers
+>>>>>>> Swift2.3
     func finishSetup(){
         activeAddresses = ActiveAddresses(user: loggedInUser)
         view.addSubview(navController.view)
@@ -77,7 +109,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         navController.didMoveToParentViewController(self)
     }
     
+<<<<<<< HEAD
     
+=======
+>>>>>>> Swift2.3
     override func viewDidLayoutSubviews() {
         promptUserFeedBack()
     }
