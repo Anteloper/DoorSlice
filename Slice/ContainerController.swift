@@ -49,29 +49,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
         networkController.checkHours(loggedInUser.userID)
-<<<<<<< HEAD
-    }
-    
-    func open(){
-        dispatch_async(dispatch_get_main_queue()){
-            self.sliceController = SliceController()
-            self.sliceController.delegate = self
-            self.navController = UINavigationController(rootViewController: self.sliceController)
-            self.finishSetup()
-        }
-    }
-    func closed(closedString: String){
-        dispatch_async(dispatch_get_main_queue()){
-            let cc = ClosedController()
-            cc.delegate = self
-            cc.closedMessage = closedString
-            self.navController = UINavigationController(rootViewController: cc)
-            self.finishSetup()
-        }
-    }
-    
-    //Both open and closed call this function to complete setup of the viewcontroller hierarchy
-=======
         closed("")
     }
     
@@ -82,6 +59,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         navController = UINavigationController(rootViewController: sliceController)
         finishSetup()
     }
+    
     func closed(closedMessage: String){
         clearViewControllerHierarchy()
         let cc = ClosedController()
@@ -101,7 +79,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
     
     //Called by both open and closed to finish the setup of the contained view controllers
->>>>>>> Swift2.3
     func finishSetup(){
         activeAddresses = ActiveAddresses(user: loggedInUser)
         view.addSubview(navController.view)
@@ -109,10 +86,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         navController.didMoveToParentViewController(self)
     }
     
-<<<<<<< HEAD
-    
-=======
->>>>>>> Swift2.3
+
     override func viewDidLayoutSubviews() {
         promptUserFeedBack()
     }

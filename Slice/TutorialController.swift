@@ -56,11 +56,7 @@ class TutorialController: UIViewController, Configurable {
         
         fullView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(fullView)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> Swift2.3
         if pendingAddress != nil {
             //Duplicate Check
             if !user.addressIDs.keys.contains(pendingAddress!.getName()){

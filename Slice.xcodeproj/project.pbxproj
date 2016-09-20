@@ -23,6 +23,7 @@
 		4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */; };
 		4C69F0C51D36F55D00810525 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69F0C41D36F55D00810525 /* WelcomeController.swift */; };
 		4C716A661D4EDAFF006EF253 /* RatingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C716A651D4EDAFF006EF253 /* RatingController.swift */; };
+		4C792B9D1D91B73C0069FE41 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C792B9C1D91B73C0069FE41 /* Default-568h@2x.png */; };
 		4CB29D081D2EC2F7009C2CA5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D071D2EC2F7009C2CA5 /* User.swift */; };
 		4CB29D0C1D2EC314009C2CA5 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0B1D2EC314009C2CA5 /* Order.swift */; };
 		4CB29D0E1D2EC32F009C2CA5 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */; };
@@ -89,6 +90,7 @@
 		4C69F0C21D36A92E00810525 /* MyriadPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Regular.otf"; sourceTree = "<group>"; };
 		4C69F0C41D36F55D00810525 /* WelcomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
 		4C716A651D4EDAFF006EF253 /* RatingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingController.swift; sourceTree = "<group>"; };
+		4C792B9C1D91B73C0069FE41 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		4CB29D071D2EC2F7009C2CA5 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4CB29D0B1D2EC314009C2CA5 /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
 		4CB29D0D1D2EC32F009C2CA5 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 		4CF756651D0A177C00746AEE = {
 			isa = PBXGroup;
 			children = (
+				4C792B9C1D91B73C0069FE41 /* Default-568h@2x.png */,
 				4CF756701D0A177C00746AEE /* Slice */,
 				4C44995F1D13367900CDB2A0 /* Tests Products Pods Frameworks */,
 				29E6226C99BE641E8AC7E343 /* Pods */,
@@ -468,6 +471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C69F0C31D36A9C800810525 /* MyriadPro-Regular.otf in Resources */,
+				4C792B9D1D91B73C0069FE41 /* Default-568h@2x.png in Resources */,
 				4CF7567C1D0A177C00746AEE /* LaunchScreen.storyboard in Resources */,
 				4CF756791D0A177C00746AEE /* Assets.xcassets in Resources */,
 			);
