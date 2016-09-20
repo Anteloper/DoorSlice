@@ -52,17 +52,21 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
     
     func open(){
-        sliceController = SliceController()
-        sliceController.delegate = self
-        navController = UINavigationController(rootViewController: sliceController)
-        finishSetup()
+        dispatch_async(dispatch_get_main_queue()){
+            self.sliceController = SliceController()
+            self.sliceController.delegate = self
+            self.navController = UINavigationController(rootViewController: self.sliceController)
+            self.finishSetup()
+        }
     }
     func closed(closedString: String){
-        let cc = ClosedController()
-        cc.delegate = self
-        cc.closedMessage = closedString
-        navController = UINavigationController(rootViewController: cc)
-        finishSetup()
+        dispatch_async(dispatch_get_main_queue()){
+            let cc = ClosedController()
+            cc.delegate = self
+            cc.closedMessage = closedString
+            self.navController = UINavigationController(rootViewController: cc)
+            self.finishSetup()
+        }
     }
     
     //Both open and closed call this function to complete setup of the viewcontroller hierarchy
