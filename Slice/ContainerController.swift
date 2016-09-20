@@ -48,7 +48,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         UIApplication.sharedApplication().statusBarStyle = .LightContent
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
-        
+        networkController.checkHours(loggedInUser.userID)
+        closed("")
     }
     
     func open(){
@@ -62,6 +63,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         clearViewControllerHierarchy()
         let cc = ClosedController()
         cc.delegate = self
+        cc.closedMessage = closedMessage
         navController = UINavigationController(rootViewController: cc)
         finishSetup()
     }
