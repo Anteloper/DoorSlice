@@ -232,7 +232,6 @@ class NetworkingController{
             case .Success:
                 if let value = response.result.value{
                     if JSON(value)["open"].boolValue{
-
                         self.containerDelegate?.open()
                     }
                     else{
