@@ -12,7 +12,6 @@ import Stripe
 
 //A menu can be slid out on top of objects that conform to this protocol
 protocol Slideable{
-    
     func toggleMenu(completion: (()->Void)?)
     func userTap()
     func menuCurrentlyShowing()->Bool
@@ -33,6 +32,8 @@ protocol Slideable{
 
 //Objects that conform to this protocol can name themselves as a networkController delegate functions
 protocol Payable {
+    func open()
+    func closed(closedMessage: String)
     func storeCardID(cardID: String, lastFour: String)
     func cardStoreageFailed(cardDeclined declined: Bool)
     func cardPaymentSuccesful(cheeseSlices: Int, pepperoniSlices: Int)

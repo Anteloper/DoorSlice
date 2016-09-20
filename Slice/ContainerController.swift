@@ -46,24 +46,43 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         super.viewDidLoad()
         UIApplication.sharedApplication().statusBarHidden = false
         UIApplication.sharedApplication().statusBarStyle = .LightContent
-        if NetworkingController.checkHours(loggedInUser.userID){
-            sliceController = SliceController()
-            sliceController.delegate = self
-            navController = UINavigationController(rootViewController: sliceController)
-        }
-        else{
-            let cc = ClosedController()
-            cc.delegate = self
-            navController = UINavigationController(rootViewController: cc)
-        }
-        activeAddresses = ActiveAddresses(user: loggedInUser)
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
+        
+    }
+    
+    func open(){
+        clearViewControllerHierarchy()
+        sliceController = SliceController()
+        sliceController.delegate = self
+        navController = UINavigationController(rootViewController: sliceController)
+        finishSetup()
+    }
+    func closed(closedMessage: String){
+        clearViewControllerHierarchy()
+        let cc = ClosedController()
+        cc.delegate = self
+        navController = UINavigationController(rootViewController: cc)
+        finishSetup()
+    }
+    
+    //Called by both open and closed to clear the contained view controllers
+    func clearViewControllerHierarchy(){
+        if navController != nil{
+            navController.view.removeFromSuperview()
+            navController.willMoveToParentViewController(nil)
+            navController.removeFromParentViewController()
+        }
+    }
+    
+    //Called by both open and closed to finish the setup of the contained view controllers
+    func finishSetup(){
+        activeAddresses = ActiveAddresses(user: loggedInUser)
         view.addSubview(navController.view)
         addChildViewController(navController)
         navController.didMoveToParentViewController(self)
-        
     }
+    
     override func viewDidLayoutSubviews() {
         promptUserFeedBack()
     }

@@ -226,24 +226,23 @@ class NetworkingController{
         }
     }
     
-    static func checkHours(userID: String)->Bool{
-        var isOpen = false
+    func checkHours(userID: String){
         Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
             debugPrint(response)
             switch response.result{
             case .Success:
                 if let value = response.result.value{
                     if JSON(value)["open"].boolValue{
-                        isOpen = true
+                      self.containerDelegate?.open()
                     }
                     else{
-                        isOpen = false
+                        let closedMessage = JSON(value)["closedMessage"].stringValue
+                        self.containerDelegate?.closed(closedMessage)
                     }
                 }
             case .Failure:
-                isOpen = false
+                self.containerDelegate?.closed("Failed to establish a network connection")
             }
         }
-        return isOpen
     }
 }
