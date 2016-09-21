@@ -60,7 +60,7 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
     var isGeorgetown: Bool? = nil
     
     lazy fileprivate var activityIndicator : CustomActivityIndicatorView = {
-        return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
+        return CustomActivityIndicatorView(image: UIImage(imageLiteralResourceName: "loading"))
     }()
 
     
@@ -134,10 +134,10 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         activityIndicator.center = view.center
         activityIndicator.startAnimating()
 
-        Alamofire.request(.POST, Constants.sendCodeURLString, parameters: ["phone" : rawNumber]).responseJSON{ response in
+        Alamofire.request(Constants.sendCodeURLString, method: .post, parameters: ["phone" : rawNumber]).responseJSON{ response in
             self.activityIndicator.stopAnimating()
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     if JSON(value)["success"].boolValue{
                         let ec = EnterCodeController()
@@ -146,13 +146,13 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
                         ec.password = self.confirmPasswordField.text!
                         ec.school = self.isGeorgetown! ? "GEORGETOWN" : "COLUMBIA"
                         ec.shouldPromptPasswordChange = false
-                        self.presentViewController(ec, animated: false, completion: nil)
+                        self.present(ec, animated: false, completion: nil)
                     }
                     else{
                         self.accountExists()
                     }
                 }
-            case .Failure:
+            case .failure:
                 self.failure()
             }
         }
@@ -355,7 +355,7 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
             
             if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
                 UIView.animate(withDuration: 1.0, animations: {self.phoneField.layer.borderColor = Constants.seaFoam.cgColor})
-                textFieldShouldReturn(phoneField)
+                _ = textFieldShouldReturn(phoneField)
             }
             return false
         }
@@ -394,8 +394,9 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         confirmViewLeft.layer.minificationFilter = kCAFilterTrilinear
         confirmViewLeft.frame = CGRect(x: confirmPasswordField.frame.minX-40, y: confirmPasswordField.frame.minY+5, width: 30, height: 30)
         view.addSubview(confirmViewLeft)
-    
-        let buttonYVal = (view.frame.height*6/7 - ((view.frame.height*6/7 - confirmPasswordField.frame.maxY)/2 + 20))
+        
+        let sixSevenths = view.frame.height*6/7
+        let buttonYVal = (sixSevenths - ((sixSevenths - confirmPasswordField.frame.maxY)/2 + 20))
         georgetownButton.frame = CGRect(x: 20, y: buttonYVal, width: view.frame.width/2-23, height: 40)
         georgetownButton.setAttributedTitle(Constants.getTitleAttributedString("GEORGETOWN", size: 10, kern: 4.0), for: UIControlState())
         georgetownButton.layer.cornerRadius = 5

@@ -23,7 +23,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
     var autoFilledNumber: String?
     
     lazy fileprivate var activityIndicator : CustomActivityIndicatorView = {
-        return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
+        return CustomActivityIndicatorView(image: UIImage(imageLiteralResourceName: "loading"))
     }()
     
     //MARK: LifeCycle Functions
@@ -66,10 +66,10 @@ class LoginController: NavBarless, UITextFieldDelegate{
     
     func loginRequest(){
         let parameters = ["phone" : rawNumber, "password" : passwordField.text!]
-        Alamofire.request(.POST, Constants.loginURLString, parameters: parameters).responseJSON{ response in
+        Alamofire.request(Constants.loginURLString, method: .post, parameters: parameters).responseJSON{ response in
             self.activityIndicator.stopAnimating()
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                         if JSON(value)["success"].boolValue{
                         self.loginUser(self.parseUser(fromJSON: JSON(value)))
@@ -81,7 +81,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
                         Alerts.shakeView(self.passViewLeft, enterTrue: true)
                     }
                 }
-            case .Failure:
+            case .failure:
                 Alerts.serverError()
             }
         }
@@ -299,7 +299,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
             textField.text = formattedString as String
             
             if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
-                textFieldShouldReturn(phoneField)
+                _ = textFieldShouldReturn(phoneField)
             }
             return false
         }
@@ -329,7 +329,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
         let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 100, width: logoWidth, height: logoWidth))
         logoView.contentMode = .scaleAspectFit
         logoView.layer.minificationFilter = kCAFilterTrilinear
-        logoView.image = UIImage(imageLiteral: "pepperoni")
+        logoView.image = UIImage(imageLiteralResourceName: "pepperoni")
         view.addSubview(logoView)
         
         let fieldSpacing:CGFloat = UIScreen.main.bounds.height <= 568.0 ? 15 : 25
@@ -344,12 +344,12 @@ class LoginController: NavBarless, UITextFieldDelegate{
         passwordField.alpha = 0.0
         passwordField.isSecureTextEntry = true
         
-        phoneViewLeft.image = UIImage(imageLiteral: "phone")
+        phoneViewLeft.image = UIImage(imageLiteralResourceName: "phone")
         phoneViewLeft.frame = CGRect(x:phoneField.frame.minX-35, y: phoneField.frame.minY+5,  width: 30, height: 30)
         phoneViewLeft.alpha = 0.0
         view.addSubview(phoneViewLeft)
         
-        passViewLeft.image =  UIImage(imageLiteral: "padlock")
+        passViewLeft.image =  UIImage(imageLiteralResourceName: "padlock")
         passViewLeft.frame = CGRect(x:passwordField.frame.minX-35, y: passwordField.frame.minY+5, width: 30, height: 30)
         passViewLeft.alpha = 0.0
         view.addSubview(passViewLeft)

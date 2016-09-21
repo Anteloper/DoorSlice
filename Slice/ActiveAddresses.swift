@@ -15,9 +15,9 @@ class ActiveAddresses{
     fileprivate var dorms: [String]?
     
     init(user: User){
-        Alamofire.request(.GET, Constants.getAddressesURLString + user.userID, parameters: nil).responseJSON{ response in
+        Alamofire.request(Constants.getAddressesURLString + user.userID, parameters: nil).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     self.dorms = [String]()
                     for dorm in JSON(value)["Dorms"].arrayValue{

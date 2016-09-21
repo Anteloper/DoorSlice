@@ -59,7 +59,7 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
     var resetPasswordButton = UIButton()
     
     lazy fileprivate var activityIndicator : CustomActivityIndicatorView = {
-        return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
+        return CustomActivityIndicatorView(image: UIImage(imageLiteralResourceName: "loading"))
     }()
     
     override func viewDidLoad() {
@@ -96,9 +96,9 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
     func changePassword(_ newPass: String){
         let parameters = ["phone" : phoneNumber, "code" : code, "password" : newPass]
         requestIsProcessing = true
-        Alamofire.request(.POST, Constants.resetPasswordURLString, parameters: parameters).responseJSON{ response in
+        Alamofire.request(Constants.resetPasswordURLString, method: .post, parameters: parameters).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     if JSON(value)["success"].boolValue{
                         let lc = LoginController()
@@ -106,11 +106,11 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                             lc.autoFilledNumber = self.placeHolder
                             lc.rawNumber = self.phoneNumber
                         }
-                        self.presentViewController(lc, animated: false, completion: {_ in Alerts.passwordReset()})
+                        self.present(lc, animated: false, completion: {_ in Alerts.passwordReset()})
                     }
                 }
                 
-            case .Failure:
+            case .failure:
                 Alerts.serverError()
             }
         }
@@ -120,19 +120,19 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
         let parameters1 = ["phone" : phoneNumber, "password" : password, "school" : school]
         let parameters2 = ["phone" : phoneNumber, "password" : password]
         //Request to /Users
-        Alamofire.request(.POST, Constants.accountCreationURLString, parameters: parameters1).responseJSON { response in
+        Alamofire.request(Constants.accountCreationURLString, method: .post, parameters: parameters1).responseJSON { response in
             switch response.result{
                 
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     let json = JSON(value)
                     if json["success"].boolValue{
                         let userID = JSON(value)["userID"].stringValue
                         //Request to /Authenticate
-                        Alamofire.request(.POST, Constants.authenticateURLString, parameters: parameters2).responseJSON{ response in
+                        Alamofire.request(Constants.authenticateURLString, method: .post, parameters: parameters2).responseJSON{ response in
                             self.activityIndicator.stopAnimating()
                             switch response.result{
-                            case .Success:
+                            case .success:
                                 if let value = response.result.value{
                                     let jwt = JSON(value)["token"].stringValue
                                     let newUser = User(userID: userID, jwt: jwt, school: self.school)
@@ -140,9 +140,9 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                                     tc.user = newUser
                                     self.view.endEditing(true)
                                     let navController = tc
-                                    self.presentViewController(navController, animated: false, completion: nil)
+                                    self.present(navController, animated: false, completion: nil)
                                 }
-                            case .Failure:
+                            case .failure:
                                 self.failure()
                             }
                         }
@@ -152,7 +152,7 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
                         self.failure()
                     }
                 }
-            case .Failure:
+            case .failure:
                 self.failure()
             }
         }
@@ -356,7 +356,7 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
     //Returns a padlock UIImageView to the left of the text field entered
     func leftViewForField(_ field: UITextField)-> UIImageView{
         let iview = UIImageView()
-        iview.image = UIImage(imageLiteral: "padlock")
+        iview.image = UIImage(imageLiteralResourceName: "padlock")
         iview.alpha = 0.0
         iview.frame = CGRect(x: field.frame.minX-40, y: field.frame.minY+5, width: 30, height: 30)
         view.addSubview(iview)
@@ -407,7 +407,7 @@ class EnterCodeController: NavBarless, UITextFieldDelegate{
         for i in 2...7{
             codeFields.append(setupCodeField(withTag: i, xPos: view.frame.width/6 + CGFloat(i-1)*view.frame.width/12))
         }
-        codeFields[0].becomeFirstResponder()
+        _ = codeFields[0].becomeFirstResponder()
     }
 }
 
@@ -415,7 +415,7 @@ class CodeField: UITextField {
     
     override func deleteBackward() {
         super.deleteBackward()
-        delegate?.textField!(self, shouldChangeCharactersIn: NSRange(), replacementString: "")
+        _ = delegate?.textField!(self, shouldChangeCharactersIn: NSRange(), replacementString: "")
     }
     
     override func becomeFirstResponder() -> Bool {

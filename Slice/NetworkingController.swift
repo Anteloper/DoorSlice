@@ -17,7 +17,7 @@ enum STPBackendChargeResult {
 typealias STPTokenSubmissionHandler = (STPBackendChargeResult?, NSError?) -> Void
 
 
-//A bag of functions to do the all of the networking and charge the user. 
+//A bag of functions to do the vast majority of the networking and charge the user.
 //Exactly one of the delegates and the headers property MUST BE SET to use this class
 class NetworkingController{
     
@@ -29,7 +29,7 @@ class NetworkingController{
     // Price is in dollars (6.49 = $6.49)
     func saveOrder(_ cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: @escaping ()->Void){
         let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
     }
     
 
@@ -42,9 +42,9 @@ class NetworkingController{
             }
             else if let token = tokenOpt{
                 let parameters = ["stripeToken" : token.tokenId, "lastFour" : lastFour]
-                Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
+                Alamofire.request(url, method: .post, parameters: parameters, encoding: .URL, headers: self.headers).responseJSON { response in
                     switch response.result{
-                    case .Success:
+                    case .success:
                         if let value = response.result.value{
                             let json = JSON(value)
                             let cardID = json["card"]["cardID"].stringValue
@@ -61,7 +61,7 @@ class NetworkingController{
                                 self.tutorialDelegate?.cardStoreageFailed(cardDeclined: false)
                             }
                         }
-                    case .Failure:
+                    case .failure:
                         if response.response?.statusCode == 401{
                             self.containerDelegate?.unauthenticated()
                             self.tutorialDelegate?.unauthenticated()
@@ -78,7 +78,7 @@ class NetworkingController{
 
 
     func changeCard(_ cardID: String, userID: String, completion: @escaping ()->Void){
-        Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(Constants.updateCardURLString+userID, method: .post, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
                 completion()
@@ -98,7 +98,7 @@ class NetworkingController{
     //Only called indirectly by NewtorkingController through a completion passed to it by ContainerController
     func chargeUser(_ url: String, amount: String, description: String, cheese: Int, pepperoni: Int){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
                 if let value = response.result.value{
@@ -126,9 +126,9 @@ class NetworkingController{
         let url = Constants.newAddressURLString+userID
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
         
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: .URL, headers: headers).responseJSON { response in
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     let id = JSON(value)["Data"]["_id"].stringValue
                     if id != ""{
@@ -144,7 +144,7 @@ class NetworkingController{
                     self.containerDelegate?.addressSaveFailed()
                     self.tutorialDelegate?.addressSaveFailed()
                 }
-            case .Failure:
+            case .failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
                     self.tutorialDelegate?.unauthenticated()
@@ -158,11 +158,11 @@ class NetworkingController{
     }
     
     func deleteAddress(_ url: String, completion: @escaping (Bool)->Void){
-        Alamofire.request(.DELETE, url, parameters: nil, encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(url, method: .delete, parameters: nil, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 completion(true)
-            case .Failure:
+            case .failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
                 }
@@ -175,11 +175,11 @@ class NetworkingController{
     
     func deleteCard(_ url: String, card: String, completion: @escaping (Bool)->Void){
         let parameters = ["cardID" : card]
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 completion(true)
-            case .Failure:
+            case .failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
                 }
@@ -192,7 +192,7 @@ class NetworkingController{
     
     func rateLastOrder(_ userID: String, stars: Int, comment: String?){
         let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
-        Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(Constants.rateLastOrderURLString + userID, method: .post, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             if response.response?.statusCode == 401{
                 self.containerDelegate?.unauthenticated()
             }
@@ -200,11 +200,11 @@ class NetworkingController{
     }
     
     func addEmail(_ userID: String, email: String){
-        Alamofire.request(.POST, Constants.addEmailURLString + userID, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(Constants.addEmailURLString + userID, method: .post, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 break
-            case .Failure:
+            case .failure:
                 if response.response?.statusCode == 401{
                     self.containerDelegate?.unauthenticated()
                 }
@@ -219,7 +219,7 @@ class NetworkingController{
     func booleanChange(_ endpoint: String, userID: String, boolean: Bool){
         let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
         let parameters = [endpoint : String(boolean)]
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: .url  , headers: headers).responseJSON{ response in
             if response.response?.statusCode == 401{
                 self.containerDelegate?.unauthenticated()
             }
@@ -227,9 +227,9 @@ class NetworkingController{
     }
     
     func checkHours(_ userID: String){
-        Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
+        Alamofire.request(Constants.isOpenURLString + userID).responseJSON{ response in
             switch response.result{
-            case .Success:
+            case .success:
                 if let value = response.result.value{
                     if JSON(value)["open"].boolValue{
                         self.containerDelegate?.open()
@@ -239,7 +239,7 @@ class NetworkingController{
                         self.containerDelegate?.closed(closedString)
                     }
                 }
-            case .Failure:
+            case .failure:
                 self.containerDelegate?.closed("Couldn't establish a network connection")
 
             }

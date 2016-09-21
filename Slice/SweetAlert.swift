@@ -215,24 +215,24 @@ open class SweetAlert: UIViewController {
     }
     
     open func showAlert(_ title: String) -> SweetAlert {
-        self.showAlert(title, subTitle: nil, style: .none)
+        _ = self.showAlert(title, subTitle: nil, style: .none)
         return self
     }
     
     open func showAlert(_ title: String, subTitle: String?, style: AlertStyle) -> SweetAlert {
-        self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: "OK")
+        _ = self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: "OK")
         return self
         
     }
     
     open func showAlert(_ title: String, subTitle: String?, style: AlertStyle,buttonTitle: String, action: ((_ isOtherButton: Bool) -> Void)? = nil) -> SweetAlert {
-        self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: buttonTitle,buttonColor: UIColor.colorFromRGB(0xAEDEF4))
+        _ = self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: buttonTitle,buttonColor: UIColor.colorFromRGB(0xAEDEF4))
         userAction = action
         return self
     }
     
     open func showAlert(_ title: String, subTitle: String?, style: AlertStyle,buttonTitle: String,buttonColor: UIColor,action: ((_ isOtherButton: Bool) -> Void)? = nil) -> SweetAlert {
-        self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: buttonTitle,buttonColor: buttonColor,otherButtonTitle:
+        _ = self.showAlert(title, subTitle: subTitle, style: style, buttonTitle: buttonTitle,buttonColor: buttonColor,otherButtonTitle:
             nil)
         userAction = action
         return self

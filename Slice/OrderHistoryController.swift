@@ -70,7 +70,7 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
     func emptyDataSet(){
         let width = UIScreen.main.bounds.width
         let imageView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY - width/2, width: width, height: width))
-        imageView.image = UIImage(imageLiteral: "noOrders")
+        imageView.image = UIImage(imageLiteralResourceName: "noOrders")
         imageView.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(imageView)
     }
