@@ -14,10 +14,10 @@ class PastOrder: NSObject, NSCoding, NSCopying{
     var cheeseSlices: Int
     var pepperoniSlices: Int
     var price: Double
-    var timeOrdered: NSDate
+    var timeOrdered: Date
     var paymentMethod: String
     
-    init(address: Address, cheeseSlices: Int = 0, pepperoniSlices: Int = 0, price: Double, timeOrdered: NSDate = NSDate(), paymentMethod: String){
+    init(address: Address, cheeseSlices: Int = 0, pepperoniSlices: Int = 0, price: Double, timeOrdered: Date = Date(), paymentMethod: String){
         self.address = address
         self.cheeseSlices = cheeseSlices
         self.price = price
@@ -31,7 +31,7 @@ class PastOrder: NSObject, NSCoding, NSCopying{
         cheeseSlices = 0
         price = 0
         pepperoniSlices = 0
-        timeOrdered = NSDate()
+        timeOrdered = Date()
         paymentMethod = ""
     }
     required init(_ order: PastOrder){
@@ -43,28 +43,28 @@ class PastOrder: NSObject, NSCoding, NSCopying{
         self.paymentMethod = order.paymentMethod
     }
     
-    func copyWithZone(zone: NSZone) -> AnyObject {
-        return self.dynamicType.init(self)
+    func copy(with zone: NSZone?) -> Any {
+        return type(of: self).init(self)
     }
     required convenience init?(coder decoder: NSCoder){
-        guard let address = decoder.decodeObjectForKey("address") as? Address,
-            let cheeseSlices = decoder.decodeObjectForKey("cheeseSlices") as? Int,
-            let pepperoniSlices = decoder.decodeObjectForKey("pepperoniSlices") as? Int,
-            let price = decoder.decodeObjectForKey("price") as? Double,
-            let timeOrdered = decoder.decodeObjectForKey("timeOrdered") as? NSDate,
-            let paymentMethod = decoder.decodeObjectForKey("paymentMethod") as? String else{
+        guard let address = decoder.decodeObject(forKey: "address") as? Address,
+            let cheeseSlices = decoder.decodeObject(forKey: "cheeseSlices") as? Int,
+            let pepperoniSlices = decoder.decodeObject(forKey: "pepperoniSlices") as? Int,
+            let price = decoder.decodeObject(forKey: "price") as? Double,
+            let timeOrdered = decoder.decodeObject(forKey: "timeOrdered") as? Date,
+            let paymentMethod = decoder.decodeObject(forKey: "paymentMethod") as? String else{
             return nil
         }
         self.init(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: price, timeOrdered: timeOrdered, paymentMethod: paymentMethod)
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.address, forKey: "address")
-        aCoder.encodeObject(self.cheeseSlices, forKey: "cheeseSlices")
-        aCoder.encodeObject(self.pepperoniSlices, forKey: "pepperoniSlices")
-        aCoder.encodeObject(self.price, forKey: "price")
-        aCoder.encodeObject(self.timeOrdered, forKey: "timeOrdered")
-        aCoder.encodeObject(self.paymentMethod, forKey: "paymentMethod")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.address, forKey: "address")
+        aCoder.encode(self.cheeseSlices, forKey: "cheeseSlices")
+        aCoder.encode(self.pepperoniSlices, forKey: "pepperoniSlices")
+        aCoder.encode(self.price, forKey: "price")
+        aCoder.encode(self.timeOrdered, forKey: "timeOrdered")
+        aCoder.encode(self.paymentMethod, forKey: "paymentMethod")
     }
 }
 

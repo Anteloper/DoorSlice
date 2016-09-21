@@ -26,7 +26,7 @@ class OrderProgressView: UIView{
         super.init(frame: frame)
         self.frame = frame
         
-        backgroundColor = UIColor.clearColor()
+        backgroundColor = UIColor.clear
         alpha = 1.0
         
         timer = TimerView(frame: frame)
@@ -40,25 +40,25 @@ class OrderProgressView: UIView{
     func resetTimer(){
         timer.removeFromSuperview()
         addSubview(timer)
-        sendSubviewToBack(timer)
+        sendSubview(toBack: timer)
         timer.animate(6.0)
         
     }
     
-    func addSlice(ofType: Slice){
+    func addSlice(_ ofType: Slice){
         let size:CGFloat = frame.width >= 375 ? 40 : 33
         let yVal:CGFloat = frame.width >= 375 ? 70 : 75
         let topSlice = UIImageView(frame: CGRect(x: frame.width/2-20, y: frame.height/2-20, width: size, height: size))
         topSlice.layer.minificationFilter = kCAFilterTrilinear
-        let image = ofType == .Cheese ? UIImage(imageLiteral: "smallCheese") : UIImage(imageLiteral: "smallPepperoni")
+        let image = ofType == .cheese ? UIImage(imageLiteralResourceName: "smallCheese") : UIImage(imageLiteralResourceName: "smallPepperoni")
         topSlice.image = image
         topSlice.alpha = 1
         addSubview(topSlice)
-        sendSubviewToBack(topSlice)
+        sendSubview(toBack: topSlice)
         slices.append(topSlice)
         
-        UIView.animateWithDuration(0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*size), y: yVal) } )
-        bringSubviewToFront(topSlice)
+        UIView.animate(withDuration: 0.1, animations: { topSlice.frame.origin = CGPoint(x: 50 + (self.numSlices*size), y: yVal) } )
+        bringSubview(toFront: topSlice)
 
     }
 

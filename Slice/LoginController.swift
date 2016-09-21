@@ -22,15 +22,15 @@ class LoginController: NavBarless, UITextFieldDelegate{
     var rawNumber =  String()
     var autoFilledNumber: String?
     
-    lazy private var activityIndicator : CustomActivityIndicatorView = {
+    lazy fileprivate var activityIndicator : CustomActivityIndicatorView = {
         return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
     
     //MARK: LifeCycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIApplication.sharedApplication().statusBarHidden = true
-        actionForBackButton({self.presentViewController(WelcomeController(), animated: false, completion: nil)})
+        UIApplication.shared.isStatusBarHidden = true
+        actionForBackButton({self.present(WelcomeController(), animated: false, completion: nil)})
         
     }
     override func viewDidLayoutSubviews() {
@@ -40,10 +40,10 @@ class LoginController: NavBarless, UITextFieldDelegate{
         activityIndicator.center = CGPoint(x: view.frame.midX, y: passwordField.frame.maxY + 10)
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIView.animateWithDuration(0.5, animations: {self.phoneField.alpha = 1.0; self.phoneViewLeft.alpha = 1.0})
-        UIView.animateWithDuration(0.5, delay: 0.2, options: [], animations: {self.passwordField.alpha = 1.0; self.passViewLeft.alpha = 1.0}, completion: nil)
+        UIView.animate(withDuration: 0.5, animations: {self.phoneField.alpha = 1.0; self.phoneViewLeft.alpha = 1.0})
+        UIView.animate(withDuration: 0.5, delay: 0.2, options: [], animations: {self.passwordField.alpha = 1.0; self.passViewLeft.alpha = 1.0}, completion: nil)
         
     }
     
@@ -132,7 +132,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
             let lastAddID = lastOrder["address"].stringValue
             for possAdd in addresses{
                 if addressIDs[possAdd.getName()] == lastAddID{
-                    if let pa = addresses.indexOf(possAdd){
+                    if let pa = addresses.index(of: possAdd){
                         preferredAddress = pa
                     }
                 }
@@ -141,7 +141,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
         
             for lastFour in cards{
                 if cardIDs[lastFour] == lastCardID{
-                    if let pc = cards.indexOf(lastFour){
+                    if let pc = cards.index(of: lastFour){
                         preferredCard = pc
                     }
                 }
@@ -191,53 +191,53 @@ class LoginController: NavBarless, UITextFieldDelegate{
             
     }
     
-    func stringToDate(date:String) -> NSDate {
-        let formatter = NSDateFormatter()
+    func stringToDate(_ date:String) -> Date {
+        let formatter = DateFormatter()
         
         // Format 1
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        if let parsedDate = formatter.dateFromString(date) { return parsedDate }
+        if let parsedDate = formatter.date(from: date) { return parsedDate }
         
         // Format 2
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:SSSZ"
-        if let parsedDate = formatter.dateFromString(date) { return parsedDate }
+        if let parsedDate = formatter.date(from: date) { return parsedDate }
         
         // Couldn't parsed with any format. Just get the date
-        let splitedDate = date.componentsSeparatedByString("T")
+        let splitedDate = date.components(separatedBy: "T")
         if splitedDate.count > 0 {
             formatter.dateFormat = "yyyy-MM-dd"
-            if let parsedDate = formatter.dateFromString(splitedDate[0]) {
+            if let parsedDate = formatter.date(from: splitedDate[0]) {
                 return parsedDate
             }
         }
-        return NSDate()
+        return Date()
     }
     
-    func loginUser(user: User){
+    func loginUser(_ user: User){
         view.endEditing(true)
         if user.hasSeenTutorial{
             let cc = ContainerController()
             cc.loggedInUser = user
-            self.presentViewController(cc, animated: false, completion: nil)
+            self.present(cc, animated: false, completion: nil)
         }
         else{
             let tc = TutorialController()
             tc.user = user
-            self.presentViewController(tc, animated: false, completion: nil)
+            self.present(tc, animated: false, completion: nil)
         }
     }
     
     
     //MARK: TextField Setup
-    func setupTextField(frame: CGRect)->UITextField{
+    func setupTextField(_ frame: CGRect)->UITextField{
         let textField = UITextField(frame: frame)
         textField.delegate = self
         textField.backgroundColor = Constants.darkBlue
-        textField.textAlignment = .Center
-        textField.textColor = UIColor.whiteColor()
-        textField.leftViewMode = UITextFieldViewMode.Always
+        textField.textAlignment = .center
+        textField.textColor = UIColor.white
+        textField.leftViewMode = UITextFieldViewMode.always
         textField.font = UIFont(name: "Myriad Pro", size: 18)
-        textField.layer.borderColor = UIColor.whiteColor().CGColor
+        textField.layer.borderColor = UIColor.white.cgColor
         textField.layer.borderWidth = 1.0
         textField.layer.cornerRadius = 5
         view.addSubview(textField)
@@ -245,7 +245,7 @@ class LoginController: NavBarless, UITextFieldDelegate{
     }
     
     //MARK: TextField Management
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == phoneField{
             passwordField.becomeFirstResponder()
         }
@@ -256,18 +256,18 @@ class LoginController: NavBarless, UITextFieldDelegate{
         return true
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         phoneField.resignFirstResponder()
         passwordField.resignFirstResponder()
     }
 
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField == phoneField{
-            let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
-            let components = newString.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet)
+            let newString = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+            let components = newString.components(separatedBy: CharacterSet.decimalDigits.inverted)
             
-            let decimalString = components.joinWithSeparator("") as NSString
+            let decimalString = components.joined(separator: "") as NSString
             let length = decimalString.length
             let hasLeadingOne = length > 0 && decimalString.hasPrefix("1")
             rawNumber = String(decimalString)
@@ -280,22 +280,22 @@ class LoginController: NavBarless, UITextFieldDelegate{
             let formattedString = NSMutableString()
             
             if hasLeadingOne{
-                formattedString.appendString("1 ")
+                formattedString.append("1 ")
                 index += 1
             }
             if (length - index) > 3{
-                let areaCode = decimalString.substringWithRange(NSMakeRange(index, 3))
+                let areaCode = decimalString.substring(with: NSMakeRange(index, 3))
                 formattedString.appendFormat("(%@) ", areaCode)
                 index += 3
             }
             if length - index > 3{
-                let prefix = decimalString.substringWithRange(NSMakeRange(index, 3))
+                let prefix = decimalString.substring(with: NSMakeRange(index, 3))
                 formattedString.appendFormat("%@-", prefix)
                 index += 3
             }
             
-            let remainder = decimalString.substringFromIndex(index)
-            formattedString.appendString(remainder)
+            let remainder = decimalString.substring(from: index)
+            formattedString.append(remainder)
             textField.text = formattedString as String
             
             if (length == 10 && !hasLeadingOne) || (length == 11 && hasLeadingOne){
@@ -306,15 +306,15 @@ class LoginController: NavBarless, UITextFieldDelegate{
         return true
     }
     
-    func textFieldDidBeginEditing(textField: UITextField) {
-        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == passwordField{
-            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y -= 200})
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if UIScreen.main.bounds.height <= 480.0 && textField == passwordField{
+            UIView.animate(withDuration: 0.2, animations: {self.view.frame.origin.y -= 200})
         }
     }
     
-    func textFieldDidEndEditing(textField: UITextField) {
-        if UIScreen.mainScreen().bounds.height <= 480.0 && textField == passwordField{
-            UIView.animateWithDuration(0.2, animations: {self.view.frame.origin.y += 200})
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if UIScreen.main.bounds.height <= 480.0 && textField == passwordField{
+            UIView.animate(withDuration: 0.2, animations: {self.view.frame.origin.y += 200})
         }
     }
     
@@ -322,27 +322,27 @@ class LoginController: NavBarless, UITextFieldDelegate{
     func setup(){
         let doorsliceLabel = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 30))
         doorsliceLabel.attributedText = Constants.getTitleAttributedString(" DOORSLICE", size: 25, kern: 18.0)
-        doorsliceLabel.textAlignment = .Center
+        doorsliceLabel.textAlignment = .center
         view.addSubview(doorsliceLabel)
         
         let logoWidth = view.frame.width/4
         let logoView = UIImageView(frame: CGRect(x: view.frame.midX-logoWidth/2, y: 100, width: logoWidth, height: logoWidth))
-        logoView.contentMode = .ScaleAspectFit
+        logoView.contentMode = .scaleAspectFit
         logoView.layer.minificationFilter = kCAFilterTrilinear
         logoView.image = UIImage(imageLiteral: "pepperoni")
         view.addSubview(logoView)
         
-        let fieldSpacing:CGFloat = UIScreen.mainScreen().bounds.height <= 568.0 ? 15 : 25
+        let fieldSpacing:CGFloat = UIScreen.main.bounds.height <= 568.0 ? 15 : 25
         
         phoneField = setupTextField(CGRect(x: view.frame.width/4, y: view.frame.height/2 - (40 + fieldSpacing), width: view.frame.width/2, height: 40))
         phoneField.alpha = 0.0
         phoneField.text = rawNumber
-        phoneField.keyboardType = .NumberPad
+        phoneField.keyboardType = .numberPad
         phoneField.text = autoFilledNumber != nil ? autoFilledNumber! : ""
         
         passwordField = setupTextField(CGRect(x: view.frame.width/4, y: view.frame.height/2 + fieldSpacing, width: view.frame.width/2, height: 40))
         passwordField.alpha = 0.0
-        passwordField.secureTextEntry = true
+        passwordField.isSecureTextEntry = true
         
         phoneViewLeft.image = UIImage(imageLiteral: "phone")
         phoneViewLeft.frame = CGRect(x:phoneField.frame.minX-35, y: phoneField.frame.minY+5,  width: 30, height: 30)
@@ -355,24 +355,24 @@ class LoginController: NavBarless, UITextFieldDelegate{
         view.addSubview(passViewLeft)
         
         let goButton = UIButton(frame: CGRect(x: view.frame.width/4, y: 4*view.frame.height/5-30, width: view.frame.width/2, height: 40))
-        goButton.addTarget(self, action: #selector(loginPressed), forControlEvents: .TouchUpInside)
+        goButton.addTarget(self, action: #selector(loginPressed), for: .touchUpInside)
         let attributedString = NSMutableAttributedString(string: "LOGIN")
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: Constants.seaFoam, range: (attributedString.string as NSString).rangeOfString("LOGIN"))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(6.0), range: (attributedString.string as NSString).rangeOfString("LOGIN"))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 18)!, range: (attributedString.string as NSString).rangeOfString("LOGIN"))
-        goButton.setAttributedTitle(attributedString, forState: .Normal)
-        goButton.backgroundColor = UIColor.clearColor()
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: Constants.seaFoam, range: (attributedString.string as NSString).range(of: "LOGIN"))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(6.0), range: (attributedString.string as NSString).range(of: "LOGIN"))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 18)!, range: (attributedString.string as NSString).range(of: "LOGIN"))
+        goButton.setAttributedTitle(attributedString, for: UIControlState())
+        goButton.backgroundColor = UIColor.clear
         view.addSubview(goButton)
         
         let forgotPassword = UIButton(frame: CGRect(x: view.frame.width/4, y: goButton.frame.maxY+60, width: view.frame.width/2, height: 40))
-        forgotPassword.addTarget(self, action: #selector(forgotPasswordPressed), forControlEvents: .TouchUpInside)
+        forgotPassword.addTarget(self, action: #selector(forgotPasswordPressed), for: .touchUpInside)
         
         let attributedString2 = NSMutableAttributedString(string: "FORGOT PASSWORD")
-        attributedString2.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString2.string as NSString).rangeOfString("FORGOT PASSWORD"))
-        attributedString2.addAttribute(NSKernAttributeName, value: CGFloat(3.0), range: (attributedString2.string as NSString).rangeOfString("FORGOT PASSWORD"))
-        attributedString2.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 11)!, range: (attributedString2.string as NSString).rangeOfString("FORGOT PASSWORD"))
-        forgotPassword.setAttributedTitle(attributedString2, forState: .Normal)
-        forgotPassword.backgroundColor = UIColor.clearColor()
+        attributedString2.addAttribute(NSForegroundColorAttributeName, value: UIColor.white, range: (attributedString2.string as NSString).range(of: "FORGOT PASSWORD"))
+        attributedString2.addAttribute(NSKernAttributeName, value: CGFloat(3.0), range: (attributedString2.string as NSString).range(of: "FORGOT PASSWORD"))
+        attributedString2.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: 11)!, range: (attributedString2.string as NSString).range(of: "FORGOT PASSWORD"))
+        forgotPassword.setAttributedTitle(attributedString2, for: UIControlState())
+        forgotPassword.backgroundColor = UIColor.clear
         view.addSubview(forgotPassword)
 
     }
@@ -384,6 +384,6 @@ class LoginController: NavBarless, UITextFieldDelegate{
             fc.placeHolder = phoneField.text
             fc.rawNumber = rawNumber
         }
-        presentViewController(fc, animated: false, completion: nil)
+        present(fc, animated: false, completion: nil)
     }
 }

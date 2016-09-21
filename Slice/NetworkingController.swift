@@ -12,7 +12,7 @@ import Alamofire
 import SwiftyJSON
 
 enum STPBackendChargeResult {
-    case Success, Failure
+    case success, failure
 }
 typealias STPTokenSubmissionHandler = (STPBackendChargeResult?, NSError?) -> Void
 
@@ -27,15 +27,15 @@ class NetworkingController{
     
     //MARK: Save Order
     // Price is in dollars (6.49 = $6.49)
-    func saveOrder(cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: ()->Void){
+    func saveOrder(_ cheese: Int, pepperoni: Int, url: String, cardID: String, price: String, completion: @escaping ()->Void){
         let parameters = ["cheese" : String(cheese), "pepperoni" : String(pepperoni), "cardUsed" : cardID, "price" : String(price)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON { _ in completion() }
     }
     
 
     //Saves a new card regardless of whether it is the user's first card or not. The url passed to it has already taken this into consideration
-    func saveNewCard(card: STPCardParams?, url: String, lastFour: String){
-        STPAPIClient.sharedClient().createTokenWithCard(card!){ (tokenOpt, error) -> Void in
+    func saveNewCard(_ card: STPCardParams?, url: String, lastFour: String){
+        STPAPIClient.shared().createToken(withCard: card!){ (tokenOpt, error) -> Void in
             if error != nil{
                 self.containerDelegate?.cardStoreageFailed(cardDeclined: true)
                 self.tutorialDelegate?.cardStoreageFailed(cardDeclined: true)
@@ -77,7 +77,7 @@ class NetworkingController{
     }
 
 
-    func changeCard(cardID: String, userID: String, completion: ()->Void){
+    func changeCard(_ cardID: String, userID: String, completion: @escaping ()->Void){
         Alamofire.request(.POST, Constants.updateCardURLString+userID, parameters: ["cardID" : cardID], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
@@ -96,7 +96,7 @@ class NetworkingController{
     //Amount should be in cents, url should already have userID appended to it
     //Default card should already be changed in the backend
     //Only called indirectly by NewtorkingController through a completion passed to it by ContainerController
-    func chargeUser(url: String, amount: String, description: String, cheese: Int, pepperoni: Int){
+    func chargeUser(_ url: String, amount: String, description: String, cheese: Int, pepperoni: Int){
         let parameters = ["chargeAmount" : amount, "chargeDescription" : description]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
@@ -122,7 +122,7 @@ class NetworkingController{
     
     
     //MARK: Non Payment Functions
-    func saveAddress(add: Address, userID: String){
+    func saveAddress(_ add: Address, userID: String){
         let url = Constants.newAddressURLString+userID
         let parameters = ["School" : add.school, "Dorm" : add.dorm, "Room" : add.room]
         
@@ -157,7 +157,7 @@ class NetworkingController{
         }
     }
     
-    func deleteAddress(url: String, completion: (Bool)->Void){
+    func deleteAddress(_ url: String, completion: @escaping (Bool)->Void){
         Alamofire.request(.DELETE, url, parameters: nil, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
@@ -173,7 +173,7 @@ class NetworkingController{
         }
     }
     
-    func deleteCard(url: String, card: String, completion: (Bool)->Void){
+    func deleteCard(_ url: String, card: String, completion: @escaping (Bool)->Void){
         let parameters = ["cardID" : card]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
@@ -190,7 +190,7 @@ class NetworkingController{
         }
     }
     
-    func rateLastOrder(userID: String, stars: Int, comment: String?){
+    func rateLastOrder(_ userID: String, stars: Int, comment: String?){
         let parameters = comment != nil ? ["stars" :  String(stars), "review" : comment!] : ["stars" : String(stars)]
         Alamofire.request(.POST, Constants.rateLastOrderURLString + userID, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
             if response.response?.statusCode == 401{
@@ -199,7 +199,7 @@ class NetworkingController{
         }
     }
     
-    func addEmail(userID: String, email: String){
+    func addEmail(_ userID: String, email: String){
         Alamofire.request(.POST, Constants.addEmailURLString + userID, parameters: ["email" : email], encoding: .URL, headers: headers).responseJSON{ response in
             switch response.result{
             case .Success:
@@ -216,7 +216,7 @@ class NetworkingController{
     }
     
     
-    func booleanChange(endpoint: String, userID: String, boolean: Bool){
+    func booleanChange(_ endpoint: String, userID: String, boolean: Bool){
         let url = "\(Constants.booleanChangeURLString)\(endpoint)/\(userID)"
         let parameters = [endpoint : String(boolean)]
         Alamofire.request(.POST, url, parameters: parameters, encoding: .URL, headers: headers).responseJSON{ response in
@@ -226,7 +226,7 @@ class NetworkingController{
         }
     }
     
-    func checkHours(userID: String){
+    func checkHours(_ userID: String){
         Alamofire.request(.GET, Constants.isOpenURLString + userID).responseJSON{ response in
             switch response.result{
             case .Success:

@@ -21,13 +21,13 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         actionForBackButton({self.exit()})
-        paymentTextField.textColor = UIColor.whiteColor()
+        paymentTextField.textColor = UIColor.white
         paymentTextField.frame = CGRect(x: 15, y: 100, width: view.frame.width-30, height: 44)
         paymentTextField.delegate = self
         view.addSubview(paymentTextField)
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
@@ -38,11 +38,11 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
         else{
             let tc = TutorialController()
             tc.user = self.user
-            presentViewController(tc, animated: false, completion: nil)
+            present(tc, animated: false, completion: nil)
         }
     }
     
-    func paymentCardTextFieldDidChange(textField: STPPaymentCardTextField) {
+    func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
         if(textField.isValid && !validated){
             validated = true //Because it was running this code twice for some reason
             textField.resignFirstResponder()
@@ -50,18 +50,18 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
             let sideLength: CGFloat = 2/3*view.frame.size.width
             let origin = CGPoint(x:view.frame.size.width/2-sideLength/2, y:view.frame.height/2-sideLength/2)
             let checkView = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: sideLength, height: sideLength)))
-            checkView.image = UIImage(imageLiteral: "check")
-            checkView.contentMode = .ScaleToFill
+            checkView.image = UIImage(imageLiteralResourceName: "check")
+            checkView.contentMode = .scaleToFill
             view.addSubview(checkView)
             checkView.alpha = 0.6
             
             //Animate
-            checkView.transform = CGAffineTransformMakeScale(0,0)
-            UIView.animateWithDuration(0.75, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 15, options: .CurveLinear, animations: {
-                checkView.transform = CGAffineTransformIdentity
+            checkView.transform = CGAffineTransform(scaleX: 0,y: 0)
+            UIView.animate(withDuration: 0.75, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 15, options: .curveLinear, animations: {
+                checkView.transform = CGAffineTransform.identity
             }){
                 if($0){
-                    UIView.animateWithDuration(0.3, animations: {
+                    UIView.animate(withDuration: 0.3, animations: {
                         checkView.alpha = 0.0
                         }, completion:{
                             if($0){
@@ -72,7 +72,7 @@ class NewCardController: NavBarred, STPPaymentCardTextFieldDelegate{
                                     let tc = TutorialController()
                                     tc.user = self.user
                                     tc.pendingCard = textField.cardParams
-                                    self.presentViewController(tc, animated: false, completion: nil)
+                                    self.present(tc, animated: false, completion: nil)
                                 }
                             }
                         }

@@ -34,13 +34,13 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     override func viewDidLoad() {
         super.viewDidLoad()
         actionForBackButton({self.exitWithoutAddress(false)})
-        keyboardShouldMoveScreen = UIScreen.mainScreen().bounds.height <= 568.0
+        keyboardShouldMoveScreen = UIScreen.main.bounds.height <= 568.0
         dormPicker.delegate = self
         dormPicker.dataSource = self
         textFieldSetup()
         dormPicker.frame = CGRect(x: 0, y: dormField.frame.maxY, width: view.frame.width, height : 130)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         checkData()
         addSave()
     }
@@ -53,17 +53,17 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
 
     func addSave(){
         saveButton = UIButton(frame: CGRect(x: 0, y: roomField.frame.maxY+200, width: view.frame.width, height: 50))
-        saveButton.setAttributedTitle(getAttributedTitle("SAVE ADDRESS", size: 16, kern: 6.0, isGreen: false), forState: .Normal)
-        saveButton.addTarget(self, action: #selector(self.exitWithAddress), forControlEvents: .TouchUpInside)
+        saveButton.setAttributedTitle(getAttributedTitle("SAVE ADDRESS", size: 16, kern: 6.0, isGreen: false), for: UIControlState())
+        saveButton.addTarget(self, action: #selector(self.exitWithAddress), for: .touchUpInside)
         view.addSubview(saveButton)
     }
     
-    func getAttributedTitle(text: String, size: CGFloat, kern: Double, isGreen: Bool)->NSMutableAttributedString{
+    func getAttributedTitle(_ text: String, size: CGFloat, kern: Double, isGreen: Bool)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)
-        let color = isGreen ? Constants.seaFoam : UIColor.whiteColor()
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: color, range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: size)!, range: (attributedString.string as NSString).rangeOfString(text))
+        let color = isGreen ? Constants.seaFoam : UIColor.white
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: color, range: (attributedString.string as NSString).range(of: text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).range(of: text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: size)!, range: (attributedString.string as NSString).range(of: text))
         return attributedString
     }
     
@@ -71,22 +71,22 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
         dormField = makeTextFieldWithText("  DORM", yPos: 100, isGreen: false)
         roomField = makeTextFieldWithText("  ROOM NUMBER", yPos: 200, isGreen: false)
         roomField.allowsEditingTextAttributes = true
-        roomField.autocapitalizationType = .None
-        roomField.autocorrectionType = .No
+        roomField.autocapitalizationType = .none
+        roomField.autocorrectionType = .no
 
         view.addSubview(dormField)
         view.addSubview(roomField)
     }
     
-    func makeTextFieldWithText(text: String, yPos: CGFloat, isGreen: Bool)->PickerField{
+    func makeTextFieldWithText(_ text: String, yPos: CGFloat, isGreen: Bool)->PickerField{
         let textField = PickerField(frame: CGRect(x: 10, y: yPos, width: view.frame.width-20, height: 40))
         textField.attributedText = getAttributedTitle(text, size: 15, kern: textFieldKern, isGreen: isGreen)
         textField.delegate = self
-        textField.backgroundColor = UIColor.clearColor()
+        textField.backgroundColor = UIColor.clear
 
         let border = CALayer()
         let width = CGFloat(1.0)
-        border.borderColor = UIColor.whiteColor().CGColor
+        border.borderColor = UIColor.white.cgColor
         border.frame = CGRect(x: 0, y: textField.frame.size.height - width, width:  textField.frame.size.width, height: textField.frame.size.height)
         border.borderWidth = width
         textField.layer.addSublayer(border)
@@ -95,26 +95,26 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
         
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        if keyboardShouldMoveScreen && roomField.isFirstResponder() && !viewIsRaised {
-            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+    func keyboardWillShow(_ notification: Notification) {
+        if keyboardShouldMoveScreen && roomField.isFirstResponder && !viewIsRaised {
+            if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 self.view.frame.origin.y -= keyboardSize.height/2
                 viewIsRaised = true
             }
         }
     }
     
-    func keyboardWillHide(notification: NSNotification?) {
+    func keyboardWillHide(_ notification: Notification?) {
         if roomField.text != "" && roomField.text != "  ROOM"{
-            UIView.animateWithDuration(1.0, animations: {
-                self.roomField.bottomBorder?.borderColor = Constants.seaFoam.CGColor
+            UIView.animate(withDuration: 1.0, animations: {
+                self.roomField.bottomBorder?.borderColor = Constants.seaFoam.cgColor
                 if self.dormField.text != "  DORM" && self.dormField.text != ""{
                     self.saveButton.titleLabel?.textColor = Constants.seaFoam
                 }
             })
         }
         if viewIsRaised{
-            if let keyboardSize = (notification?.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+            if let keyboardSize = ((notification as NSNotification?)?.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 self.view.frame.origin.y += keyboardSize.height
                 viewIsRaised = false
             }
@@ -122,11 +122,11 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        let cs = NSCharacterSet(charactersInString: acceptableCharacters).invertedSet
-        let filteredString = string.componentsSeparatedByCharactersInSet(cs).joinWithSeparator("")
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let cs = CharacterSet(charactersIn: acceptableCharacters).inverted
+        let filteredString = string.components(separatedBy: cs).joined(separator: "")
         if string != filteredString{
-            roomField.bottomBorder?.borderColor = Constants.lightRed.CGColor
+            roomField.bottomBorder?.borderColor = Constants.lightRed.cgColor
             Alerts.shakeView(roomField, enterTrue: false)
         }
         return string == filteredString
@@ -135,7 +135,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     
     
     //MARK: TextField Delegate Functions
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
 
         if textField == dormField{
             dormFieldSelected()
@@ -148,7 +148,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     //Will only be reached when it's roomField
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         
         if dormField.text != "  DORM" && dormField.text != ""{
@@ -160,13 +160,13 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     //Will only be reached when it's roomField
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.text = ""
     }
 
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if roomField.isFirstResponder(){
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if roomField.isFirstResponder{
             roomField.resignFirstResponder()
         }
     }
@@ -176,34 +176,34 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     func dormFieldSelected(){
         dormField.attributedText = getAttributedTitle(dorms[selectedDorm], size: 15, kern: textFieldKern, isGreen: false)
         roomField.resignFirstResponder()
-        UIView.animateWithDuration(1.0, animations: {self.dormField.bottomBorder?.borderColor = Constants.seaFoam.CGColor})
+        UIView.animate(withDuration: 1.0, animations: {self.dormField.bottomBorder?.borderColor = Constants.seaFoam.cgColor})
         dormField.frame.origin.y = 100
-        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 270}, completion: {if $0 {self.view.addSubview(self.dormPicker)}})
+        UIView.animate(withDuration: 0.3, animations: {self.roomField.frame.origin.y = 270}, completion: {if $0 {self.view.addSubview(self.dormPicker)}})
         dormPicker.becomeFirstResponder()
     }
     
     func roomFieldSelected(){
         dormPicker.removeFromSuperview()
         dormField.frame.origin.y = 100
-        UIView.animateWithDuration(0.3, animations: {self.roomField.frame.origin.y = 200})
+        UIView.animate(withDuration: 0.3, animations: {self.roomField.frame.origin.y = 200})
     }
     
     
     //MARK: PickerView Delegate Functions
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return dorms.count
     }
     
-    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let plainString = dorms[row]
         return getAttributedTitle(plainString, size: 14, kern: 3.0, isGreen: false)
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedDorm = row
     }
 
@@ -213,7 +213,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
 
     
     //MARK: Return Functions
-    func exitWithoutAddress(networkError: Bool){
+    func exitWithoutAddress(_ networkError: Bool){
         if networkError && delegate != nil{
             delegate?.retrieveAddresses()
         }
@@ -223,7 +223,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
         else{
             let tc = TutorialController()
             tc.user = user!
-            presentViewController(tc, animated: false, completion: nil)
+            present(tc, animated: false, completion: nil)
         }
 
     }
@@ -239,7 +239,7 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
                     let tc = TutorialController()
                     tc.user = user!
                     tc.pendingAddress = address
-                    presentViewController(tc, animated: false, completion: nil)
+                    present(tc, animated: false, completion: nil)
                 }
             }
             else{

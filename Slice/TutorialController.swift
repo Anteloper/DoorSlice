@@ -43,14 +43,14 @@ class TutorialController: UIViewController, Configurable {
         networkController.tutorialDelegate = self
         networkController.headers = ["authorization" : user.jwt]
         view.backgroundColor = Constants.darkBlue
-        UIApplication.sharedApplication().statusBarHidden = false
-        UIApplication.sharedApplication().statusBarStyle = .Default
+        UIApplication.shared.isStatusBarHidden = false
+        UIApplication.shared.statusBarStyle = .default
     }
     
-    override func viewDidAppear(animated: Bool){
+    override func viewDidAppear(_ animated: Bool){
         super.viewDidAppear(animated)
         let fullView = UIImageView(frame: view.frame)
-        let tutImage = UIImage(imageLiteral: "tutorial")
+        let tutImage = UIImage(imageLiteralResourceName: "tutorial")
         fullView.image = tutImage
         backgroundColor = tutImage.getPixelColor(CGPoint(x: 1, y: 1))
         
@@ -91,10 +91,10 @@ class TutorialController: UIViewController, Configurable {
             let n: CGFloat = CGFloat(i) + CGFloat(i-1)
             let label = UILabel(frame: CGRect(x: 0, y: (startHeight + rowHeight*n/2)-10, width: view.frame.width/4, height: 20))
             label.attributedText = Constants.getTitleAttributedString("\(i).", size: 15, kern: 1.0)
-            label.textAlignment = .Center
+            label.textAlignment = .center
             label.alpha = 0.0
             view.addSubview(label)
-            UIView.animateWithDuration(0.5, delay: 0.5 * (Double(i)-1), options: [], animations: {label.alpha = 1.0}, completion: nil)
+            UIView.animate(withDuration: 0.5, delay: 0.5 * (Double(i)-1), options: [], animations: {label.alpha = 1.0}, completion: nil)
         }
         
         checkAndAddAddressCheck()
@@ -105,7 +105,7 @@ class TutorialController: UIViewController, Configurable {
     func addAddressButton(){
         let label = UILabel(frame: CGRect(x: 0, y: startHeight + 7, width: view.frame.width, height: 30))
         label.attributedText = Constants.getTitleAttributedString("ADD YOUR ROOM", size: 14, kern: 4.0)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.alpha = 0.0
         view.addSubview(label)
         
@@ -120,11 +120,11 @@ class TutorialController: UIViewController, Configurable {
         }
         
         addressButton.frame = CGRect(x: 0, y: startHeight, width: view.frame.width, height: rowHeight)
-        addressButton.setTitle("", forState: .Normal)
-        addressButton.addTarget(self, action: #selector(addressPressed), forControlEvents: .TouchUpInside)
+        addressButton.setTitle("", for: UIControlState())
+        addressButton.addTarget(self, action: #selector(addressPressed), for: .touchUpInside)
         view.addSubview(addressButton)
         
-        UIView.animateWithDuration(0.5, animations: {label.alpha = 1.0})
+        UIView.animate(withDuration: 0.5, animations: {label.alpha = 1.0})
     }
     
     func addressPressed(){
@@ -132,7 +132,7 @@ class TutorialController: UIViewController, Configurable {
         na.dorms = addresses?.getDorms()
         na.schoolFullName = "\(user.school) UNIVERSITY"
         na.user = user
-        presentViewController(UINavigationController(rootViewController: na), animated: false, completion: nil)
+        present(UINavigationController(rootViewController: na), animated: false, completion: nil)
     }
     
     
@@ -140,13 +140,13 @@ class TutorialController: UIViewController, Configurable {
     func addPaymentButton(){
         let label = UILabel(frame: CGRect(x: 0, y: startHeight+rowHeight+7, width: view.frame.width, height: 30))
         label.attributedText = Constants.getTitleAttributedString("ADD A PAYMENT METHOD", size: 14, kern: 4.0)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.alpha = 0.0
         view.addSubview(label)
 
         paymentButton.frame = CGRect(x: 0, y: startHeight+rowHeight, width: view.frame.width, height: rowHeight)
-        paymentButton.setTitle("", forState: .Normal)
-        paymentButton.addTarget(self, action: #selector(paymentPressed), forControlEvents: .TouchUpInside)
+        paymentButton.setTitle("", for: UIControlState())
+        paymentButton.addTarget(self, action: #selector(paymentPressed), for: .touchUpInside)
         view.addSubview(paymentButton)
         
         if  user.cards.count == 0 {
@@ -159,20 +159,20 @@ class TutorialController: UIViewController, Configurable {
             hasPayment = true
         }
         
-        UIView.animateWithDuration(0.5, delay: 0.5, options: [], animations: {label.alpha = 1.0}, completion: nil)
+        UIView.animate(withDuration: 0.5, delay: 0.5, options: [], animations: {label.alpha = 1.0}, completion: nil)
     }
 
     
     func paymentPressed(){
         let nc = NewCardController()
         nc.user = user
-        presentViewController(UINavigationController(rootViewController: nc), animated: false) {_ in nc.paymentTextField.becomeFirstResponder()}
+        present(UINavigationController(rootViewController: nc), animated: false) {_ in nc.paymentTextField.becomeFirstResponder()}
     }
     
     
-    func getCheckView(frame: CGRect)->UIImageView{
+    func getCheckView(_ frame: CGRect)->UIImageView{
         let checkView = UIImageView(frame: frame)
-        checkView.image = UIImage(imageLiteral: "check")
+        checkView.image = UIImage(imageLiteralResourceName: "check")
         return checkView
     }
     
@@ -180,26 +180,26 @@ class TutorialController: UIViewController, Configurable {
     func addSliceLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: startHeight + (rowHeight*2) + 7, width: view.frame.width, height: 30))
         label.attributedText = Constants.getTitleAttributedString("TAP A SLICE TO ORDER", size: 14, kern: 4.0)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.alpha = 0.0
         view.addSubview(label)
-        UIView.animateWithDuration(0.5, delay: 1.0, options: [], animations: {label.alpha = 1.0}, completion: nil)
+        UIView.animate(withDuration: 0.5, delay: 1.0, options: [], animations: {label.alpha = 1.0}, completion: nil)
     }
     
     //MARK: Bottom Views
     func addGoLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: view.frame.height*4/5-35, width: view.frame.width, height: 40))
         label.attributedText = Constants.getTitleAttributedString("WE'LL BE THERE IN FIVE", size: 20, kern: 5.5)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.alpha = 0.0
         view.addSubview(label)
-        UIView.animateWithDuration(0.5, delay: 1.5, options: [], animations: {label.alpha = 1.0}, completion: nil)
+        UIView.animate(withDuration: 0.5, delay: 1.5, options: [], animations: {label.alpha = 1.0}, completion: nil)
     }
     
     func addGoButton(){
         let goButton = UIButton(frame: CGRect(x: view.frame.midX-40, y: view.frame.height*7/8-20, width: 80, height: 80))
-        goButton.setTitle("", forState: .Normal)
-        goButton.addTarget(self, action: #selector(goPressed), forControlEvents: .TouchUpInside)
+        goButton.setTitle("", for: UIControlState())
+        goButton.addTarget(self, action: #selector(goPressed), for: .touchUpInside)
         view.addSubview(goButton)
     }
     
@@ -209,7 +209,7 @@ class TutorialController: UIViewController, Configurable {
             user.hasSeenTutorial = true
             let cc = ContainerController()
             cc.loggedInUser = user
-            presentViewController(cc, animated: false, completion: nil)
+            present(cc, animated: false, completion: nil)
         }
         else{
             var string = ""
@@ -223,9 +223,9 @@ class TutorialController: UIViewController, Configurable {
         }
     }
     
-    func addForwardButton(frame: CGRect){
+    func addForwardButton(_ frame: CGRect){
         let forward = UIImageView(frame: frame)
-        forward.image = UIImage(imageLiteral: "forward")
+        forward.image = UIImage(imageLiteralResourceName: "forward")
         forward.layer.minificationFilter = kCAFilterTrilinear
         view.addSubview(forward)
     }
@@ -238,7 +238,7 @@ class TutorialController: UIViewController, Configurable {
             coverView.backgroundColor = backgroundColor
             view.addSubview(addCheck)
             view.addSubview(coverView)
-            UIView.animateWithDuration(0.3, delay: 1.5, options: .CurveLinear, animations: {coverView.frame.origin.x += 25}, completion: nil)
+            UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveLinear, animations: {coverView.frame.origin.x += 25}, completion: nil)
         }
         
     }
@@ -251,12 +251,12 @@ class TutorialController: UIViewController, Configurable {
             coverView.backgroundColor = backgroundColor
             view.addSubview(addCheck)
             view.addSubview(coverView)
-            UIView.animateWithDuration(0.3, delay: 1.5, options: .CurveLinear, animations: {coverView.frame.origin.x += 25}, completion: nil)
+            UIView.animate(withDuration: 0.3, delay: 1.5, options: .curveLinear, animations: {coverView.frame.origin.x += 25}, completion: nil)
         }
     }
     
-    func getSpinnerWithCenter(center: CGPoint) -> CustomActivityIndicatorView{
-        let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
+    func getSpinnerWithCenter(_ center: CGPoint) -> CustomActivityIndicatorView{
+        let spinner = CustomActivityIndicatorView(image: UIImage(imageLiteralResourceName: "loading"))
         spinner.center = center
         view.addSubview(spinner)
         spinner.startAnimating()
@@ -273,7 +273,7 @@ class TutorialController: UIViewController, Configurable {
         Alerts.serverError()
     }
     
-    func addressSaveSucceeded(add: Address, orderID: String) {
+    func addressSaveSucceeded(_ add: Address, orderID: String) {
         addressSpinner?.stopAnimating()
         user.addresses.append(add)
         user.preferredAddress = user.addresses.count-1
@@ -293,7 +293,7 @@ class TutorialController: UIViewController, Configurable {
         
     }
     
-    func storeCardID(cardID: String, lastFour: String) {
+    func storeCardID(_ cardID: String, lastFour: String) {
         user.hasCreatedFirstCard = true
         user.cards.append(lastFour)
         user.preferredCard = user.cards.count-1
@@ -310,7 +310,7 @@ class TutorialController: UIViewController, Configurable {
         Alerts.unauthenticated(){_ in }
     }
     static func getStartHeightAndRowHeight()->(CGFloat, CGFloat){
-        let height = UIScreen.mainScreen().bounds.height
+        let height = UIScreen.main.bounds.height
         if height == 736.0{ //6+ or 6s+
             return (130, 130)
         }
@@ -329,9 +329,9 @@ class TutorialController: UIViewController, Configurable {
 //For animation of checkmark, a view that slides to the right revealing the check mark makes it appear as if the checkmark is being drawn
 //Because the tutorial background is an image this extension is used to grab the exact runtime color of that image
 extension UIImage {
-    func getPixelColor(pos: CGPoint) -> UIColor {
+    func getPixelColor(_ pos: CGPoint) -> UIColor {
         
-        let pixelData = CGDataProviderCopyData(CGImageGetDataProvider(self.CGImage!)!)
+        let pixelData = self.cgImage!.dataProvider!.data
         let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
         
         let pixelInfo: Int = ((Int(self.size.width) * Int(pos.y)) + Int(pos.x)) * 4

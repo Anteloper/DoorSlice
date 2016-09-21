@@ -11,10 +11,10 @@ import UIKit
 
 internal struct Constants{
     
-    private static var pepperoniPrice = 349
-    private static var cheesePrice = 299
+    fileprivate static var pepperoniPrice = 349
+    fileprivate static var cheesePrice = 299
     
-    static func setPrices(cheese cheese: Int, pepperoni: Int){
+    static func setPrices(cheese: Int, pepperoni: Int){
         cheesePrice = cheese
         pepperoniPrice = pepperoni
     }
@@ -33,16 +33,16 @@ internal struct Constants{
     }
     
     static func userFilePath() -> String{
-        let paths = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
-        let filePath = paths[0].URLByAppendingPathComponent("productionPath.plist")
-        return filePath!.path!
+        let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
+        let filePath = paths[0].appendingPathComponent("productionPath.plist")
+        return filePath.path
     }
     
-    static func getTitleAttributedString(text: String, size: Int, kern: Double)->NSMutableAttributedString{
+    static func getTitleAttributedString(_ text: String, size: Int, kern: Double)->NSMutableAttributedString{
         let attributedString = NSMutableAttributedString(string: text)
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).rangeOfString(text))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).rangeOfString(text))
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.white, range: (attributedString.string as NSString).range(of: text))
+        attributedString.addAttribute(NSKernAttributeName, value: CGFloat(kern), range: (attributedString.string as NSString).range(of: text))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Myriad Pro", size: CGFloat(size))!, range: (attributedString.string as NSString).range(of: text))
         return attributedString
     }
     

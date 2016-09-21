@@ -32,7 +32,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
     let amountVisibleOfSliceController: CGFloat = 110
     
-    private var amount = 0.00 //The amount in dollars (6.49 represents $6.49)
+    fileprivate var amount = 0.00 //The amount in dollars (6.49 represents $6.49)
     func getAmountInt()->Int{ return Int(amount*100) }//The amount in cents. (649 represents $6.49)
     func getAmountString()->String {return String(amount)}// The double as a string (6.49 represents $6.49)
     
@@ -44,8 +44,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIApplication.sharedApplication().statusBarHidden = false
-        UIApplication.sharedApplication().statusBarStyle = .LightContent
+        UIApplication.shared.isStatusBarHidden = false
+        UIApplication.shared.statusBarStyle = .lightContent
         networkController.containerDelegate = self
         networkController.headers = ["authorization" : loggedInUser.jwt]
         networkController.checkHours(loggedInUser.userID)
@@ -60,7 +60,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         finishSetup()
     }
     
-    func closed(closedMessage: String){
+    func closed(_ closedMessage: String){
         clearViewControllerHierarchy()
         let cc = ClosedController()
         cc.delegate = self
@@ -73,7 +73,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func clearViewControllerHierarchy(){
         if navController != nil{
             navController.view.removeFromSuperview()
-            navController.willMoveToParentViewController(nil)
+            navController.willMove(toParentViewController: nil)
             navController.removeFromParentViewController()
         }
     }
@@ -83,7 +83,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         activeAddresses = ActiveAddresses(user: loggedInUser)
         view.addSubview(navController.view)
         addChildViewController(navController)
-        navController.didMoveToParentViewController(self)
+        navController.didMove(toParentViewController: self)
     }
     
 
@@ -94,7 +94,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func promptUserFeedBack() {
         if loggedInUser.hasPromptedRating != nil && loggedInUser.hasPromptedRating! == false{
             if let lastOrder = loggedInUser.orderHistory.last?.timeOrdered{
-                if NSDate().timeIntervalSinceDate(lastOrder) > 600{
+                if Date().timeIntervalSince(lastOrder as Date) > 600{
                     loggedInUser.hasPromptedRating = true
                     let rc = RatingController()
                     rc.delegate = self
@@ -105,7 +105,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
     
     //MARK: Slideable Functions
-    func toggleMenu(completion: (()->Void)?) {
+    func toggleMenu(_ completion: (()->Void)?) {
         //Display menu when no menu is visible
         if !menuIsVisible && menuController == nil{
             menuController = MenuController()
@@ -114,9 +114,9 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
             menuController?.preferredAddress = loggedInUser.preferredAddress
             menuController?.preferredCard = loggedInUser.preferredCard
             menuController?.delegate = self
-            view.insertSubview(menuController!.view, atIndex: 0)
+            view.insertSubview(menuController!.view, at: 0)
             addChildViewController(menuController!)
-            menuController!.didMoveToParentViewController(self)
+            menuController!.didMove(toParentViewController: self)
         }
         
         if !menuIsVisible{
@@ -152,11 +152,11 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         }
     }
     
-    func animateCenterPanelXPosition(targetPosition: CGFloat, fromFullScreen: Bool, completion: ((Bool) ->Void)! = nil){
+    func animateCenterPanelXPosition(_ targetPosition: CGFloat, fromFullScreen: Bool, completion: ((Bool) ->Void)! = nil){
         
-        UIView.animateWithDuration(0.3,
+        UIView.animate(withDuration: 0.3,
                                    delay: 0.0,
-                                   options: [.CurveEaseInOut],
+                                   options: UIViewAnimationOptions(),
                                    animations: {
                                     if(fromFullScreen){
                                         self.newAddressController?.view.alpha = 0.0
@@ -167,7 +167,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         )
     }
     
-    func showShadow(shouldShowShadow: Bool){
+    func showShadow(_ shouldShowShadow: Bool){
         if shouldShowShadow{
             navController.view.layer.shadowOpacity = 0.8
         }
@@ -244,10 +244,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
 
     }
     
-    func prepareControllerForFullsreen(controller: UIViewController){
-        view.insertSubview(controller.view, atIndex: 1)
+    func prepareControllerForFullsreen(_ controller: UIViewController){
+        view.insertSubview(controller.view, at: 1)
         addChildViewController(controller)
-        controller.didMoveToParentViewController(self)
+        controller.didMove(toParentViewController: self)
     }
 
     //MARK: Return From Fullscreen
@@ -324,13 +324,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         activeAddresses = ActiveAddresses(user: loggedInUser)
     }
     
-    func cardRemoved(index: Int) {
+    func cardRemoved(_ index: Int) {
         let lastFour = loggedInUser.cards[index]
         let url = Constants.deleteCardURLString + loggedInUser.userID
         networkController.deleteCard(url, card: loggedInUser.cardIDs[lastFour]!){
             if ($0){
-                self.loggedInUser.cards.removeAtIndex(index)
-                self.loggedInUser.cardIDs.removeValueForKey(lastFour)
+                self.loggedInUser.cards.remove(at: index)
+                self.loggedInUser.cardIDs.removeValue(forKey: lastFour)
                 if index == self.loggedInUser.preferredCard{
                     self.loggedInUser.preferredCard = 0
                 }
@@ -347,13 +347,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         
     }
     
-    func addressRemoved(index: Int) {
+    func addressRemoved(_ index: Int) {
         let name = loggedInUser.addresses[index].getName()
         let url = Constants.deleteAddressURLString + loggedInUser.userID + "/" + loggedInUser.addressIDs[name]!
         networkController.deleteAddress(url){ [unowned self] in
             if ($0){
-                self.loggedInUser.addresses.removeAtIndex(index)
-                self.loggedInUser.addressIDs.removeValueForKey(name)
+                self.loggedInUser.addresses.remove(at: index)
+                self.loggedInUser.addressIDs.removeValue(forKey: name)
                 if index == self.loggedInUser.preferredAddress{
                     self.loggedInUser.preferredAddress = 0
                 }
@@ -371,10 +371,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     func logOutUser(){
         loggedInUser.isLoggedIn = false
         let lc = LoginController()
-        presentViewController(lc, animated: false, completion: nil)
+        present(lc, animated: false, completion: nil)
     }
 
-    func timerEnded(cheese cheese: Double, pepperoni: Double){
+    func timerEnded(cheese: Double, pepperoni: Double){
         if Alerts.checkValidity(loggedInUser, cc: self){
             if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
                 let receiptController = ReceiptController()
@@ -392,7 +392,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     //MARK: Payment Functions
     //The beginning point for any payment process when the sliceController timer runs out. This function decides which
     //payment method is appropriate and the calls the corresponding function
-    func payForOrder(cheese: Double, pepperoni: Double) {
+    func payForOrder(_ cheese: Double, pepperoni: Double) {
 
         amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
         orderDescription = getOrderDescription(Int(cheese), pepperoni: Int(pepperoni))
@@ -428,13 +428,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     
     //Saves the order to the backend then submits a charge token to the backend.
     //Credit Card exclusive
-    func saveOrderThenCharge(cheese: Int, pepperoni: Int, addressID: String, cardID: String){
+    func saveOrderThenCharge(_ cheese: Int, pepperoni: Int, addressID: String, cardID: String){
         networkController.saveOrder(cheese, pepperoni: pepperoni, url: Constants.saveOrderURLString+loggedInUser.userID + "/" + addressID, cardID: cardID, price: self.getAmountString()){
             self.networkController.chargeUser(Constants.chargeUserURLString+self.loggedInUser.userID, amount: String(self.getAmountInt()), description: self.orderDescription, cheese: cheese, pepperoni: pepperoni)
         }
     }
     
-    func getOrderDescription(cheese: Int, pepperoni: Int)->String{
+    func getOrderDescription(_ cheese: Int, pepperoni: Int)->String{
         var string = ""
         if pepperoni != 0{
             let plural = pepperoni == 1 ? "Slice" : "Slices"
@@ -453,7 +453,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     
 
     //MARK: Payable Delegate Methods
-    func storeCardID(cardID: String, lastFour: String){
+    func storeCardID(_ cardID: String, lastFour: String){
         loggedInUser.hasCreatedFirstCard = true
         loggedInUser.cards.append(lastFour)
         loggedInUser.preferredCard = loggedInUser.cards.count-1
@@ -470,10 +470,10 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         declined ? Alerts.cardDeclined() : Alerts.saveNotSuccesful(isCard: true, internetError: false)
     }
     
-    func cardPaymentSuccesful(cheeseSlices: Int, pepperoniSlices: Int){
+    func cardPaymentSuccesful(_ cheeseSlices: Int, pepperoniSlices: Int){
         let payString = loggedInUser.cards[loggedInUser.preferredCard]
         let address = loggedInUser.addresses[loggedInUser.preferredAddress]
-        let order = PastOrder(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
+        let order = PastOrder(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: Date(), paymentMethod: payString)
             loggedInUser.orderHistory.append(order)
 
         
@@ -486,7 +486,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         declined ? Alerts.cardDeclined() : Alerts.failedPayment()
     }
     
-    func addressSaveSucceeded(add: Address, orderID: String) {
+    func addressSaveSucceeded(_ add: Address, orderID: String) {
         loggedInUser.addresses.append(add)
         loggedInUser.preferredAddress = loggedInUser.addresses.count-1
         menuController?.preferredAddress = loggedInUser.preferredAddress
@@ -511,7 +511,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         networkController.rateLastOrder(loggedInUser.userID, stars: rating, comment: comment)
     }
     
-    func addEmail(email: String) {
+    func addEmail(_ email: String) {
         loggedInUser.email = email
         networkController.addEmail(loggedInUser.userID, email: email)
         networkController.booleanChange(Constants.wantsReceipts, userID: loggedInUser.userID, boolean: true)

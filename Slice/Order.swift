@@ -13,11 +13,11 @@ struct Order{
     var cheeseSlices: Double = 0
     var pepperoniSlices: Double = 0
     
-    mutating func add(sliceType: Slice){
+    mutating func add(_ sliceType: Slice){
         switch sliceType{
-        case .Cheese:
+        case .cheese:
             cheeseSlices += 1
-        case .Pepperoni:
+        case .pepperoni:
             pepperoniSlices += 1
         }
     }

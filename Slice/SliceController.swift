@@ -19,7 +19,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     let cancelButton = UIButton()
     
     let fadeView = UIView()
-    lazy private var activityIndicator : CustomActivityIndicatorView = {return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))}()
+    lazy fileprivate var activityIndicator : CustomActivityIndicatorView = {return CustomActivityIndicatorView(image: UIImage(imageLiteralResourceName: "loading"))}()
     
     let pepperoniButton = UIButton()
     let cheeseButton = UIButton()
@@ -44,19 +44,19 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                 self.addProgressBar()
             }
             if order.totalSlices() < 8{
-                currentButtonShowing.transform = CGAffineTransformMakeScale(0, 0)
-                let sliceType: Slice = currentButtonShowing == cheeseButton ? .Cheese : .Pepperoni
+                currentButtonShowing.transform = CGAffineTransform(scaleX: 0, y: 0)
+                let sliceType: Slice = currentButtonShowing == cheeseButton ? .cheese : .pepperoni
                 order.add(sliceType)
                 orderProgressBar?.resetTimer()
                 orderProgressBar?.addSlice(sliceType)
                 orderProgressBar?.numSlices += 1
             
-                UIView.animateWithDuration(0.2,
+                UIView.animate(withDuration: 0.2,
                                            delay: 0.0,
                                            usingSpringWithDamping: 0.5,
                                            initialSpringVelocity: 15,
-                                           options: .CurveLinear,
-                                           animations: { self.currentButtonShowing.transform = CGAffineTransformIdentity},
+                                           options: .curveLinear,
+                                           animations: { self.currentButtonShowing.transform = CGAffineTransform.identity},
                                            completion: nil)
             }
             else{
@@ -74,16 +74,16 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         orderProgressBar = OrderProgressView(frame: view.frame)
         orderProgressBar!.delegate = self
         view.addSubview(orderProgressBar!)
-        view.sendSubviewToBack(orderProgressBar!)
-        view.bringSubviewToFront(cancelButton)
+        view.sendSubview(toBack: orderProgressBar!)
+        view.bringSubview(toFront: cancelButton)
     }
     
     
     //MARK: Swipe and Swipe Handling Functions
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
+    func didSwipe(_ recognizer: UIPanGestureRecognizer){
+        if recognizer.state == .ended{
             if !delegate!.menuCurrentlyShowing(){
-                let point = recognizer.translationInView(view)
+                let point = recognizer.translation(in: view)
                 //Horizontal swipe
                 if(abs(point.x) >= abs(point.y)){
                     swapButton(newButtonIsCheese: currentButtonShowing != cheeseButton, comingFromRight: point.x < 0)
@@ -102,9 +102,9 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         
         newButton.frame.origin.x = positions[0]
         view.addSubview(newButton)
-        UIView.animateWithDuration(0.1,
+        UIView.animate(withDuration: 0.1,
                                    delay: 0.0,
-                                   options: UIViewAnimationOptions.CurveEaseIn,
+                                   options: UIViewAnimationOptions.curveEaseIn,
                                    animations: {
                                         self.currentButtonShowing.frame.origin.x = positions[1]
                                         newButton.frame.origin.x = self.view.frame.width/12
@@ -117,11 +117,11 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //The second number is the end x position of the button sliding out
     func startPosition(fromRight right: Bool)-> [CGFloat]{
         let positions = [0 - currentButtonShowing.frame.width, view.frame.width]
-        return right ? positions.reverse() : positions
+        return right ? positions.reversed() : positions
     }
     
     //MARK Touches Began
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         delegate?.userTap()
     }
     
@@ -129,13 +129,13 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     //MARK: Order Processing Functions
     func orderProcessing(){
         fadeView.frame = view.frame
-        fadeView.backgroundColor = UIColor.blackColor()
+        fadeView.backgroundColor = UIColor.black
         fadeView.alpha = 0.6
         view.addSubview(fadeView)
         
         activityIndicator.center = view.center
         view.addSubview(activityIndicator)
-        view.bringSubviewToFront(activityIndicator)
+        view.bringSubview(toFront: activityIndicator)
         activityIndicator.startAnimating()
     }
     
@@ -177,12 +177,12 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
+        titleLabel.textAlignment = .center
         navigationItem.titleView = titleLabel
         
-        let menuButton = UIButton(type: .Custom)
-        menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
-        menuButton.addTarget(self, action: #selector(SliceController.toggleMenu), forControlEvents: .TouchUpInside)
+        let menuButton = UIButton(type: .custom)
+        menuButton.setImage(UIImage(imageLiteralResourceName: "menu"), for: UIControlState())
+        menuButton.addTarget(self, action: #selector(SliceController.toggleMenu), for: .touchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
@@ -199,34 +199,34 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     }
     
     func configureSlices(){
-        pepperoniButton.setBackgroundImage(UIImage(imageLiteral: "pepperoni"), forState: .Normal)
-        pepperoniButton.contentMode = .ScaleAspectFit
+        pepperoniButton.setBackgroundImage(UIImage(imageLiteralResourceName: "pepperoni"), for: UIControlState())
+        pepperoniButton.contentMode = .scaleAspectFit
         
-        let screenSizeAdjuster: CGFloat = UIScreen.mainScreen().bounds.height <= 480.0 ? -5 : 30
+        let screenSizeAdjuster: CGFloat = UIScreen.main.bounds.height <= 480.0 ? -5 : 30
         pepperoniButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+screenSizeAdjuster), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
         pepperoniButton.layer.minificationFilter = kCAFilterTrilinear
         pepperoniButton.adjustsImageWhenHighlighted = false
         pepperoniButton.alpha = 1.0
-        pepperoniButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
+        pepperoniButton.addTarget(self, action: #selector(SliceController.slicePressed), for: .touchUpInside)
         
-        cheeseButton.setBackgroundImage(UIImage(imageLiteral: "cheese"), forState: .Normal)
+        cheeseButton.setBackgroundImage(UIImage(imageLiteralResourceName: "cheese"), for: UIControlState())
         cheeseButton.layer.minificationFilter = kCAFilterTrilinear
         cheeseButton.adjustsImageWhenHighlighted = false
-        cheeseButton.contentMode = .ScaleAspectFit
+        cheeseButton.contentMode = .scaleAspectFit
         cheeseButton.frame = CGRect(origin: CGPoint(x: view.frame.width/12, y: view.frame.width/2+screenSizeAdjuster), size: CGSize(width: view.frame.width*5/6, height: view.frame.width*5/6))
         cheeseButton.alpha = 1.0
-        cheeseButton.addTarget(self, action: #selector(SliceController.slicePressed), forControlEvents: .TouchUpInside)
+        cheeseButton.addTarget(self, action: #selector(SliceController.slicePressed), for: .touchUpInside)
     }
     
     
     func configureCancel(){
         //cancelButton
-        cancelButton.setBackgroundImage(UIImage(imageLiteral: "cancel"), forState: .Normal)
+        cancelButton.setBackgroundImage(UIImage(imageLiteralResourceName: "cancel"), for: UIControlState())
         cancelButton.layer.minificationFilter = kCAFilterTrilinear
-        cancelButton.contentMode = .ScaleAspectFit
+        cancelButton.contentMode = .scaleAspectFit
         cancelButton.frame = CGRect(x: 10, y: 73, width: 34, height: 34)
-        cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), forControlEvents: .TouchUpInside)
-        view.bringSubviewToFront(cancelButton)
+        cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), for: .touchUpInside)
+        view.bringSubview(toFront: cancelButton)
     }
     
     func configureSwipeCircles(){
@@ -241,7 +241,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
 
     
     //MARK: Timeable Protocol Functions
-    func timerEnded(didComplete: Bool) {
+    func timerEnded(_ didComplete: Bool) {
         if didComplete{
             delegate!.timerEnded(cheese: order.cheeseSlices, pepperoni: order.pepperoniSlices)
         }
@@ -249,6 +249,6 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
 }
 
 enum Slice{
-    case Cheese
-    case Pepperoni
+    case cheese
+    case pepperoni
 }

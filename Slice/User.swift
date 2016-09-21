@@ -63,20 +63,20 @@ class User: NSObject, NSCoding{
     }
     
     required convenience init?(coder decoder: NSCoder){
-        guard let addresses = decoder.decodeObjectForKey("addresses") as? [Address],
-            let addressIDs = decoder.decodeObjectForKey("addressIDs") as? [String : String],
-            let cards = decoder.decodeObjectForKey("cards") as? [String],
-            let cardIDs = decoder.decodeObjectForKey("cardIDs") as? [String : String],
-            let userID = decoder.decodeObjectForKey("userID") as? String,
-            let jwt = decoder.decodeObjectForKey("jwt") as? String,
-            let orderHistory = decoder.decodeObjectForKey("orderHistory") as? [PastOrder],
-            let hasPromptedRating = decoder.decodeObjectForKey("hasPrompted") as? Bool?,
-            let loyaltySlices = decoder.decodeObjectForKey("loyaltySlices") as? Int,
-            let hasSeenTutorial = decoder.decodeObjectForKey("hasSeenTutorial") as? Bool,
-            let email = decoder.decodeObjectForKey("email") as? String?,
-            let wantsReceipt = decoder.decodeObjectForKey("wantsReceipts") as? Bool,
-            let wantsOrderConfirmation = decoder.decodeObjectForKey("confirmation") as? Bool,
-            let school = decoder.decodeObjectForKey("school") as? String
+        guard let addresses = decoder.decodeObject(forKey: "addresses") as? [Address],
+            let addressIDs = decoder.decodeObject(forKey: "addressIDs") as? [String : String],
+            let cards = decoder.decodeObject(forKey: "cards") as? [String],
+            let cardIDs = decoder.decodeObject(forKey: "cardIDs") as? [String : String],
+            let userID = decoder.decodeObject(forKey: "userID") as? String,
+            let jwt = decoder.decodeObject(forKey: "jwt") as? String,
+            let orderHistory = decoder.decodeObject(forKey: "orderHistory") as? [PastOrder],
+            let hasPromptedRating = decoder.decodeObject(forKey: "hasPrompted") as? Bool?,
+            let loyaltySlices = decoder.decodeObject(forKey: "loyaltySlices") as? Int,
+            let hasSeenTutorial = decoder.decodeObject(forKey: "hasSeenTutorial") as? Bool,
+            let email = decoder.decodeObject(forKey: "email") as? String?,
+            let wantsReceipt = decoder.decodeObject(forKey: "wantsReceipts") as? Bool,
+            let wantsOrderConfirmation = decoder.decodeObject(forKey: "confirmation") as? Bool,
+            let school = decoder.decodeObject(forKey: "school") as? String
             else{
                 return nil
             }
@@ -84,12 +84,12 @@ class User: NSObject, NSCoding{
         self.init(userID:  userID,
                   addresses: addresses,
                   addressIDs:  addressIDs,
-                  preferredAddress: decoder.decodeIntegerForKey("preferredAddress"),
+                  preferredAddress: decoder.decodeInteger(forKey: "preferredAddress"),
                   cards: cards,
                   cardIDs: cardIDs,
-                  preferredCard: decoder.decodeIntegerForKey("preferredCard"),
-                  hasCreatedFirstCard: decoder.decodeBoolForKey("hasCreated"),
-                  isLoggedIn: decoder.decodeBoolForKey("isLoggedIn"),
+                  preferredCard: decoder.decodeInteger(forKey: "preferredCard"),
+                  hasCreatedFirstCard: decoder.decodeBool(forKey: "hasCreated"),
+                  isLoggedIn: decoder.decodeBool(forKey: "isLoggedIn"),
                   jwt: jwt,
                   orderHistory: orderHistory,
                   hasPromptedRating: hasPromptedRating,
@@ -102,25 +102,25 @@ class User: NSObject, NSCoding{
         )
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.userID, forKey:  "userID")
-        aCoder.encodeObject(self.addresses, forKey: "addresses")
-        aCoder.encodeObject(self.addressIDs, forKey: "addressIDs")
-        aCoder.encodeInteger(self.preferredAddress, forKey: "preferredAddress")
-        aCoder.encodeObject(self.cards, forKey: "cards")
-        aCoder.encodeObject(self.cardIDs, forKey: "cardIDs")
-        aCoder.encodeInteger(self.preferredCard, forKey: "preferredCard")
-        aCoder.encodeBool(self.hasCreatedFirstCard, forKey: "hasCreated")
-        aCoder.encodeBool(self.isLoggedIn, forKey: "isLoggedIn")
-        aCoder.encodeObject(self.jwt, forKey: "jwt")
-        aCoder.encodeObject(self.orderHistory, forKey: "orderHistory")
-        aCoder.encodeObject(self.hasPromptedRating, forKey: "hasPrompted")
-        aCoder.encodeObject(self.loyaltySlices, forKey: "loyaltySlices")
-        aCoder.encodeObject(self.hasSeenTutorial, forKey: "hasSeenTutorial")
-        aCoder.encodeObject(self.email, forKey: "email")
-        aCoder.encodeObject(self.wantsReceipts, forKey: "wantsReceipts")
-        aCoder.encodeObject(self.wantsOrderConfirmation, forKey: "confirmation")
-        aCoder.encodeObject(self.school, forKey: "school")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.userID, forKey:  "userID")
+        aCoder.encode(self.addresses, forKey: "addresses")
+        aCoder.encode(self.addressIDs, forKey: "addressIDs")
+        aCoder.encode(self.preferredAddress, forKey: "preferredAddress")
+        aCoder.encode(self.cards, forKey: "cards")
+        aCoder.encode(self.cardIDs, forKey: "cardIDs")
+        aCoder.encode(self.preferredCard, forKey: "preferredCard")
+        aCoder.encode(self.hasCreatedFirstCard, forKey: "hasCreated")
+        aCoder.encode(self.isLoggedIn, forKey: "isLoggedIn")
+        aCoder.encode(self.jwt, forKey: "jwt")
+        aCoder.encode(self.orderHistory, forKey: "orderHistory")
+        aCoder.encode(self.hasPromptedRating, forKey: "hasPrompted")
+        aCoder.encode(self.loyaltySlices, forKey: "loyaltySlices")
+        aCoder.encode(self.hasSeenTutorial, forKey: "hasSeenTutorial")
+        aCoder.encode(self.email, forKey: "email")
+        aCoder.encode(self.wantsReceipts, forKey: "wantsReceipts")
+        aCoder.encode(self.wantsOrderConfirmation, forKey: "confirmation")
+        aCoder.encode(self.school, forKey: "school")
     }
     
     func saveToDefaults(){

@@ -15,11 +15,11 @@ class SwipeCircle: UIView {
     
     override init(frame: CGRect){
         super.init(frame: frame)
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
         self.frame = frame
         layer.cornerRadius = bounds.size.width/2
         clipsToBounds = true
-        layer.borderColor = UIColor.grayColor().CGColor
+        layer.borderColor = UIColor.gray.cgColor
         layer.borderWidth = 1.0
     }
     
@@ -27,10 +27,10 @@ class SwipeCircle: UIView {
     
     func fill(){
         backgroundColor = Constants.tiltColor
-        layer.borderColor = UIColor.clearColor().CGColor
+        layer.borderColor = UIColor.clear.cgColor
     }
     func unfill(){
-        backgroundColor = UIColor.clearColor()
-        layer.borderColor = UIColor.grayColor().CGColor
+        backgroundColor = UIColor.clear
+        layer.borderColor = UIColor.gray.cgColor
     }
 }

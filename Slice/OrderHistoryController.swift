@@ -22,7 +22,7 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
         if orderHistory.count != 0{
    
             setupTableView()
-            orderHistory = orderHistory.reverse()
+            orderHistory = orderHistory.reversed()
             addTitleLabel()
         }
         else{
@@ -33,7 +33,7 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
     func addTitleLabel(){
         let label = UILabel(frame: CGRect(x: 0, y: 60, width: view.frame.width, height: 100))
         label.attributedText = Constants.getTitleAttributedString("ORDER HISTORY", size: 16, kern: 6.0)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         view.addSubview(label)
     }
 
@@ -43,32 +43,32 @@ class OrderHistoryController: NavBarred, UITableViewDelegate, UITableViewDataSou
         tableView.backgroundColor = Constants.darkBlue
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.registerClass(OrderCell.self, forCellReuseIdentifier: "OrderCell")
+        tableView.register(OrderCell.self, forCellReuseIdentifier: "OrderCell")
         tableView.showsVerticalScrollIndicator = false
         tableView.allowsSelection = false
         view.addSubview(tableView)
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return orderHistory.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("OrderCell")! as! OrderCell
-        cell.order = orderHistory[indexPath.row]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "OrderCell")! as! OrderCell
+        cell.order = orderHistory[(indexPath as NSIndexPath).row]
         return cell
     }
     
     func emptyDataSet(){
-        let width = UIScreen.mainScreen().bounds.width
+        let width = UIScreen.main.bounds.width
         let imageView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY - width/2, width: width, height: width))
         imageView.image = UIImage(imageLiteral: "noOrders")
         imageView.layer.minificationFilter = kCAFilterTrilinear

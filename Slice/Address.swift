@@ -33,24 +33,24 @@ class Address: NSObject, NSCoding, NSCopying{
         dorm = add.dorm
         room = add.room
     }
-    func copyWithZone(zone: NSZone) -> AnyObject {
-        return self.dynamicType.init(self)
+    func copy(with zone: NSZone?) -> Any {
+        return type(of: self).init(self)
     }
     
     required convenience init?(coder decoder: NSCoder){
-        guard let school = decoder.decodeObjectForKey("school") as? String,
-            let dorm = decoder.decodeObjectForKey("dorm") as? String,
-            let room = decoder.decodeObjectForKey("room") as? String else{
+        guard let school = decoder.decodeObject(forKey: "school") as? String,
+            let dorm = decoder.decodeObject(forKey: "dorm") as? String,
+            let room = decoder.decodeObject(forKey: "room") as? String else{
                 return nil
         }
         self.init(school: school, dorm: dorm, room: room)
     }
     
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.school, forKey: "school")
-        aCoder.encodeObject(self.dorm, forKey: "dorm")
-        aCoder.encodeObject(self.room, forKey: "room")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.school, forKey: "school")
+        aCoder.encode(self.dorm, forKey: "dorm")
+        aCoder.encode(self.room, forKey: "room")
         
     }
     

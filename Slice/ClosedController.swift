@@ -28,17 +28,17 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
+        titleLabel.textAlignment = .center
         navigationItem.titleView = titleLabel
         
         
         let closedView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY-view.frame.width/3+15, width: view.frame.width, height: view.frame.width))
         closedView.layer.minificationFilter = kCAFilterTrilinear
-        closedView.image = UIImage(imageLiteral: "closed")
+        closedView.image = UIImage(imageLiteralResourceName: "closed")
         view.addSubview(closedView)
         
         let closedLabel = UILabel(frame: CGRect(x: 0, y: closedView.frame.minY-80, width: view.frame.width, height: 40))
-        closedLabel.textAlignment = .Center
+        closedLabel.textAlignment = .center
         closedLabel.attributedText = Constants.getTitleAttributedString("WE'RE CLOSED RIGHT NOW :(", size: 18, kern: 4.0)
         view.addSubview(closedLabel)
         
@@ -49,18 +49,18 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         paragraphStyle.lineSpacing = 9
         attString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attString.length))
         closedMess.attributedText = attString
-        closedMess.textAlignment = .Center
+        closedMess.textAlignment = .center
         view.addSubview(closedMess)
         
         
-        let menuButton = UIButton(type: .Custom)
-        menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
-        menuButton.addTarget(self, action: #selector(toggleMenu), forControlEvents: .TouchUpInside)
+        let menuButton = UIButton(type: .custom)
+        menuButton.setImage(UIImage(imageLiteralResourceName: "menu"), for: UIControlState())
+        menuButton.addTarget(self, action: #selector(toggleMenu), for: .touchUpInside)
         menuButton.frame = CGRect(x: 0, y: -4, width: 18, height: 18)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if delegate.menuCurrentlyShowing(){
             toggleMenu()
         }
@@ -70,10 +70,10 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         delegate.toggleMenu(nil)
     }
 
-    func didSwipe(recognizer: UIPanGestureRecognizer){
+    func didSwipe(_ recognizer: UIPanGestureRecognizer){
     
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
+        if recognizer.state == .ended{
+            let point = recognizer.translation(in: view)
             if(abs(point.x) >= abs(point.y)){
                 if delegate.menuCurrentlyShowing() && point.x < 0{
                     delegate.toggleMenu(nil)

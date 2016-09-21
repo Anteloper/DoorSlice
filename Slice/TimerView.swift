@@ -14,23 +14,23 @@ class TimerView: UIView {
     var delegate: Timeable?
     var lineLayer: CAShapeLayer!
     
-    var startTime: NSDate!
+    var startTime: Date!
     
     override init(frame: CGRect){
         super.init(frame: frame)
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
         alpha = 0.7
         
         let linePath = UIBezierPath()
         
         //No idea why the frames aren't lining up the same
-        linePath.moveToPoint(CGPoint(x: 0, y: 87))
-        linePath.addLineToPoint(CGPoint(x: frame.maxX , y: 87))
+        linePath.move(to: CGPoint(x: 0, y: 87))
+        linePath.addLine(to: CGPoint(x: frame.maxX , y: 87))
        
         lineLayer = CAShapeLayer()
-        lineLayer.path = linePath.CGPath
-        lineLayer.fillColor = UIColor.clearColor().CGColor
-        lineLayer.strokeColor = Constants.tiltColorFade.CGColor
+        lineLayer.path = linePath.cgPath
+        lineLayer.fillColor = UIColor.clear.cgColor
+        lineLayer.strokeColor = Constants.tiltColorFade.cgColor
         lineLayer.lineWidth = 60
         lineLayer.opacity = 1.0
         lineLayer.strokeEnd = 0.0
@@ -39,12 +39,12 @@ class TimerView: UIView {
     }
     
 
-    func animate(duration: NSTimeInterval){
-        startTime = NSDate()
+    func animate(_ duration: TimeInterval){
+        startTime = Date()
         CATransaction.begin()
         CATransaction.setCompletionBlock({
             if self.delegate != nil {
-                let timeElapsed = NSDate().timeIntervalSinceDate(self.startTime)
+                let timeElapsed = Date().timeIntervalSince(self.startTime)
                 self.delegate!.timerEnded(timeElapsed >= 6.0)
                 
             }
@@ -66,13 +66,13 @@ class TimerView: UIView {
         lineLayer.strokeEnd = 1.0
         
         //Do the actual animation
-        lineLayer.addAnimation(animation, forKey: "animateCircle")
+        lineLayer.add(animation, forKey: "animateCircle")
         CATransaction.commit()
         
     }
 
     func pause(){
-        let pausedTime = lineLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
+        let pausedTime = lineLayer.convertTime(CACurrentMediaTime(), from: nil)
         lineLayer.speed = 0.0
         lineLayer.timeOffset = pausedTime
     }
@@ -82,7 +82,7 @@ class TimerView: UIView {
         lineLayer.speed = 1.0
         lineLayer.timeOffset = 0.0
         lineLayer.beginTime = 0.0
-        let timeSincePause = layer.convertTime(CACurrentMediaTime(), fromLayer: nil)-pausedTime
+        let timeSincePause = layer.convertTime(CACurrentMediaTime(), from: nil)-pausedTime
         layer.beginTime = timeSincePause
         
     }

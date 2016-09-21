@@ -12,7 +12,7 @@ import SwiftyJSON
 
 //A class to retrieve active dorms for the user's school
 class ActiveAddresses{
-    private var dorms: [String]?
+    fileprivate var dorms: [String]?
     
     init(user: User){
         Alamofire.request(.GET, Constants.getAddressesURLString + user.userID, parameters: nil).responseJSON{ response in

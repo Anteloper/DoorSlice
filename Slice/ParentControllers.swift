@@ -29,7 +29,7 @@ class NavBarless: UIViewController, UIGestureRecognizerDelegate {
     //To be overridden by navBarred
     func addTop(){
         backButton = UIButton(frame: CGRect(x: 9, y: 20, width: 20, height: 20))
-        backButton!.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton!.setImage(UIImage(imageLiteralResourceName: "back"), for: UIControlState())
         view.addSubview(backButton!)
     }
     
@@ -39,15 +39,15 @@ class NavBarless: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    func actionForBackButton(action: ()->Void){
+    func actionForBackButton(_ action: @escaping ()->Void){
         backAction = action
-        backButton!.addTarget(self, action: #selector(backPressed), forControlEvents: .TouchUpInside)
+        backButton!.addTarget(self, action: #selector(backPressed), for: .touchUpInside)
     }
     
    
-    func didSwipe(recognizer: UIPanGestureRecognizer){
-        if recognizer.state == .Ended{
-            let point = recognizer.translationInView(view)
+    func didSwipe(_ recognizer: UIPanGestureRecognizer){
+        if recognizer.state == .ended{
+            let point = recognizer.translation(in: view)
             if(abs(point.x) >= abs(point.y)) && point.x > 40{
                 backPressed()
             }
@@ -66,11 +66,11 @@ class NavBarred: NavBarless{
         navigationController?.navigationBar.barTintColor = Constants.darkBlue
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         titleLabel.attributedText = Constants.getTitleAttributedString("DOORSLICE", size: 16, kern: 6.0)
-        titleLabel.textAlignment = .Center
+        titleLabel.textAlignment = .center
         navigationItem.titleView = titleLabel
         
-        backButton = UIButton(type: .Custom)
-        backButton!.setImage(UIImage(imageLiteral: "back"), forState: .Normal)
+        backButton = UIButton(type: .custom)
+        backButton!.setImage(UIImage(imageLiteralResourceName: "back"), for: UIControlState())
         backButton!.frame = CGRect(x: -40, y: -4, width: 20, height: 20)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton!)
     }
