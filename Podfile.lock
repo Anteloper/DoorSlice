@@ -1,18 +1,28 @@
 PODS:
-  - Alamofire (3.4.0)
-  - Stripe (7.0.2)
+  - Alamofire (4.0.0)
+  - Stripe (8.0.7)
   - SwiftyJSON (2.3.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 3.4)
+  - Alamofire (~> 4.0)
   - Stripe
-  - SwiftyJSON
+  - SwiftyJSON (from `https://github.com/acegreen/SwiftyJSON.git`, branch `swift3`)
+
+EXTERNAL SOURCES:
+  SwiftyJSON:
+    :branch: swift3
+    :git: https://github.com/acegreen/SwiftyJSON.git
+
+CHECKOUT OPTIONS:
+  SwiftyJSON:
+    :commit: 8971384559780e631b041ac91b16734a396d4c14
+    :git: https://github.com/acegreen/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  Alamofire: c19a627cefd6a95f840401c49ab1f124e07f54ee
-  Stripe: d1eae5522cf993590f962ac1829a56c2096cf486
+  Alamofire: fef59f00388f267e52d9b432aa5d93dc97190f14
+  Stripe: 2bb9646115745d0ee8c7799e6872c57ba5dc6cc5
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
-PODFILE CHECKSUM: 156c81311f4d4a52407aa09c4a3d53c8217a41bc
+PODFILE CHECKSUM: 1a5b843d061c89493c31738299097dff882ec943
 
 COCOAPODS: 1.0.1

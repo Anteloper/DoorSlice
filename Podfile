@@ -7,17 +7,15 @@ target 'Slice' do
 
   # Pods for Slice
   pod 'Stripe'
-  pod 'Alamofire', '~> 3.4'
-  pod 'SwiftyJSON'
+  pod 'SwiftyJSON', :git => 'https://github.com/acegreen/SwiftyJSON.git', :branch => 'swift3'
+  pod 'Alamofire', '~> 4.0'
+  
+end
 
-  target 'SliceTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'SliceUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '3.0'
+        end
+    end
 end

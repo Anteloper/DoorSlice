@@ -14,12 +14,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-SliceTests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-SliceUITests.xcscheme</key>
+		<key>Stripe-Stripe.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -42,12 +37,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>29BB87BAE793BEACA1494AC0FFEB93B6</key>
+		<key>1C2D895B8ADF7EA5D2FB4C1C8667FBF6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>65AD5B6B4BB9B1554E66A319CF412998</key>
+		<key>29BB87BAE793BEACA1494AC0FFEB93B6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -58,11 +53,6 @@
 			<true/>
 		</dict>
 		<key>79C040AFDDCE1BCBF6D8B5EB0B85887F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>7F471D809E1F2CEBDAA679C7344DE58B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
