@@ -41,15 +41,13 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        //dispatch_async(dispatch_get_main_queue()){
-            self.actionForBackButton({self.save()})
-            self.wantsReceipts = self.user.wantsReceipts
-            self.cellData = self.getCellData()
-            self.addSaveButton()
-            self.tableViewSetup()
-            self.addExplainLabel()
-            self.coverUp()
-       // }
+        actionForBackButton({self.save()})
+        wantsReceipts = self.user.wantsReceipts
+        cellData = self.getCellData()
+        addSaveButton()
+        tableViewSetup()
+        addExplainLabel()
+        coverUp()
     }
 
     //MARK: Data Management

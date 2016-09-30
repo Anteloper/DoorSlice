@@ -373,7 +373,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     }
 
     func timerEnded(cheese cheese: Double, pepperoni: Double){
-        print("cc: timer ended")
         if Alerts.checkValidity(loggedInUser, cc: self){
             if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
                 let receiptController = ReceiptController()
@@ -392,7 +391,6 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     //The beginning point for any payment process when the sliceController timer runs out. This function decides which
     //payment method is appropriate and the calls the corresponding function
     func payForOrder(cheese: Double, pepperoni: Double) {
-        print("cc: pay for order")
         amount = (cheese*Constants.getCheesePriceDollars()  + pepperoni*Constants.getPepperoniPriceDollars())
         orderDescription = getOrderDescription(Int(cheese), pepperoni: Int(pepperoni))
         

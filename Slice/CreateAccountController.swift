@@ -120,7 +120,6 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
                 if let value = response.result.value{
                     if JSON(value)["success"].boolValue{
                         let ec = EnterCodeController()
-                        print(JSON(value)["message"].stringValue)
                         ec.code = JSON(value)["message"].stringValue
                         ec.phoneNumber = self.rawNumber
                         ec.password = self.confirmPasswordField.text!
