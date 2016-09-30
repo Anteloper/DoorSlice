@@ -68,11 +68,12 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     func textFieldSetup(){
-        dormField = makeTextFieldWithText("  DORM", yPos: 100, isGreen: false)
-        roomField = makeTextFieldWithText("  ROOM NUMBER", yPos: 200, isGreen: false)
+        dormField = makeTextFieldWithText("DORM", yPos: 100, isGreen: false)
+        roomField = makeTextFieldWithText("ROOM NUMBER", yPos: 200, isGreen: false)
         roomField.allowsEditingTextAttributes = true
         roomField.autocapitalizationType = .None
         roomField.autocorrectionType = .No
+        roomField.typingAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor(), NSKernAttributeName : 4.0, NSFontAttributeName : UIFont(name: "Myriad Pro", size: 16)!]
 
         view.addSubview(dormField)
         view.addSubview(roomField)
@@ -83,16 +84,20 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
         textField.attributedText = getAttributedTitle(text, size: 15, kern: textFieldKern, isGreen: isGreen)
         textField.delegate = self
         textField.backgroundColor = UIColor.clearColor()
-
+        
+        //Indentation
+        let spacerView = UIView(frame:CGRect(x:0, y:0, width:10, height:10))
+        textField.leftViewMode = UITextFieldViewMode.Always
+        textField.leftView = spacerView
+        
         let border = CALayer()
         let width = CGFloat(1.0)
         border.borderColor = UIColor.whiteColor().CGColor
-        border.frame = CGRect(x: 0, y: textField.frame.size.height - width, width:  textField.frame.size.width, height: textField.frame.size.height)
+        border.frame = CGRect(x: 0, y: textField.frame.size.height - width, width:  textField.frame.size.width, height: width)
         border.borderWidth = width
         textField.layer.addSublayer(border)
         textField.bottomBorder = border
         return textField
-        
     }
     
     func keyboardWillShow(notification: NSNotification) {
@@ -105,10 +110,10 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     func keyboardWillHide(notification: NSNotification?) {
-        if roomField.text != "" && roomField.text != "  ROOM"{
+        if roomField.text != "" && roomField.text != "ROOM"{
             UIView.animateWithDuration(1.0, animations: {
                 self.roomField.bottomBorder?.borderColor = Constants.seaFoam.CGColor
-                if self.dormField.text != "  DORM" && self.dormField.text != ""{
+                if self.dormField.text != "DORM" && self.dormField.text != ""{
                     self.saveButton.titleLabel?.textColor = Constants.seaFoam
                 }
             })
@@ -151,8 +156,8 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         
-        if dormField.text != "  DORM" && dormField.text != ""{
-            if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
+        if dormField.text != "DORM" && dormField.text != ""{
+            if roomField.text != "ROOM NUMBER" && roomField.text != ""{
                 exitWithAddress()
             }
         }
@@ -229,8 +234,8 @@ class NewAddressController: NavBarred, UIPickerViewDelegate, UIPickerViewDataSou
     }
     
     func exitWithAddress(){
-        if dormField.text != "  DORM" && dormField.text != ""{
-            if roomField.text != "  ROOM NUMBER" && roomField.text != ""{
+        if dormField.text != "DORM" && dormField.text != ""{
+            if roomField.text != "ROOM NUMBER" && roomField.text != ""{
                 let address = Address(school: schoolFullName!, dorm: dormField.text!, room: roomField.text!)
                 if delegate != nil{
                     delegate!.returnFromNewAddress(withAddress: address)

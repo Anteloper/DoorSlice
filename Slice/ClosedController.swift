@@ -31,7 +31,6 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         titleLabel.textAlignment = .Center
         navigationItem.titleView = titleLabel
         
-        
         let closedView = UIImageView(frame: CGRect(x: 0, y: view.frame.midY-view.frame.width/3+15, width: view.frame.width, height: view.frame.width))
         closedView.layer.minificationFilter = kCAFilterTrilinear
         closedView.image = UIImage(imageLiteral: "closed")
@@ -52,7 +51,6 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         closedMess.textAlignment = .Center
         view.addSubview(closedMess)
         
-        
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(toggleMenu), forControlEvents: .TouchUpInside)
@@ -60,7 +58,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if delegate.menuCurrentlyShowing(){
             toggleMenu()
         }
@@ -76,10 +74,10 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
             let point = recognizer.translationInView(view)
             if(abs(point.x) >= abs(point.y)){
                 if delegate.menuCurrentlyShowing() && point.x < 0{
-                    delegate.toggleMenu(nil)
+                    toggleMenu()
                 }
                 else if !delegate.menuCurrentlyShowing() && point.x > 40{
-                    delegate.toggleMenu(nil)
+                    toggleMenu()
                 }
             }
         }

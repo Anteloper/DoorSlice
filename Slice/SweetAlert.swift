@@ -131,7 +131,7 @@ public class SweetAlert: UIViewController {
         let button = buttons.first!
         let string = button.titleForState(.Normal)!
         let at = Constants.getTitleAttributedString(button.titleForState(.Normal)!, size: 18, kern: 5.0)
-        at.addAttribute(NSForegroundColorAttributeName, value: color.CGColor, range: (at.string as NSString).rangeOfString(string))
+        at.addAttribute(NSForegroundColorAttributeName, value: color, range: (at.string as NSString).rangeOfString(string))
         button.setAttributedTitle(at, forState: .Normal)
         button.addTarget(self, action: #selector(pressed(_:)), forControlEvents: .TouchUpInside)
        
@@ -147,7 +147,7 @@ public class SweetAlert: UIViewController {
             otherButton.frame = CGRect(x: 0, y: line.frame.maxY, width: kContentWidth/2, height: 50)
             let string2 = (otherButton.titleForState(.Normal))!
             let at2 = Constants.getTitleAttributedString(string2, size: 18, kern: 5.0)
-            at2.addAttribute(NSForegroundColorAttributeName, value: color.CGColor, range: (at2.string as NSString).rangeOfString(string2))
+            at2.addAttribute(NSForegroundColorAttributeName, value: color, range: (at2.string as NSString).rangeOfString(string2))
             otherButton.setAttributedTitle(at2, forState: .Normal)
             otherButton.addTarget(self, action: #selector(pressed(_:)), forControlEvents: .TouchUpInside)
             contentView.addSubview(otherButton)

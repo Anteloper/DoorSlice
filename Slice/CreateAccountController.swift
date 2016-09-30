@@ -43,7 +43,6 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))
     }()
 
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         UIApplication.sharedApplication().statusBarHidden = true
@@ -121,6 +120,7 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
                 if let value = response.result.value{
                     if JSON(value)["success"].boolValue{
                         let ec = EnterCodeController()
+                        print(JSON(value)["message"].stringValue)
                         ec.code = JSON(value)["message"].stringValue
                         ec.phoneNumber = self.rawNumber
                         ec.password = self.confirmPasswordField.text!
@@ -137,7 +137,7 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
             }
         }
     }
-    
+
     func accountCreated(){
         let ec = EnterCodeController()
         ec.shouldPromptPasswordChange = false
