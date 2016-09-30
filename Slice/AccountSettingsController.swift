@@ -41,7 +41,7 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
     //MARK: Lifecycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        dispatch_async(dispatch_get_main_queue()){
+        //dispatch_async(dispatch_get_main_queue()){
             self.actionForBackButton({self.save()})
             self.wantsReceipts = self.user.wantsReceipts
             self.cellData = self.getCellData()
@@ -49,7 +49,7 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
             self.tableViewSetup()
             self.addExplainLabel()
             self.coverUp()
-        }
+       // }
     }
 
     //MARK: Data Management
@@ -218,7 +218,7 @@ class AccountSettingsController: NavBarred, UITableViewDelegate, UITableViewData
         wantsReceiptSwitch = getRightSwitch()
         wantsReceiptSwitch.on = (user.wantsReceipts || (fakeOnSwitch != nil && fakeOnSwitch!)) && cellData.count != 2
         wantsReceiptSwitch.addTarget(self, action: #selector(wantsReceiptsChanged(_:)), forControlEvents: .ValueChanged)
-        cell.accessoryView = (wantsReceiptSwitch)
+        cell.contentView.addSubview(wantsReceiptSwitch)
         cell.contentView.addSubview(getCenterLabel("RECEIPTS"))
         return cell
         
