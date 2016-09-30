@@ -9,6 +9,10 @@
 import UIKit
 
 //Alert specifically for prompting the user for their receipt preference and email if applicable
+//To Use
+//1. Instantiate
+//2. Set the delegate
+//3. .present()
 class ReceiptController: UIViewController, UITextFieldDelegate{
     var contentView = UIView()
     var strongSelf: ReceiptController?
@@ -167,7 +171,7 @@ class ReceiptController: UIViewController, UITextFieldDelegate{
     }
     
     //Completion will be called after the alert is dismissed, not presented
-    func showAlert(completion: (()->Void)?){
+    func present(completion: (()->Void)?){
         self.completion = completion
         view.alpha = 0;
         UIView.animateWithDuration(0.1, animations: { () -> Void in

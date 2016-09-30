@@ -50,7 +50,7 @@ class ClosedController: UIViewController, UIGestureRecognizerDelegate{
         closedMess.attributedText = attString
         closedMess.textAlignment = .Center
         view.addSubview(closedMess)
-        
+    
         let menuButton = UIButton(type: .Custom)
         menuButton.setImage(UIImage(imageLiteral: "menu"), forState: .Normal)
         menuButton.addTarget(self, action: #selector(toggleMenu), forControlEvents: .TouchUpInside)

@@ -98,7 +98,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
                     loggedInUser.hasPromptedRating = true
                     let rc = RatingController()
                     rc.delegate = self
-                    rc.showAlert()
+                    rc.present()
                 }
             }
         }
@@ -377,7 +377,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
             if loggedInUser.email == nil && loggedInUser.orderHistory.count == 0{
                 let receiptController = ReceiptController()
                 receiptController.delegate = self
-                receiptController.showAlert() { [unowned self] in
+                receiptController.present() { [unowned self] in
                     self.payForOrder(cheese, pepperoni: pepperoni)
                 }
             }

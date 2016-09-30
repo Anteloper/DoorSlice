@@ -9,6 +9,10 @@
 import UIKit
 
 //Alert specifically for prompting the user for their rating and comment if applicable
+//To Use
+//1. Instantiate
+//2. Set the delegate
+//3. .present()
 class RatingController: UIViewController, UITextViewDelegate {
     
     var contentView = UIView()
@@ -122,7 +126,6 @@ class RatingController: UIViewController, UITextViewDelegate {
     func addOkayButton(){
         okayButton.frame = CGRect(x: -5, y: 255, width: 320, height: 40)
         let attString = Constants.getTitleAttributedString("SUBMIT", size: 18, kern: 6.0)
-        //attString.addAttribute(NSForegroundColorAttributeName, value: Constants.darkBlue.CGColor, range: (attString.string as NSString).rangeOfString("SUBMIT"))
         okayButton.addTarget(self, action: #selector(okayPressed), forControlEvents: .TouchUpInside)
         okayButton.setAttributedTitle(attString, forState: .Normal)
         
@@ -144,7 +147,7 @@ class RatingController: UIViewController, UITextViewDelegate {
     }
     
     
-    func showAlert(){
+    func present(){
         view.alpha = 0;
         UIView.animateWithDuration(0.1, animations: { () -> Void in
             self.view.alpha = 1.0;
