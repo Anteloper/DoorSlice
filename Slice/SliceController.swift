@@ -18,8 +18,11 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
     var orderProgressBar: OrderProgressView?
     let cancelButton = UIButton()
     
-    let fadeView = UIView()
+    let fadeView = UIView()//Partially dark view to darken the screen while the order processes
     lazy private var activityIndicator : CustomActivityIndicatorView = {return CustomActivityIndicatorView(image: UIImage(imageLiteral: "loading-1"))}()
+    
+    let tapAgainLabel = UILabel()
+    let priceLabel = UILabel()
     
     let pepperoniButton = UIButton()
     let cheeseButton = UIButton()
@@ -43,6 +46,11 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
             if orderProgressBar == nil || orderProgressBar?.superview == nil{
                 self.addProgressBar()
             }
+            
+            if(delegate!.userHasOrdered() && !view.subviews.contains(tapAgainLabel)){
+                addTapAgainLabel()
+            }
+            
             if order.totalSlices() < 8{
                 currentButtonShowing.transform = CGAffineTransformMakeScale(0, 0)
                 let sliceType: Slice = currentButtonShowing == cheeseButton ? .Cheese : .Pepperoni
@@ -86,7 +94,10 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
                 let point = recognizer.translationInView(view)
                 //Horizontal swipe
                 if(abs(point.x) >= abs(point.y)){
-                    swapButton(newButtonIsCheese: currentButtonShowing != cheeseButton, comingFromRight: point.x < 0)
+                    let newButtonIsCheese = currentButtonShowing != cheeseButton
+                    swapButton(newButtonIsCheese: newButtonIsCheese, comingFromRight: point.x < 0)
+                    let priceString = "$\(newButtonIsCheese ? Constants.getCheesePriceDollars() : Constants.getPepperoniPriceDollars())"
+                    priceLabel.attributedText = Constants.getTitleAttributedString(priceString, size: 18, kern: 4.0)
                 }
             }
             else{
@@ -139,24 +150,13 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         activityIndicator.startAnimating()
     }
     
-    func clearCurrentOrder(){
+    func orderCanceledOrCompleted(){
+        order.clear()
         fadeView.removeFromSuperview()
         activityIndicator.stopAnimating()
         cancelButton.removeFromSuperview()
         orderProgressBar?.removeFromSuperview()
-    }
-    
-    func orderCompleted(){
-        activityIndicator.stopAnimating()
-        fadeView.removeFromSuperview()
-        orderProgressBar?.removeFromSuperview()
-        cancelButton.removeFromSuperview()
-        order.clear()
-    }
-    
-    func orderCancelled(){
-        order.clear()
-        clearCurrentOrder()
+        tapAgainLabel.removeFromSuperview()
     }
     
     //MARK: Setup Functions
@@ -170,6 +170,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         view.addSubview(pepperoniButton)
         currentButtonShowing = pepperoniButton
         configureSwipeCircles()
+        addPriceLabel()
     }
     
     func navigationBarSetup(){
@@ -196,6 +197,22 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         let swipe = UIPanGestureRecognizer(target: self, action: #selector(SliceController.didSwipe))
         swipe.delegate = self
         view.addGestureRecognizer(swipe)
+    }
+    func addTapAgainLabel(){
+        tapAgainLabel.frame = CGRect(x: 0, y: 145, width: view.frame.width, height: 70)
+        tapAgainLabel.attributedText = Constants.getTitleAttributedString("TAP AGAIN FOR ANOTHER SLICE", size: 15, kern: 4.0)
+        tapAgainLabel.textAlignment = .Center
+        tapAgainLabel.alpha = 0.0
+        view.addSubview(tapAgainLabel)
+        UIView.animateWithDuration(0.6, animations: {self.tapAgainLabel.alpha = 1.0})
+    }
+    
+    func addPriceLabel(){
+        let midY =  swipeCircles![0].frame.maxY + (view.frame.height - swipeCircles![0].frame.maxY)/2
+        priceLabel.frame = CGRect(x: view.frame.midX-40, y: midY-15, width: 80, height: 30)
+        priceLabel.attributedText = Constants.getTitleAttributedString("$\(Constants.getPepperoniPriceDollars())", size: 18, kern: 4.0)
+        priceLabel.textAlignment = .Center
+        view.addSubview(priceLabel)
     }
     
     func configureSlices(){
@@ -225,7 +242,7 @@ class SliceController: UIViewController, UIGestureRecognizerDelegate, Timeable {
         cancelButton.layer.minificationFilter = kCAFilterTrilinear
         cancelButton.contentMode = .ScaleAspectFit
         cancelButton.frame = CGRect(x: 10, y: 73, width: 34, height: 34)
-        cancelButton.addTarget(self, action: #selector(SliceController.orderCancelled), forControlEvents: .TouchUpInside)
+        cancelButton.addTarget(self, action: #selector(SliceController.orderCanceledOrCompleted), forControlEvents: .TouchUpInside)
         view.bringSubviewToFront(cancelButton)
     }
     

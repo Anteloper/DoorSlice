@@ -371,6 +371,8 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         let lc = LoginController()
         presentViewController(lc, animated: false, completion: nil)
     }
+    
+    func userHasOrdered() -> Bool { return loggedInUser.orderHistory.count == 0 }
 
     func timerEnded(cheese cheese: Double, pepperoni: Double){
         if Alerts.checkValidity(loggedInUser, cc: self){
@@ -471,15 +473,13 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
         let payString = loggedInUser.cards[loggedInUser.preferredCard]
         let address = loggedInUser.addresses[loggedInUser.preferredAddress]
         let order = PastOrder(address: address, cheeseSlices: cheeseSlices, pepperoniSlices: pepperoniSlices, price: amount, timeOrdered: NSDate(), paymentMethod: payString)
-            loggedInUser.orderHistory.append(order)
-
-        
-        sliceController.orderCompleted()
+        loggedInUser.orderHistory.append(order)
+        sliceController.orderCanceledOrCompleted()
         Alerts.successfulOrder(loggedInUser, cc: self, total: pepperoniSlices + cheeseSlices)
     }
     
     func cardPaymentFailed(cardDeclined declined: Bool){
-        sliceController.orderCancelled()
+        sliceController.orderCanceledOrCompleted()
         declined ? Alerts.cardDeclined() : Alerts.failedPayment()
     }
     

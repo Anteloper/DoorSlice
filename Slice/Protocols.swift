@@ -15,6 +15,7 @@ protocol Slideable{
     func toggleMenu(completion: (()->Void)?)
     func userTap()
     func menuCurrentlyShowing()->Bool
+    func userHasOrdered()->Bool
     func bringMenuToNewCard()
     func bringMenuToNewAddress()
     func bringMenuToSettings()

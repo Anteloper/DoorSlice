@@ -46,7 +46,6 @@ class TimerView: UIView {
             if self.delegate != nil {
                 let timeElapsed = NSDate().timeIntervalSinceDate(self.startTime)
                 self.delegate!.timerEnded(timeElapsed >= 6.0)
-                
             }
         })
         
@@ -68,7 +67,6 @@ class TimerView: UIView {
         //Do the actual animation
         lineLayer.addAnimation(animation, forKey: "animateCircle")
         CATransaction.commit()
-        
     }
 
     func pause(){

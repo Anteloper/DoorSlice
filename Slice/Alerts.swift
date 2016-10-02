@@ -55,7 +55,7 @@ class Alerts{
                 confirmedHandler()
             }
             else{
-                cc.sliceController.orderCancelled()
+                cc.sliceController.orderCanceledOrCompleted()
             }
         }
     }
@@ -112,7 +112,7 @@ class Alerts{
                     cc.toggleMenu({cc.bringMenuToNewCard()})
                 }
             }
-            cc.sliceController?.orderCancelled()
+            cc.sliceController?.orderCanceledOrCompleted()
             return false
         }
         if loggedInUser.addresses.count == 0{
@@ -121,7 +121,7 @@ class Alerts{
                     cc.toggleMenu({cc.bringMenuToNewAddress()})
                 }
             }
-            cc.sliceController?.orderCancelled()
+            cc.sliceController?.orderCanceledOrCompleted()
             return false
         }
         return true
