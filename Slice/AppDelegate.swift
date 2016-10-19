@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var containerController: ContainerController?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
+    
         Stripe.setDefaultPublishableKey(Constants.stripePublishableKey)
         retrieveAndSetPrices()
         
