@@ -116,7 +116,6 @@ class MenuController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         headerView.addSubview(title)
         return headerView
-        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
