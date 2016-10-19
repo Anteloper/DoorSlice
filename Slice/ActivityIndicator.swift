@@ -2,9 +2,9 @@
 //  ActivityIndicator.swift
 //  Slice
 //
-//  Created by Oliver Hill on 7/2/16.
-//  Copyright © 2016 Oliver Hill. All rights reserved.
-//
+//  Created by Sergey Yuryev on 22/01/15.
+//  Copyright (c) 2015 syuryev. All rights reserved.
+//  Modified For DoorSlice needs by Oliver Hill
 
 import UIKit
 import QuartzCore
