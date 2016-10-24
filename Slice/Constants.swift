@@ -56,7 +56,6 @@ internal struct Constants{
     static let tiltColorFade = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 0.8)
     static let darkBlue = UIColor(red: 30/255.0, green: 39/255.0, blue: 68/255.0, alpha: 1.0)
     static let lightRed = UIColor(red: 208/255.0, green: 91/255.0, blue: 91/255.0, alpha: 1.0)
-    static let statusColor = UIColor(red: 30/255.0, green: 40/255.0, blue: 62/255.0, alpha: 1.0)
 
     //URLS
     static let isOpenURLString = "https://prod-doorslice.herokuapp.com/api/isOpen/"
