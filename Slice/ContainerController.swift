@@ -30,7 +30,7 @@ class ContainerController: UIViewController, Slideable, Payable, Rateable{
     var paymentPreferenceChanged = false
     
     var menuIsVisible = false{ didSet{ showShadow(menuIsVisible) } }
-    let amountVisibleOfSliceController: CGFloat = 110
+    let amountVisibleOfSliceController: CGFloat = Constants.sliceControllerShowing
     
     private var amount = 0.00 //The amount in dollars (6.49 represents $6.49)
     func getAmountInt()->Int{ return Int(amount*100) }//The amount in cents. (649 represents $6.49)

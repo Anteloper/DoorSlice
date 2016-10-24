@@ -51,7 +51,6 @@ internal struct Constants{
     
     //Colors
     static let tiltColor = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 1.0)
-    static let tiltColorDark = UIColor(red: 0/255.0, green: 140/255.0, blue: 200/255.0, alpha: 1.0)
     static let seaFoam = UIColor(red: 40/255.0, green: 231/255.0, blue: 169/255.0, alpha: 1.0)
     static let tiltColorFade = UIColor(red: 19/255.0,green: 157/255.0, blue: 234/255.0, alpha: 0.8)
     static let darkBlue = UIColor(red: 30/255.0, green: 39/255.0, blue: 68/255.0, alpha: 1.0)
