@@ -268,6 +268,10 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         if keyboardShouldMoveScreen && (textField == phoneField || textField == passwordField) && viewIsRaised{
             keyboardWillHide(nil)
         }
+        if textField == passwordField || textField == confirmPasswordField{
+            textField.secureTextEntry = true
+            textField.font = UIFont(name: "Myriad Pro", size: 18)
+        }
         return true
     }
     
@@ -351,11 +355,11 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         
         passwordField = setupTextField(CGRect(x: view.frame.width/4, y: phoneField.frame.maxY+40, width: view.frame.width/2, height: 40))
         passwordField.alpha = 0.0
-        passwordField.secureTextEntry = true
+        passwordField.attributedText = Constants.getTitleAttributedString("SET PASSWORD", size: 10, kern: 3.0)
         
         confirmPasswordField = setupTextField(CGRect(x: view.frame.width/4, y: passwordField.frame.maxY+40, width: view.frame.width/2, height: 40))
         confirmPasswordField.alpha = 0.0
-        confirmPasswordField.secureTextEntry = true
+        confirmPasswordField.attributedText = Constants.getTitleAttributedString("CONFIRM PASSWORD", size: 10, kern: 3.0)
         
         phoneViewLeft.image = UIImage(imageLiteral: "phone")
         phoneViewLeft.alpha = 0.0
