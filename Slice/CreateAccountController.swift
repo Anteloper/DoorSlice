@@ -419,7 +419,6 @@ class CreateAccountController: NavBarless, UITextFieldDelegate{
         
         columbiaButton.setAttributedTitle(Constants.getTitleAttributedString("COLUMBIA", size: 10, kern: 4.0), forState: .Normal)
         columbiaButton.layer.borderColor = UIColor.whiteColor().CGColor
-        
     }
     
     func columbiaPressed(){
