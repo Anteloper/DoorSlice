@@ -6,8 +6,6 @@ Available at Georgetown University and Columbia University
 
 Demo: https://vimeo.com/188041261
 
-www.doorslice.com
-
 
 CODE FEATURES
 
